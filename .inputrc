@@ -1,0 +1,4 @@
+$include /etc/inputrc
+set completion-ignore-case On
+
+"\C-f": "tmux-sessionizer.sh\n" # CTRL+F

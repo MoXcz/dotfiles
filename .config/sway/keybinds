@@ -1,0 +1,118 @@
+# Logo key. Use Mod1 for Alt.
+set $mod Mod4
+
+# Home row direction keys, like vim
+set $left h
+set $down j
+set $up k
+set $right l
+
+# Set terminal and menu
+set $term wezterm
+# set $menu dmenu_path | dmenu -b | xargs swaymsg exec --
+set $menu bemenu-run -b --fn $uifont -b -p "▶" --tf "$prompt" --hf "$highlight" --sf "$highlight" --scf "$highlight" | xargs swaymsg exec
+# wallpaper
+output * background ~/.config/backgrounds/afoolmoonnight.jpg fill
+# Start a terminal
+bindsym $mod+Return exec $term
+bindsym $mod+Shift+Return exec alacritty
+# Start your launcher
+bindsym $mod+d exec $menu
+# Toggle control center
+bindsym $mod+Shift+n exec swaync-client -t -sw
+# Open file manager
+bindsym $mod+n exec nemo
+# Open browser
+bindsym $mod+Shift+b exec swaymsg "exec brave-browser"
+# Open gimp
+bindsym $mod+g exec swaymsg "exec gimp"
+bindsym $mod+w exec swaymsg "exec obsidian; exec zen"
+
+# Layout stuff:
+    # You can "split" the current object of your focus with $mod+b or $mod+v, for horizontal and vertical splits respectively.
+    bindsym $mod+b splith
+    bindsym $mod+v splitv
+
+    # Switch the current container between different layout styles
+    # bindsym $mod+s layout stacking
+    # bindsym $mod+w layout tabbed
+    bindsym $mod+e layout toggle split
+
+    # Make the current focus fullscreen
+    bindsym $mod+f fullscreen
+
+    # Toggle the current focus between tiling and floating mode
+    bindsym $mod+Shift+space floating toggle
+
+    # Swap focus between the tiling area and the floating area
+    bindsym $mod+space focus mode_toggle
+
+    # Move focus to the parent container
+    bindsym $mod+a focus parent
+
+# Kill focused window
+bindsym $mod+Shift+q kill
+# Reload the configuration file
+bindsym $mod+Shift+r reload; exec notify-send 'sway' 'Restarted'
+# Exit sway (logs you out of your Wayland session)
+bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+
+# Change normal to inverse to use left mouse button for resizing and right mouse button for dragging.
+floating_modifier $mod normal
+
+# Moving around:
+    # Move your focus around
+    bindsym $mod+$left focus left
+    bindsym $mod+$down focus down
+    bindsym $mod+$up focus up
+    bindsym $mod+$right focus right
+    # Or use $mod+[up|down|left|right]
+    bindsym $mod+Left focus left
+    bindsym $mod+Down focus down
+    bindsym $mod+Up focus up
+    bindsym $mod+Right focus right
+
+    # Move the focused window with the same, but add Shift
+    bindsym $mod+Shift+$left move left
+    bindsym $mod+Shift+$down move down
+    bindsym $mod+Shift+$up move up
+    bindsym $mod+Shift+$right move right
+    # Ditto, with arrow keys
+    bindsym $mod+Shift+Left move left
+    bindsym $mod+Shift+Down move down
+    bindsym $mod+Shift+Up move up
+    bindsym $mod+Shift+Right move right
+
+
+# Resizing containers:
+mode "resize" {
+    bindsym $left resize shrink width 40px
+    bindsym $down resize grow height 40px
+    bindsym $up resize shrink height 40px
+    bindsym $right resize grow width 40px
+
+    bindsym Left resize shrink width 40px
+    bindsym Down resize grow height 40px
+    bindsym Up resize shrink height 40px
+    bindsym Right resize grow width 40px
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+# Screen Capture
+bindsym Print exec grim ~/Screenshots/$(date +"%Y-%m-%d_%H-%M-%S").png; exec notify-send 'Grim' 'Image saved to ~/Screenshots'
+bindsym $mod+Print exec grim -g "$(slurp)" ~/Screenshots/$(date +"%Y-%m-%d_%H-%M-%S").png; exec notify-send 'Grim' 'Selected image saved to ~/Screenshots'
+
+
+bar {
+     swaybar_command waybar
+     }
+
+# Scratchpad:
+    bindsym $mod+Shift+minus move scratchpad
+    bindsym $mod+minus scratchpad show
+
+#GTK issue
+exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK

@@ -1,0 +1,7 @@
+git-setup.yml
+.config/tmux/plugins/
+.local/bin/fd
+.config/zsh/plugins
+.config/zsh/.zcompdump
+.xprofile
+old/

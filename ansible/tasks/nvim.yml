@@ -1,0 +1,36 @@
+- name: Clone nvim repository
+  git:
+    repo: 'https://github.com/neovim/neovim.git'
+    dest: "{{ lookup('env', 'HOME') }}/neovim"
+    clone: true
+    version: "v0.10.1"
+
+- name: Install nvim build dependencies
+  become: true
+  apt:
+    name:
+      - ninja-build
+      - gettext
+      - libtool
+      - libtool-bin
+      - autoconf
+      - automake
+      - cmake
+      - g++
+      - pkg-config
+      - unzip
+      - curl
+      - build-essential
+    state: present
+
+- name: Build nvim release version
+  community.general.make:
+    chdir: "{{ lookup('env', 'HOME') }}/neovim"
+    params:
+      CMAKE_BUILD_TYPE: Release
+
+- name: Install nvim release version
+  become: true
+  community.general.make:
+    chdir: "{{ lookup('env', 'HOME') }}/neovim"
+    target: install

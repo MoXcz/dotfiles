@@ -1,0 +1,28 @@
+- name: Installing common requirements
+  become: true
+  apt:
+    name:
+      [
+        "curl",
+        "apt-transport-https",
+        "ninja-build",
+        "gettext",
+        "libtool",
+        "libtool-bin",
+        "autoconf",
+        "automake",
+        "cmake",
+        "g++",
+        "pkg-config",
+        "unzip",
+        "build-essential",
+        "nodejs",
+        "npm",
+        "git",
+        "clang",
+        "clangd",
+        "python3-full"
+      ]
+  tags:
+    - requirements
+    - install
