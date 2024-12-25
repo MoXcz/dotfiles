@@ -16,7 +16,7 @@ output * background ~/.config/backgrounds/afoolmoonnight.jpg fill
 # Start a terminal
 bindsym $mod+Return exec $term
 bindsym $mod+Shift+Return exec alacritty
-# Start your launcher
+# Start launcher
 bindsym $mod+d exec $menu
 # Toggle control center
 bindsym $mod+Shift+n exec swaync-client -t -sw
@@ -27,6 +27,10 @@ bindsym $mod+Shift+b exec swaymsg "exec brave-browser"
 # Open gimp
 bindsym $mod+g exec swaymsg "exec gimp"
 bindsym $mod+w exec swaymsg "exec obsidian; exec zen"
+# Change output display
+bindsym $mod+p move workspace to output right
+# Logout menu
+bindsym $mod+q exec swaymsg "exec wlogout"
 
 # Layout stuff:
     # You can "split" the current object of your focus with $mod+b or $mod+v, for horizontal and vertical splits respectively.
@@ -105,14 +109,13 @@ bindsym $mod+r mode "resize"
 bindsym Print exec grim ~/Screenshots/$(date +"%Y-%m-%d_%H-%M-%S").png; exec notify-send 'Grim' 'Image saved to ~/Screenshots'
 bindsym $mod+Print exec grim -g "$(slurp)" ~/Screenshots/$(date +"%Y-%m-%d_%H-%M-%S").png; exec notify-send 'Grim' 'Selected image saved to ~/Screenshots'
 
-
 bar {
      swaybar_command waybar
-     }
+}
 
 # Scratchpad:
-    bindsym $mod+Shift+minus move scratchpad
-    bindsym $mod+minus scratchpad show
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
 
 #GTK issue
 exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
