@@ -1,2 +1,2 @@
-require("mocos.core")
-require("mocos.lazy")
+require('mocos.core')
+require('mocos.lazy')

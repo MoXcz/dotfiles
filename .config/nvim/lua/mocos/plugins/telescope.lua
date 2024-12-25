@@ -16,15 +16,16 @@ return {
         live_grep = { theme = 'dropdown' },
         diagnostics = { theme = 'dropdown' },
       },
+      extensions = {
+        fzf = {},
+      },
     })
 
     local builtin = require('telescope.builtin')
     pcall(require('telescope').load_extension, 'fzf')
     pcall(require('telescope').load_extension, 'ui-select')
 
-    -- Avoid redundancy
     local set = vim.keymap.set
-
     set('n', '<leader>ff', builtin.find_files, {})
     set('n', '<leader>fr', builtin.oldfiles, { desc = 'Recent files' })
     set('n', '<leader>fs', builtin.live_grep, { desc = 'Search for a String' })

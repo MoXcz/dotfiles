@@ -1,29 +1,43 @@
--- Lazy bootstrap
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
   local out = vim.fn.system({ 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath })
   if vim.v.shell_error ~= 0 then
-    error('Error cloning lazy.nvim:\n' .. out)
+    vim.api.nvim_echo({
+      { 'Failed to clone lazy.nvim:\n', 'ErrorMsg' },
+      { out, 'WarningMsg' },
+      { '\nPress any key to exit...' },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
   end
-end ---@diagnostic disable-next-line: undefined-field
+end
 vim.opt.rtp:prepend(lazypath)
 
---local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
---if not (vim.uv or vim.loop).fs_stat(lazypath) then
---  vim.fn.system({
---    "git",
---    "clone",
---    "--filter=blob:none",
---    "https://github.com/folke/lazy.nvim.git",
---    "--branch=stable", -- latest stable release
---    lazypath,
---  })
---end
---vim.opt.rtp:prepend(lazypath)
-
 require('lazy').setup({
-  spec = 'mocos.plugins',
-  -- Each time a change to a file is made a message is send, it is now in false
-  change_detection = { notify = false },
+  spec = {
+    change_detection = { notify = false, enabled = false },
+    { import = 'mocos.plugins' },
+    -- Undotree
+    {
+      'mbbill/undotree',
+      config = function()
+        vim.keymap.set('n', '<leader>ut', vim.cmd.UndotreeToggle)
+      end,
+    },
+    -- Icons
+    ui = { icons = vim.g.have_nerd_font and {} or {} },
+    -- Colorscheme
+    {
+      'rebelot/kanagawa.nvim',
+      config = function()
+        vim.cmd.colorscheme('kanagawa-dragon')
+        vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
+        vim.api.nvim_set_hl(0, 'NormalFloat', { bg = 'none' })
+
+        -- You can configure highlights by doing something like:
+        vim.cmd.hi('Comment gui=none')
+      end,
+    },
+  },
 })
