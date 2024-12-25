@@ -43,6 +43,10 @@ if [ -d "/usr/local/go/bin" ] ;
   then PATH="$PATH:/usr/local/go/bin"
 fi
 
+if [ -d "/usr/games/" ] ;
+  then PATH="$PATH:/usr/games"
+fi
+
 export ZDOTDIR=$HOME/.config/zsh
 
 if [ -z "$ZSH_COMPDUMP" ] ; then
