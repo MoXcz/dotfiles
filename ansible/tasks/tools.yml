@@ -30,6 +30,7 @@
         "fish",
         "gnome-tweaks",
         "stow",
+        "wlogout",
       ]
   tags:
     - install
