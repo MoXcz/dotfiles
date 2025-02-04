@@ -24,6 +24,7 @@ truncate_to_repo = true # truncates directory to root folder if in github repo
 
 [aws]
 symbol = "  "
+disabled = true
 
 [buf]
 symbol = " "

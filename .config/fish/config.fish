@@ -141,7 +141,6 @@ alias .5='cd ../../../../..'
 # vim and emacs
 alias vim='nvim'
 
-# Changing "ls" to "eza"
 alias ls='ls -F --color=auto' # my preferred listing
 
 # adding flags

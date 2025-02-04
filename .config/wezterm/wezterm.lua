@@ -14,7 +14,8 @@ config = {
 
   enable_tab_bar = false,
   window_decorations = 'RESIZE',
-  color_scheme = 'Everblush (Gogh)',
+  color_scheme = 'Kanagawa (Gogh)',
+  -- color_scheme = 'Everblush (Gogh)',
   -- color_scheme = "Everforest Dark (Gogh)",
   -- Change value depending on the background color
   window_background_opacity = 0.9,

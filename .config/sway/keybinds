@@ -8,7 +8,7 @@ set $up k
 set $right l
 
 # Set terminal and menu
-set $term wezterm
+set $term ghostty
 # set $menu dmenu_path | dmenu -b | xargs swaymsg exec --
 set $menu bemenu-run -b --fn $uifont -b -p "▶" --tf "$prompt" --hf "$highlight" --sf "$highlight" --scf "$highlight" | xargs swaymsg exec
 # wallpaper
