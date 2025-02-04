@@ -31,7 +31,7 @@ return {
     set('n', '<leader>fs', builtin.live_grep, { desc = 'Search for a String' })
     set('n', '<C-g>', builtin.git_files, { desc = 'Search files inside git repo' })
     set('n', '<leader>fh', builtin.help_tags, { desc = 'Help command fuzzy finder' })
-    set('n', '<leader>b', builtin.builtin, { desc = 'Search option and plugin configuration' })
+    set('n', '<leader>bb', builtin.builtin, { desc = 'Search option and plugin configuration' })
     set('n', '<leader>fd', builtin.diagnostics, { desc = 'Search for diagnostics' })
     set('n', '<leader>/', function()
       builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown({

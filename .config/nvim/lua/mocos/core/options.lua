@@ -1,78 +1,99 @@
+local set = vim.opt
+
+-- Set leader key to <space>
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-vim.opt.number = true
-vim.opt.relativenumber = true
+
+set.number = true
+set.relativenumber = true
 -- Set to false if there is not a nerd font installed
 vim.g.have_nerd_font = true
 -- Enable mouse mode
-vim.opt.mouse = 'a'
+set.mouse = 'a'
 
 -- Change netrw style
 -- vim.cmd("let g:netrw_liststyle = 3")
 
 -- To share clipboard between nvim and system (not recommended, use xclip instead)
--- vim.opt.clipboard = "unnamedplus";
+-- set.clipboard = "unnamedplus";
 
 -- Use 2 spaces instead of tabs and respect indentation
-vim.opt.tabstop = 2
-vim.opt.softtabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.expandtab = true
-vim.opt.autoindent = true
-vim.opt.smartindent = true
+set.tabstop = 2
+set.softtabstop = 2
+set.shiftwidth = 2
+set.expandtab = true
+set.autoindent = true
+set.smartindent = true
 
--- For notes,it allows long lines of characters to be corerctly displayed on screen
-vim.opt.wrap = true
-vim.opt.breakindent = true
-vim.opt.linebreak = true
+-- For notes,it allows long lines of characters to be correctly displayed on screen
+set.wrap = true
+set.breakindent = true
+set.linebreak = true
 
 -- Avoid backups
-vim.opt.swapfile = false
-vim.opt.backup = false
+set.swapfile = false
+set.backup = false
 
 -- Get access to long running undoes
-vim.opt.undodir = os.getenv('HOME') .. '/.vim/undodir'
-vim.opt.undofile = true
+set.undodir = os.getenv('HOME') .. '/.vim/undodir'
+set.undofile = true
 
 -- Disable dangling highlights
-vim.opt.hlsearch = false
-vim.opt.incsearch = true
+set.hlsearch = true
+set.incsearch = true
 
 -- Enable 24-bit RGB colors
-vim.opt.termguicolors = true
+set.termguicolors = true
 
 -- The screen will move with 8 lines of space
-vim.opt.scrolloff = 8
+set.scrolloff = 10
 
 -- To see marks (errors, linting)
-vim.opt.signcolumn = 'yes'
-vim.opt.isfname:append('@-@')
+set.signcolumn = 'yes'
+set.isfname:append('@-@')
 
--- Snappier markers update
-vim.opt.updatetime = 50
+-- Snappier markers update (decrease update time)
+set.updatetime = 250
+
+-- Decrease mapped sequence wait time
+set.timeoutlen = 300
 
 -- Turn the guide column at 80 characters
-vim.opt.colorcolumn = '80'
-
--- For obsidian/markdown syntax
-vim.opt_local.conceallevel = 2
+set.colorcolumn = '80'
 
 -- To automatically start a new line after 80 characters
-vim.opt.textwidth = 80
+set.textwidth = 80
 
 -- See difference between spaces, tabs and whitespaces
-vim.opt.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+set.list = true
+set.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 -- Preview substitutions live inside a split
-vim.opt.inccommand = 'split'
+set.inccommand = 'split'
 
-vim.opt.cursorline = false
+set.cursorline = false
 
-vim.opt.path:append('**')
+set.path:append('**')
 
-vim.opt.spelllang = 'en_us'
-vim.opt.spell = true
+set.spelllang = 'en_us'
+set.spell = true
 
 -- Deactivate default mode status
-vim.opt.showmode = false
+set.showmode = false
+
+-- Case insensitive search unless it has one or more capital letters in the search term
+set.ignorecase = true
+set.smartcase = true
+
+-- vim.api.nvim_create_autocommand('LspAttach', {
+--   callback = function(args)
+--     local client = vim.lsp.get_client_by_id(args.data.client_id)
+--     if not client then
+--       vim.wo.foldmethod = 'expr'
+--       vim.wo.foldexpr = 'nvim_treesitter#foldexpr()'
+--     elseif client:supports_method('textDocument/foldingRange') then
+--       vim.wo.foldmethod = 'expr'
+--       vim.wo.foldexpr = 'v:lua.vim.lsp.foldexpr()'
+--     end
+--   end,
+-- })

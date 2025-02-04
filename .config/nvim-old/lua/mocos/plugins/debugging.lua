@@ -32,7 +32,7 @@ return {
 
     local set = vim.keymap.set
 
-    set('n', '<Leader>db', dap.toggle_breakpoint, {})
+    set('n', '<Leader>b', dap.toggle_breakpoint, {})
     set('n', '<Leader>dc', dap.continue, {})
     set('n', '<Leader>di', dap.step_into, {})
     set('n', '<Leader>do', dap.step_over, {})

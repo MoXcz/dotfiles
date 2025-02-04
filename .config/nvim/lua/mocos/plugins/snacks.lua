@@ -2,8 +2,11 @@ return {
   'folke/snacks.nvim',
   priority = 1000,
   lazy = false,
+  ---@type snacks.Config
   opts = {
+    scroll = { enabled = false },
     bigfile = { enabled = true, notify = true, size = 1.5 * 1024 * 1024 },
+    animate = { enabled = false },
     notifier = { enabled = true, tiemout = 3000 },
     quickfile = { enabled = true },
     statuscolumn = { enabled = true },
@@ -11,6 +14,7 @@ return {
     styles = { notification = { wo = { wrap = true } } },
     toggle = { enabled = true },
     input = { enabled = true },
+    indent = { enabled = true },
   },
   keys = {
     {
@@ -159,8 +163,8 @@ return {
         Snacks.toggle.diagnostics():map('<leader>ud')
         Snacks.toggle.line_number():map('<leader>ul')
         Snacks.toggle
-          .option('conceallevel', { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
-          :map('<leader>uc')
+            .option('conceallevel', { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
+            :map('<leader>uc')
         Snacks.toggle.treesitter():map('<leader>uT')
         Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' }):map('<leader>ub')
         Snacks.toggle.inlay_hints():map('<leader>uh')

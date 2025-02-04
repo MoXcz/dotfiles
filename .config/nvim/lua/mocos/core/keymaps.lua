@@ -10,10 +10,10 @@ set('n', '<leader>x', ':.lua<CR>', { desc = 'Execute the current line' })
 set('n', '<leader><leader>x', '<cmd>source %<CR>', { desc = 'Source the current file' })
 
 -- Move between splits using vim motions
-set('n', '<c-j>', '<c-w><c-j>')
-set('n', '<c-k>', '<c-w><c-k>')
-set('n', '<c-l>', '<c-w><c-l>')
-set('n', '<c-h>', '<c-w><c-h>')
+set('n', '<C-j>', '<C-w><C-j>')
+set('n', '<C-k>', '<C-w><C-k>')
+set('n', '<C-l>', '<C-w><C-l>')
+set('n', '<C-h>', '<C-w><C-h>')
 
 -- Move highlighted text
 set('v', 'J', ":m '>+1<CR>gv=gv")
@@ -77,6 +77,8 @@ set('n', '<M-j>', '<cmd>cnext<CR>')
 set('n', '<M-k>', '<cmd>cprev<CR>')
 set('n', '<M-h>', '<cmd>copen<CR>') -- Open quickfix list
 
+set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+
 -- Set local settings for terminal buffers
 vim.api.nvim_create_autocmd('TermOpen', {
   group = vim.api.nvim_create_augroup('custom-term-open', { clear = true }),
@@ -90,7 +92,7 @@ vim.api.nvim_create_autocmd('TermOpen', {
 })
 
 -- Exit terminal mode
-set('t', '<esc>', '<c-\\><c-n>')
+set('t', '<Esc><Esc>', '<C-\\><C-n>')
 
 local job_id = 0
 -- Open a terminal at the bottom of the screen with a fixed height.
@@ -110,7 +112,6 @@ end)
 
 -- Highlight when yanking (copying) text
 vim.api.nvim_create_autocmd('TextYankPost', {
-  desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
   callback = function()
     vim.highlight.on_yank()

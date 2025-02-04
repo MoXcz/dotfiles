@@ -5,7 +5,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
       { 'Failed to clone lazy.nvim:\n', 'ErrorMsg' },
-      { out, 'WarningMsg' },
+      { out,                            'WarningMsg' },
       { '\nPress any key to exit...' },
     }, true, {})
     vim.fn.getchar()
@@ -38,6 +38,13 @@ require('lazy').setup({
         -- You can configure highlights by doing something like:
         vim.cmd.hi('Comment gui=none')
       end,
+    },
+    -- Highlight to do's
+    {
+      'folke/todo-comments.nvim',
+      event = 'VimEnter',
+      dependencies = { 'nvim-lua/plenary.nvim' },
+      opts = { signs = false },
     },
   },
 })
