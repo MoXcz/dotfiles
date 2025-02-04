@@ -1,36 +1,28 @@
-- name: Clone nvim repository
-  git:
-    repo: 'https://github.com/neovim/neovim.git'
-    dest: "{{ lookup('env', 'HOME') }}/neovim"
-    clone: true
-    version: "v0.10.1"
+- name: My first playbook
+  tasks:
+    - name: Git neovim
+      ansible.builtin.git:
+        repo: "https://github.com/neovim/neovim.git"
+        dest: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal/neovim"
+        version: v0.9.4
 
-- name: Install nvim build dependencies
-  become: true
-  apt:
-    name:
-      - ninja-build
-      - gettext
-      - libtool
-      - libtool-bin
-      - autoconf
-      - automake
-      - cmake
-      - g++
-      - pkg-config
-      - unzip
-      - curl
-      - build-essential
-    state: present
+    - name: Install helping libs
+      become: true
+      ansible.builtin.apt:
+        pkg:
+          - lua5.1
+          - liblua5.1-0-dev
+          - cmake
+          - gettext
 
-- name: Build nvim release version
-  community.general.make:
-    chdir: "{{ lookup('env', 'HOME') }}/neovim"
-    params:
-      CMAKE_BUILD_TYPE: Release
+    - name: neovim
+      make:
+        chdir: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal/neovim"
+        params:
+          CMAKE_BUILD_TYPE: "RelWithDebInfo"
 
-- name: Install nvim release version
-  become: true
-  community.general.make:
-    chdir: "{{ lookup('env', 'HOME') }}/neovim"
-    target: install
+    - name: neovim install
+      become: true
+      make:
+        target: install
+        chdir: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal/neovim"

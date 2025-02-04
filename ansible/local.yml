@@ -1,4 +1,5 @@
-- hosts: localhost
+- name: Tasks
+  hosts: localhost
   become: true
   pre_tasks:
     - name: Update cache
