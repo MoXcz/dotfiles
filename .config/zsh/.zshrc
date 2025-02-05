@@ -143,26 +143,10 @@ bindkey -M vicmd v edit-command-line
 # Only these are useful, the rest are still pending revision
 bindkey "^A" beginning-of-line
 bindkey "^E" end-of-line
-# ---
-bindkey "^J" accept-line
-bindkey "^K" kill-line
-bindkey "^M" accept-line
 bindkey "^N" down-line-or-history
-bindkey "^O" accept-line-and-down-history
 bindkey "^P" up-line-or-history
-bindkey "^Q" push-line
 bindkey "^U" kill-whole-line
 bindkey "^['" quote-line
-bindkey "^[G" get-line
-bindkey "^[OA" up-line-or-history
-bindkey "^[OB" down-line-or-history
-bindkey "^[OF" end-of-line
-bindkey "^[OH" beginning-of-line
-bindkey "^[Q" push-line
-bindkey "^[[A" up-line-or-history
-bindkey "^[[B" down-line-or-history
-bindkey "^[g" get-line
-bindkey "^[q" push-line
 
 ## -- Plugins
 source "$ZDOTDIR/zsh-functions"
