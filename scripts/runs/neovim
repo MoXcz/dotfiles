@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+
+neovim_v="stable"
+
+nvim_curl() {
+
+  sudo apt install make gcc ripgrep unzip git xclip curl
+
+  # Now we install nvim
+  curl -LO https://github.com/neovim/neovim/releases/download/"$neovim_v"/nvim-linux-x86_64.tar.gz
+  sudo rm -rf /opt/nvim-linux-x86_64
+  sudo mkdir -p /opt/nvim-linux-x86_64
+  sudo chmod a+rX /opt/nvim-linux-x86_64
+  sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+  rm -i nvim-linux-x86_64.tar.gz
+
+  # make it available in /usr/local/bin, distro installs to /usr/bin
+  sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/
+  # From: https://github.com/nvim-lua/kickstart.nvim
+}
+
+nvim_build() {
+  download_dir=$HOME/Downloads
+  if [ ! -d "$download_dir" ]; then
+    echo "$download_dir" does not exist, creating it...
+    mkdir download_dir
+  fi
+  if [ -d "$HOME/Downloads/neovim" ]; then
+    echo "Neovim already cloned, downloading..."
+    cd "$download_dir"/neovim || exit
+    git fetch
+    git checkout v0.10.4
+    sudo apt install cmake gettext lua5.1 liblua5.1-0-dev
+    make CMAKE_BUILD_TYPE=RelWithDebInfo
+    sudo make install
+  else
+    echo "Neovim is not cloned, cloning it..."
+    git clone "https://github.com/neovim/neovim.git" "$download_dir"/neovim
+    cd "$download_dir"/neovim || exit
+    git fetch
+    git checkout v0.10.4
+
+    sudo apt install cmake gettext lua5.1 liblua5.1-0-dev
+    make CMAKE_BUILD_TYPE=RelWithDebInfo
+    sudo make install
+  fi
+}
+
+version=4
+echo "1. curl nvim stable"
+echo "2. curl nvim nightly"
+echo "3. build nvim stable"
+echo -n "Chose one installation method [1, 2, 3]: "
+
+while [ "$version" -eq 4 ]; do
+  read -r version
+  if [ "$version" -eq 1 ] ; then
+    nvim_curl
+  elif [ "$version" -eq 2 ] ; then
+    neovim_v="nightly"
+    nvim_curl
+  elif [ "$version" -eq 3 ] ; then
+    nvim_build
+  else
+    version=4
+    echo "Error! Choose [1, 2, or 3]"
+    echo -n "Chose one installation method [1, 2, 3]: "
+  fi
+
+done
+
