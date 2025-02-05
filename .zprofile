@@ -12,6 +12,12 @@ if [ -z "$XDG_CACHE_HOME" ] ; then
     export XDG_CACHE_HOME="$HOME/.cache"
 fi
 
+path() {
+  if [[ "$PATH" != *"$1"* ]]; then
+    export PATH=$PATH:$1
+  fi
+}
+
 ## -- Environment Variables
 export TERM="xterm-256color"
 export EDITOR="nvim"
@@ -19,41 +25,17 @@ export VISUAL="nvim"
 export MANPAGER="nvim +Man!"
 
 ## -- Path
-if [ -d "$HOME/bin" ] ;
-  then PATH="$HOME/bin:$PATH"
-fi
-
-if [ -d "$HOME/.local/bin" ] ;
-  then PATH="$HOME/.local/bin:$PATH"
-fi
-
-if [ -d "$HOME/.fzf/bin" ] ;
-  then PATH="$HOME/.fzf/bin:$PATH"
-fi
-
-if [ -d "$HOME/.cargo/bin" ] ;
-  then PATH="$HOME/.cargo/bin:$PATH"
-fi
-
-if [ -d "$HOME/go/bin" ] ;
-  then PATH="$PATH:$HOME/go/bin"
-fi
-
-if [ -d "/usr/local/go/bin" ] ;
-  then PATH="$PATH:/usr/local/go/bin"
-fi
-
-if [ -d "$HOME/.lua/src" ] ;
-  then PATH="$PATH:/.lua/src"
-fi
-
-if [ -d "/usr/games/" ] ;
-  then PATH="$PATH:/usr/games"
-fi
-
-if [ -d "$HOME/scripts" ] ;
-  then PATH="$PATH:$HOME/scripts"
-fi
+path $HOME/.local/bin
+path $HOME/.fzf/bin
+path $HOME/.cargo/bin
+path $HOME/go/bin
+path /usr/local/go/bin
+path "$HOME"/.lua/src
+path "$HOME"/scripts
+path "$HOME"/.local/n/bin
+path /usr/games
+path "$HOME"/.rbenv/shims
+path "$HOME"/.rbenv/bin
 
 export ZDOTDIR=$HOME/.config/zsh
 
@@ -61,4 +43,3 @@ if [ -z "$ZSH_COMPDUMP" ] ; then
     export ZSH_COMPDUMP="$HOME/.cache/zsh/.zcompdump-$HOST"
 fi
 
-eval "$(~/.rbenv/bin/rbenv init - --no-rehash zsh)"
