@@ -156,3 +156,4 @@ plug "zsh-completions"
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=7"
 eval "$(starship init zsh)"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export N_PREFIX="$HOME/.local/n"
