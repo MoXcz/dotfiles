@@ -37,7 +37,7 @@ set({ 'n', 'v' }, '<leader>y', [["+y]])
 set('n', '<leader>Y', [["+Y]])
 
 -- Open new tmux session to another project
-set('n', '<C-f>', '<cmd>silent !tmux neww tmux-sessionizer<CR>')
+set('n', '<C-f>', '<cmd>silent !tmux neww tmux-sessionizer.sh<CR>')
 
 -- Format code : Changed to Conform
 -- vim.keymap.set("n", "<leader>af", vim.lsp.buf.format)
@@ -49,7 +49,7 @@ set('n', '<leader>ss', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 set('n', '<leader>xc', '<cmd>!chmod +x %<CR>', { silent = true })
 
 -- Create new tmux session using script to fuzzy find directory
-set('n', '<C-f>', '<cmd>silent !tmux neww tmux-sessionizer<CR>')
+set('n', '<C-f>', '<cmd>silent !tmux neww tmux-sessionizer.sh<CR>')
 
 -- To split windows
 set('n', '<leader>sv', '<C-w>v', { desc = 'Split window vertically' })
