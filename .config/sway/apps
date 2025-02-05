@@ -1,12 +1,12 @@
 # notifications
 exec swaync
 
-exec_always --no-startup-id ~/.local/bin/sway-lock.sh
+exec_always --no-startup-id ~/scripts/sway-lock.sh
 
 exec nm-applet --indicator
 
 # Volume and brightness control
-set $volume_ctrl ~/.local/bin/volume-ctrl.sh
+set $volume_ctrl ~/scripts/volume-ctrl.sh
 bindsym XF86AudioRaiseVolume exec $volume_ctrl up
 bindsym XF86AudioLowerVolume exec $volume_ctrl down
 bindsym XF86AudioMute exec $volume_ctrl mute

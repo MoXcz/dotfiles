@@ -43,12 +43,16 @@ if [ -d "/usr/local/go/bin" ] ;
   then PATH="$PATH:/usr/local/go/bin"
 fi
 
-if [ -d "/$HOME/.lua/src" ] ;
+if [ -d "$HOME/.lua/src" ] ;
   then PATH="$PATH:/.lua/src"
 fi
 
 if [ -d "/usr/games/" ] ;
   then PATH="$PATH:/usr/games"
+fi
+
+if [ -d "$HOME/scripts" ] ;
+  then PATH="$PATH:$HOME/scripts"
 fi
 
 export ZDOTDIR=$HOME/.config/zsh
