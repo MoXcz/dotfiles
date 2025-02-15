@@ -44,7 +44,7 @@ return {
         ['emmet_ls'] = function()
           lspconfig['emmet_ls'].setup({
             capabilities = capabilities,
-            filetypes = { 'html', 'typescriptreact', 'javascriptreact', 'css', 'sass', 'scss', 'less', 'svelte' },
+            filetypes = { 'html', 'typescriptreact', 'javascriptreact', 'css', 'sass', 'scss', 'less', 'svelte', 'php' },
           })
         end,
         ['rust_analyzer'] = function() end,

@@ -6,11 +6,12 @@ set $left h
 set $down j
 set $up k
 set $right l
+set $uifont JetBrainsMono Nerd Font
 
 # Set terminal and menu
 set $term ghostty
 # set $menu dmenu_path | dmenu -b | xargs swaymsg exec --
-set $menu bemenu-run -b --fn $uifont -b -p "▶" --tf "$prompt" --hf "$highlight" --sf "$highlight" --scf "$highlight" | xargs swaymsg exec
+set $menu bemenu-run -b -i --fn $uifont -p "Program:" --tf "#bd93f9" --hf "#f1fa8c" --sf "#f1fa8c" --scf "#f1fa8c" | xargs swaymsg exec
 # wallpaper
 output * background ~/.config/backgrounds/afoolmoonnight.jpg fill
 # Start a terminal

@@ -58,7 +58,7 @@ bindsym Ctrl+Mod4+Print exec --no-startup-id maim --window $(xdotool getactivewi
 bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection clipboard -t image/png
 
 # start a terminal
-bindsym Mod4+Return exec wezterm
+bindsym Mod4+Return exec ghostty
 
 # Move to second monitor
 bindsym Mod4+p move workspace to output right
@@ -221,6 +221,7 @@ exec_always feh --bg-fill ~/.config/backgrounds/afoolmoonnight.jpg &
 
 # Transparency with picom compositor
 exec_always picom -f
+exec_always keys
 
 #######################################################################
 # automatically start i3-config-wizard to offer the user to create a
