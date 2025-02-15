@@ -1,45 +1,48 @@
 #!/usr/bin/env bash
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-filter=""
-dry="0"
-
-cd "$script_dir" || exit
-scripts=$(find runs -maxdepth 1 -mindepth 1 -executable -type f)
-
-while [[ $# -gt 0 ]]; do
-    if [[ "$1" == "--dry" ]]; then
-        dry="1"
-    else
-        filter="$1"
-    fi
-    shift
-done
+scripts=$(find "$script_dir/runs" -maxdepth 1 -mindepth 1 -executable -type f)
 
 log() {
-    if [[ $dry == "1" ]]; then
-        echo "[DRY_RUN]: $*"
-    else
-        echo "$@"
-    fi
+  echo Running: "$@"
 }
 
-execute() {
-    log "execute: $*"
-    if [[ $dry == "1" ]]; then
-        return
-    fi
-
-    "$@"
-}
-
-log "run: filter=$filter"
-
+menu_items="Run All\nTest Run"
 for script in $scripts; do
-    if echo "$script" | grep -qv "$filter"; then
-        log "filtered: $filter -- $script"
-        continue
-    fi
-    log "running script: $script"
-    execute ./"$script"
+    menu_items="$menu_items\n$(basename "$script")"
 done
+
+choice=$(echo -e "$menu_items" | bemenu -b -l 5 -p "Choose a script to run:")
+
+if [[ -z "$choice" ]]; then
+    exit 0
+fi
+
+run_cmd() {
+  for script in $scripts; do
+    echo Running: "$script"
+    "$script"
+    echo "$script"
+  done
+}
+
+test_run() {
+  for script in $scripts; do
+    log "$script"
+  done
+}
+
+case "$choice" in
+    "Run All")
+        run_cmd ;;
+    "Test Run")
+        test_run ;;
+    *)
+        selected_script="$script_dir/runs/$choice"
+        if [[ -x "$selected_script" ]]; then
+            "$selected_script"
+        else
+            log "Error: Selected script is not executable."
+        fi
+        ;;
+esac

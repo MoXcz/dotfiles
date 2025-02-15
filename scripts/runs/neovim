@@ -27,23 +27,17 @@ nvim_build() {
   fi
   if [ -d "$HOME/Downloads/neovim" ]; then
     echo "Neovim already cloned, downloading..."
-    cd "$download_dir"/neovim || exit
-    git fetch
-    git checkout v0.10.4
-    sudo apt install cmake gettext lua5.1 liblua5.1-0-dev
-    make CMAKE_BUILD_TYPE=RelWithDebInfo
-    sudo make install
   else
     echo "Neovim is not cloned, cloning it..."
     git clone "https://github.com/neovim/neovim.git" "$download_dir"/neovim
-    cd "$download_dir"/neovim || exit
-    git fetch
-    git checkout v0.10.4
-
-    sudo apt install cmake gettext lua5.1 liblua5.1-0-dev
-    make CMAKE_BUILD_TYPE=RelWithDebInfo
-    sudo make install
   fi
+  cd "$download_dir"/neovim || exit
+  git fetch
+  git checkout v0.10.4
+
+  sudo apt install cmake gettext lua5.1 liblua5.1-0-dev
+  make CMAKE_BUILD_TYPE=RelWithDebInfo
+  sudo make install
 }
 
 version=4

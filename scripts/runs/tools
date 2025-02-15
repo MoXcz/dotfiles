@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Tools
-sudo apt install tmux shellcheck syncthing stow gnome-tweaks fonts-jetbrains-mono bat tldr python3-neovim grim slurp gimp ripgrep fonts-recommended git clang clangd python3-full
+sudo apt install tmux shellcheck syncthing gnome-tweaks fonts-jetbrains-mono bat tldr python3-neovim grim slurp gimp ripgrep fonts-recommended git clang clangd python3-full jq
 
 # Some dependencies
 sudo apt install curl apt-transport-https ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip build-essential

@@ -2,13 +2,22 @@
 
 install() {
   # fzf
-  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-  ~/.fzf/install
+  if [ ! -d "$HOME"/.fzf ]; then
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  else
+    echo "fzf already installed, pulling latest change"
+  fi
+  cd ~/.fzf || exit
+  git pull && ~/.fzf/install
+
   # tpm
   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
   # fd
   sudo apt install fd-find
   ln -s "$(which fdfind)" ~/.local/bin/fd
+  # bat
+  sudo apt install bat
+  ln -s "$(which batcat)" ~/.local/bin/bat
   # starship
   curl -sS https://starship.rs/install.sh | sh
   # Rust
