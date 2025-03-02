@@ -22,9 +22,6 @@ install() {
   curl -sS https://starship.rs/install.sh | sh
   # Rust
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-  # PHP
-  /bin/bash -c "$(curl -fsSL https://php.new/install/linux)"
-  mv ~/.profile ~/.php_profile
 }
 
 choice=3

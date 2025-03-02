@@ -2,15 +2,11 @@
 [[ $- != *i* ]] && return
 
 ## -- XDG
-if [ -z "$XDG_CONFIG_HOME" ] ; then
-    export XDG_CONFIG_HOME="$HOME/.config"
-fi
-if [ -z "$XDG_DATA_HOME" ] ; then
-    export XDG_DATA_HOME="$HOME/.local/share"
-fi
-if [ -z "$XDG_CACHE_HOME" ] ; then
-    export XDG_CACHE_HOME="$HOME/.cache"
-fi
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 
 path() {
   if [[ "$PATH" != *"$1"* ]]; then
@@ -36,10 +32,5 @@ path "$HOME"/.local/n/bin
 path /usr/games
 path "$HOME"/.rbenv/shims
 path "$HOME"/.rbenv/bin
-
-export ZDOTDIR=$HOME/.config/zsh
-
-if [ -z "$ZSH_COMPDUMP" ] ; then
-    export ZSH_COMPDUMP="$HOME/.cache/zsh/.zcompdump-$HOST"
-fi
-
+path "$HOME"/.venv/bin
+path "$HOME"/.local/npm/bin

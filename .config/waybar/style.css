@@ -1,14 +1,18 @@
+@import url("../../.cache/wal/colors-waybar.css");
+
 * {
   border: none;
   border-radius: 0;
   min-height: 0;
-  font-family: Ubuntu;
+  font-family: "Ubuntu";
   font-size: 13px;
   font-weight: bold;
+  color: @foreground;
 }
 
 window#waybar {
-  background-color: #282c34;
+  /*background-color: #282c34;*/
+  background: transparent;
   transition-property: background-color;
   transition-duration: 0.5s;
 }
@@ -58,9 +62,6 @@ window#waybar.hidden {
 
 #cpu,
 #memory,
-#custom-kernel,
-#custom-power,
-#custom-diskfree,
 #disk,
 #battery,
 #backlight,
@@ -75,33 +76,11 @@ window#waybar.hidden {
   background-color: #282c34;
   color: #282c34;
 }
-#custom-kernel {
-  background-color: #ff6c6b;
-}
-
-#custom-power {
-  margin-right: 6px;
-  background-color: #f2cdcd;
-}
-
-#custom-diskfree {
-  background-color: #fc9867;
-}
-
 #cpu,
 #disk,
 #memory {
   background-color: #1e1e2e;
   color: #cdd6f4;
-}
-
-#custom-logo {
-  padding-right: 7px;
-  padding-left: 7px;
-  margin-left: 5px;
-  font-size: 15px;
-  border-radius: 8px 0px 0px 8px;
-  color: #1793d1;
 }
 
 #battery {

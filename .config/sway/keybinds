@@ -7,13 +7,14 @@ set $down j
 set $up k
 set $right l
 set $uifont JetBrainsMono Nerd Font
+set $bg ~/.config/backgrounds/deluge.jpeg
 
 # Set terminal and menu
 set $term ghostty
 # set $menu dmenu_path | dmenu -b | xargs swaymsg exec --
 set $menu bemenu-run -b -i --fn $uifont -p "Program:" --tf "#bd93f9" --hf "#f1fa8c" --sf "#f1fa8c" --scf "#f1fa8c" | xargs swaymsg exec
 # wallpaper
-output * background ~/.config/backgrounds/afoolmoonnight.jpg fill
+output * background $bg fill
 # Start a terminal
 bindsym $mod+Return exec $term
 bindsym $mod+Shift+Return exec alacritty

@@ -7,25 +7,29 @@ export KEYTIMEOUT=1
 
 # Should be called before compinit
 zmodload zsh/complist
-zmodload zsh/zprof
 
 ## -- Setopt
-setopt histignorealldups sharehistory appendhistory histfindnodups histignorespace
+setopt appendhistory histignorealldups share_history inc_append_history # append to history file incrementally
 setopt GLOB_COMPLETE        # Show autocompletion menu with globs
 setopt MENU_COMPLETE        # Automatically highlight first element of completion menu
 setopt AUTO_LIST            # Automatically list choices on ambiguous completion.
 setopt COMPLETE_IN_WORD     # Complete from both ends of a word.
 setopt autocd               # Automatically cd into typed directory.
-setopt interactive_comments
+setopt interactive_comments # Allow comments (#) in interactive mode
+setopt prompt_sp
+setopt auto_param_slash # when a dir is completed, add a / instead of a trailing space
 stty -ixon                  # Disable ctrl+s to freeze terminal
+stty stop undef
 
 # Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
-HISTSIZE=4096
+HISTSIZE=10000
 SAVEHIST=16384
-HISTFILE=$HOME/.cache/zsh/.zsh_history
+HISTFILE="$XDG_CACHE_HOME/zsh/.zsh_history"
+HISTCONTROL=ignoreboth
 
 # Use modern completion system
 autoload -Uz compinit; compinit
+autoload -Uz colors; colors
 _comp_options+=(globdots) # With hidden files
 
 zstyle ':completion:*' auto-description 'specify: %d'
@@ -35,10 +39,9 @@ zstyle ':completion:*' cache-path "~/.cache/zsh/zcompcache"
 zstyle ':completion:*:*:*:*:corrections' format '%F{yellow}!- %d (errors: %e) -!%f'
 zstyle ':completion:*:messages' format ' %F{purple} -- %d --%f'
 zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
-#zstyle ':completion:*' completer _expand _complete _correct _approximate
 zstyle ':completion:*' format 'Completing %d'
 zstyle ':completion:*' group-name ''
-zstyle ':completion:*' menu select=2
+zstyle ':completion:*' menu select
 eval "$(dircolors -b)"
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' list-colors ''
@@ -61,9 +64,14 @@ alias psa="ps auxf"
 alias psgrep="ps aux | grep -v grep | grep -i -e VSZ -e"
 alias psmem='ps auxf | sort -nr -k 4'
 alias pscpu='ps auxf | sort -nr -k 3'
+alias lsmount="mount | column -t" # mounted volume spaces in readable format
+alias lsdf="df -h -x squashfx -x tmpfs -x devtmpfs"
+alias mem5="ps auxf | sort -nr -k 4 | head -5"
+alias cpu5="ps auxf | sort -nr -k 3 | head -5"
 
-# Merge Xresources
-alias merge='xrdb -merge ~/.Xresources'
+# Git
+alias gs="git status"
+alias glog="git log --oneline --graph --decorate"
 
 # get error messages from journalctl
 alias jctl="journalctl -p 3 -xb"
@@ -107,8 +115,6 @@ cursor_mode() {
     zle -N zle-line-init
 }
 
-cursor_mode
-
 # Text objects, similar to ci', to change what is inside single quotes
 autoload -Uz select-bracketed select-quoted
 zle -N select-quoted
@@ -123,7 +129,7 @@ for km in viopp visual; do
   done
 done
 
-## -- keybindings
+## -- Keybindings
 bindkey '^E' autosuggest-accept
 bindkey -s '^F' "tmux-sessionizer.sh\n"
 bindkey -s '^[l' "ls\n"
@@ -140,7 +146,7 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd v edit-command-line
 
-# Only these are useful, the rest are still pending revision
+# Emacs keybindings that I like
 bindkey "^A" beginning-of-line
 bindkey "^E" end-of-line
 bindkey "^N" down-line-or-history

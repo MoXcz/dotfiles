@@ -1,6 +1,8 @@
 font-family="JetBrainsMono Mono"
 theme=gruvbox-material
-background-opacity=0.9
+background-opacity=0.65
+background-blur-radius=20
+background = #000000
 command=zsh
 shell-integration=detect
 shell-integration-features=sudo,title

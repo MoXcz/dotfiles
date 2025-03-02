@@ -6,12 +6,13 @@
   "position": "top",
   "height": 33,
   "spacing": 4,
+  "reload_style_on_change": true,
 
   "modules-left": [
-    "disk", 
-    "memory", 
-    "cpu", 
-    "sway/workspaces", 
+    "disk",
+    "memory",
+    "cpu",
+    "sway/workspaces",
     "sway/mode",
     ],
 
@@ -20,13 +21,13 @@
   ],
 
   "modules-right": [
-    "pulseaudio", 
+    "pulseaudio",
     "temperature",
-    "backlight", 
-    "battery", 
-    "clock", 
+    "backlight",
+    "battery",
+    "clock",
     "network",
-    "tray", 
+    "tray",
     ],
 
   "disk": {

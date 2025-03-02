@@ -13,3 +13,5 @@ curl -LO https://luarocks.org/releases/luarocks-3.11.0.tar.gz
 tar -zxpf luarocks-3.11.0.tar.gz
 cd luarocks-3.11.0 || exit
 ./configure && make && sudo make install
+rm -ri luarocks-3.11.0.tar.gz
+rm -ri lua-5.3.5
