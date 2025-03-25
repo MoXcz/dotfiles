@@ -1,12 +1,9 @@
-font-family="JetBrainsMono Mono"
+font-family= JetBrainsMono Nerd Font
 theme=gruvbox-material
 background-opacity=0.65
-background-blur-radius=20
-background = #000000
-command=zsh
-shell-integration=detect
-shell-integration-features=sudo,title
+background = 000000
+shell-integration-features=sudo,title,no-cursor
 font-size=12
 mouse-hide-while-typing=true
 window-decoration=false
-window-theme=ghostty
+keybind = ctrl+a>r=reload_config
