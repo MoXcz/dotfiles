@@ -65,16 +65,10 @@
   "sway/workspaces": {
     "disable-scroll": true,
     "all-outputs": true,
-    // "format": "{name}: {icon}",
     "format-icons": {
       "urgent": " ",
       "focused": " ",
       "default": " ",
-      // "1": "",
-      // "2": "",
-      // "3": "",
-      // "4": "",
-      // "5": "",
     },
   },
 
@@ -90,7 +84,7 @@
     "format-bluetooth-muted": "󰂲 {icon} {format_source}",
     "format-muted": "󰂲 {format_source}",
     "format-source": "{volume}% ",
-    "format-source-muted": "",
+    "format-source-muted": " ",
     "format-icons": {
       "headphone": " ",
       "hands-free": "󰂑 ",
@@ -98,7 +92,7 @@
       "phone": " ",
       "portable": " ",
       "car": " ",
-      "default": [" ", " ", " "],
+      "default": [" ", " ", "  "],
     },
     "on-click": "pavucontrol"
   },
