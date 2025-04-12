@@ -1,8 +1,7 @@
 {
-  /* Bar Settings */
-
-  "id" : "bar",
-  "layer": "top", // Waybar at top layer
+  // Bar Settings for Wayland
+  "id": "bar",
+  "layer": "top",
   "position": "top",
   "height": 33,
   "spacing": 4,
@@ -13,11 +12,11 @@
     "memory",
     "cpu",
     "sway/workspaces",
-    "sway/mode",
-    ],
+    "sway/mode"
+  ],
 
   "modules-center": [
-    "sway/window",
+    "sway/window"
   ],
 
   "modules-right": [
@@ -27,30 +26,29 @@
     "battery",
     "clock",
     "network",
-    "tray",
-    ],
+    "tray"
+  ],
 
   "disk": {
     "format": "{free} 󰋊 ",
-    "tooltip-format": "{used} used out of {total} on {path}",
+    "tooltip-format": "{used} used out of {total} on {path}"
   },
 
   "memory": {
     "interval": 5,
     "format": "{percentage}%  ",
-    "tooltip-format": "{used} used out of {total}",
+    "tooltip-format": "{used} used out of {total}"
   },
 
   "cpu": {
     "interval": 5,
     "format": "{usage}% 󰍛 ",
-    "tooltip": false,
+    "tooltip": false
   },
 
   "network": {
     "interval": 30,
     "format-wifi": "{essid}  ",
-    //"format-wifi": "{essid} ({bandwidthUpBytes} {bandwidthDownBytes})  ",
     "format-ethernet": "{ipaddr}/{cidr} 󰈁 ",
     "format-linked": "{ifname} (No IP) 󰈁 ",
     "format-disconnected": "Disconnected ⚠ ",
@@ -59,7 +57,7 @@
 
   "tray": {
     "icon-size": 21,
-    "spacing": 10,
+    "spacing": 10
   },
 
   "sway/workspaces": {
@@ -68,13 +66,13 @@
     "format-icons": {
       "urgent": " ",
       "focused": " ",
-      "default": " ",
-    },
+      "default": " "
+    }
   },
 
   "sway/mode": {
     "format": "  {}",
-    "max-length": 100,
+    "max-length": 100
   },
 
   "pulseaudio": {
@@ -83,7 +81,7 @@
     "format-bluetooth": "{volume}% {icon} {format_source}",
     "format-bluetooth-muted": "󰂲 {icon} {format_source}",
     "format-muted": "󰂲 {format_source}",
-    "format-source": "{volume}% ",
+    "format-source": "{volume}%  ",
     "format-source-muted": " ",
     "format-icons": {
       "headphone": " ",
@@ -92,38 +90,38 @@
       "phone": " ",
       "portable": " ",
       "car": " ",
-      "default": [" ", " ", "  "],
+      "default": [" ", " ", "  "]
     },
     "on-click": "pavucontrol"
   },
 
   "backlight": {
     "format": "{percent}% {icon}",
-    "format-icons": [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+    "format-icons": [" ", " ", " ", " ", " ", " ", " ", " ", " "]
   },
 
   "battery": {
     "bat": "BAT0",
     "states": {
       "good": 95,
-      "warning": 25,
+      "warning": 25
     },
     "format": "{capacity}% {icon}",
     "format-charging": "{capacity}% 󰃨 ",
     "format-plugged": "{capacity}%  ",
     "format-icons": [" ", " ", " ", " ", " "],
-    "tooltip-format": "{timeTo}",
+    "tooltip-format": "{timeTo}"
   },
 
   "clock": {
     "timezone": "America/Monterrey",
     "format": "{:%a %m-%d %H:%M}",
-    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
   },
 
   "temperature": {
     "hwmon-path": "/sys/class/hwmon/hwmon4/temp1_input",
-    "format": "{temperatureC}°C ",
+    "format": "{temperatureC}°C "
   }
-},
+}
 
