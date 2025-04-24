@@ -20,8 +20,6 @@ install() {
   ln -s "$(which batcat)" ~/.local/bin/bat
   # starship
   curl -sS https://starship.rs/install.sh | sh
-  # Rust
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 }
 
 choice=3
