@@ -1,9 +1,29 @@
-font-family= JetBrainsMono Nerd Font
-theme=gruvbox-material
-background-opacity=0.65
-background = 000000
+font-family= Iosevka Term
 shell-integration-features=sudo,title,no-cursor
-font-size=12
+font-size=14
 mouse-hide-while-typing=true
 window-decoration=false
 keybind = ctrl+a>r=reload_config
+
+palette = 0=#0d0c0c
+palette = 1=#c4746e
+palette = 2=#8a9a7b
+palette = 3=#c4b28a
+palette = 4=#8ba4b0
+palette = 5=#a292a3
+palette = 6=#8ea4a2
+palette = 7=#c8c093
+palette = 8=#a6a69c
+palette = 9=#e46876
+palette = 10=#87a987
+palette = 11=#e6c384
+palette = 12=#7fb4ca
+palette = 13=#938aa9
+palette = 14=#7aa89f
+palette = 15=#c5c9c5
+
+background = 181616
+foreground = c5c9c5
+cursor-color = c8c093
+selection-background = 2d4f67
+selection-foreground = c8c093
