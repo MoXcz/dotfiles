@@ -21,12 +21,7 @@ path $HOME/go/bin
 path /usr/local/go/bin
 path "$HOME"/.lua/src
 path "$HOME"/scripts
-path "$HOME"/.local/n/bin
 path /usr/games
-path "$HOME"/.rbenv/shims
-path "$HOME"/.rbenv/bin
-path "$HOME"/.venv/bin
-path "$HOME"/.local/npm/bin
 
 # Use vim keybindings and reduce delay when changing modes
 bindkey -v
@@ -48,8 +43,7 @@ setopt auto_param_slash # when a dir is completed, add a / instead of a trailing
 stty -ixon                  # Disable ctrl+s to freeze terminal
 stty stop undef
 
-# Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
-HISTSIZE=10000
+HISTSIZE=100000
 SAVEHIST=16384
 HISTFILE="$XDG_CACHE_HOME/zsh/.zsh_history"
 HISTCONTROL=ignoreboth
@@ -82,8 +76,11 @@ zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
 ## -- Aliases
-alias vim="nvim"
+alias v="nvim"
 alias ls='ls -F --color=auto'
+alias l='lsd'
+# nice for workspace/dir management
+alias vi='pushd $(fd . -t d | fzf) && nvim $(fzf --preview "bat --color=always --style=numbers --line-range=:500 {}") && popd'
 alias df='df -h'               # human-readable sizes
 alias free='free -m'           # show sizes in MB
 alias grep='grep --color=auto' # colorize output (good for log files)
@@ -165,7 +162,7 @@ bindkey -s '^[l' "ls\n"
 # Backspace to not change behavior after changing vi modes
 bindkey -M viins '^?' backward-delete-char
 bindkey -M viins '^H' backward-delete-char
-# Naviaget history and selection with vim motions
+# Navigate history and selection with vim motions
 bindkey -M menuselect 'h' vi-backward-char
 bindkey -M menuselect 'k' vi-up-line-or-history
 bindkey -M menuselect 'l' vi-forward-char
@@ -175,7 +172,7 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd v edit-command-line
 
-# Emacs keybindings that I like
+# Emacs keybindings that I like (blasphemy? Only on Wednesdays)
 bindkey "^A" beginning-of-line
 bindkey "^E" end-of-line
 bindkey "^N" down-line-or-history
@@ -190,5 +187,5 @@ plug "zsh-syntax-highlighting"
 plug "zsh-completions"
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=7"
 eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export N_PREFIX="$HOME/.local/n"
