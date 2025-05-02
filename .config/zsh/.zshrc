@@ -56,7 +56,6 @@ _comp_options+=(globdots) # With hidden files
 zstyle ':completion:*' auto-description 'specify: %d'
 zstyle ':completion:*' completer _extensions _complete _approximate
 zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path "~/.cache/zsh/zcompcache"
 zstyle ':completion:*:*:*:*:corrections' format '%F{yellow}!- %d (errors: %e) -!%f'
 zstyle ':completion:*:messages' format ' %F{purple} -- %d --%f'
 zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
@@ -78,7 +77,7 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 ## -- Aliases
 alias v="nvim"
 alias ls='ls -F --color=auto'
-alias l='lsd'
+alias l='ls -lF --color=auto'
 # nice for workspace/dir management
 alias vi='pushd $(fd . -t d | fzf) && nvim $(fzf --preview "bat --color=always --style=numbers --line-range=:500 {}") && popd'
 alias df='df -h'               # human-readable sizes
