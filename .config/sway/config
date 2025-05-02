@@ -11,6 +11,8 @@ include keybinds
 include apps
 
 input "type:keyboard" {
+    # Make caps lock behave as escape
+    xkb_options caps:escape
 }
 
 input "type:touchpad" {
@@ -21,11 +23,6 @@ input "type:touchpad" {
 
 # Second monitor
 output HDMI-A-1 mode 1920x1080@120.000hz
-
-input "type:keyboard" {
-    # Make caps lock behave as escape
-    xkb_options caps:escape
-}
 
 # Rules
 for_window [app_id="Alacritty"] floating enable, resize set 1280 720
@@ -41,15 +38,13 @@ client.background       #282a36
 
 include /etc/sway/config.d/*
 
-# Workspaces variables
-# 1, 2 - Development and web: Terminal with tmux and Neovim, Zen browser and
-# Obsidian
+### Workspaces -----------------------------------------------------------------
+# 1, 2, 3  - Development and web: Terminal(tmux/Nvim), Zen browser and Obsidian
 set $ws1 "1:  "
 set $ws2 "2:  "
-# 3, 4 - Communication: Email and other communication apps
-set $ws3 "3: 󰵅 "
-set $ws4 "4: 󰏶 "
+set $ws3 "3:  "
 # Rest of the workspaces are often unused
+set $ws4 "4: 󰏶 "
 set $ws5 "5 "
 set $ws6 "6 "
 set $ws7 "7 "
@@ -57,7 +52,7 @@ set $ws8 "8 "
 set $ws9 "9 "
 set $ws10 "10 "
 
-# Workspaces:
+# Keybinds:
     # Switch to workspace
     bindsym $mod+1 workspace number $ws1
     bindsym $mod+2 workspace number $ws2

@@ -17,6 +17,3 @@ bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
 # Notes
 set $note ~/scripts/new_note.sh
 bindsym Mod4+t exec $note
-
-# Transparency
-# exec xrdb ~/.Xresources
