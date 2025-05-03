@@ -1,7 +1,11 @@
 # notifications
 exec swaync
 
-exec_always --no-startup-id ~/scripts/sway-lock.sh
+# Idle
+exec swayidle -w \
+	timeout 600 'swaylock -f' \
+	timeout 1200 'swaymsg "output * dpms off"' resume 'swaymsg "output *   dpms on"' \
+	before-sleep 'swaylock -f'
 
 exec nm-applet --indicator
 

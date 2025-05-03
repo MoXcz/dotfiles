@@ -117,5 +117,5 @@ bar {
 bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
 
-#GTK issue
+# GTK issue
 exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
