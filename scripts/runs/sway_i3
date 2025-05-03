@@ -8,7 +8,7 @@ install_sway() {
 
 install_i3() {
   # i3
-  sudo apt install i3 i3status xclip
+  sudo apt install i3 i3status xclip xfce4-power-manager tlp
 }
 
 choice=4

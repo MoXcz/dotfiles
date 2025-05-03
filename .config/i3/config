@@ -1,235 +1,234 @@
-include $HOME/.config/i3/rules.conf
-font pango: Fira Code 12
+## Main settings
+font pango:Iosevka Term 10
 
-exec --no-startup-id dex --autostart --environment i3
+gaps inner 6
+gaps outer 4
 
-# xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
-# screen before suspend. Use loginctl lock-session to lock your screen.
-# exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+default_border pixel
+default_floating_border pixel
+smart_borders on
+hide_edge_borders smart
+exec xset m 26/10 4
 
-# Setup xss-lock daemon
-exec_always --no-startup-id xset +dpms dpms 0 600 600
-exec_always --no-startup-id xss-lock --transfer-sleep-lock -- ~/scripts/lock.sh
-#exec_always --no-startup-id xss-lock --transfer-sleep-lock -- i3lcok --nofork
+# ------------------------------------------------------------------------------
+## Variables
+# Logo key. Use Mod1 for Alt.
+set $mod Mod4
+# Vim-like home row direction keys
+set $left h
+set $down j
+set $up k
+set $right l
+# Wallpaper
+exec_always feh --bg-fill $HOME/.config/backgrounds/deluge.jpeg &
+# Terminal
+set $term ghostty
+set $note $HOME/scripts/new_note.sh
+# ------------------------------------------------------------------------------
+## Applications
+    exec --no-startup-id dex --autostart --environment i3
+    # Change caps lock and escape (for vim)
+    exec --no-startup-id setxkbmap -option caps:escape
+    # Second monitor setup
+    exec --no-startup-id xrandr --output HDMI-A-0 --auto --mode 1920x1080 --rate 120.07
+    # Internet
+    exec --no-startup-id nm-applet
+    # Notifications
+    exec --no-startup-id dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+    exec --no-startup-id dunst
+    bindsym $mod+t exec $note
+    # Transparency with picom compositor
+    exec_always picom -f
+# ------------------------------------------------------------------------------
+## Keybinds
+# Applications
+    # Start terminal
+    bindsym $mod+Return exec $term
+    # Start launcher
+    bindsym $mod+d exec --no-startup-id dmenu_run -b
+    # Open file manager
+    bindsym $mod+n exec nemo
+    # Open browser
+    bindsym $mod+Shift+b exec i3-msg "exec brave-browser"
+    # Open gimp
+    bindsym $mod+g exec i3-msg "exec gimp"
+    # Open browser and obsidian
+    bindsym $mod+w exec i3-msg "exec obsidian; exec zen"
+    # Change output display
+    bindsym $mod+p move workspace to output right
+# Layout stuff
+    # vertical
+    bindsym $mod+b split h
+    # horizontal
+    bindsym $mod+v split v
+    # toggle between vertical and horizontal
+    bindsym $mod+e layout toggle split
 
-bindsym Mod4+x mode "lock"
+    # change container layout (stacked, tabbed, toggle split)
+    bindsym $mod+s layout stacking
+    # bindsym $mod+w layout tabbed
 
+    # enter fullscreen mode for the focused container
+    bindsym $mod+f fullscreen toggle
+
+    # Toggle the current focus between tiling and floating mode
+    bindsym $mod+Shift+space floating toggle
+
+    # Swap focus between the tiling area and the floating area
+    bindsym $mod+space focus mode_toggle
+
+    # Move focus to the parent container
+    bindsym Mod4+a focus parent
+    # Move focus to the child container
+    #bindsym $mod+d focus child
+# Actions
+    # Reload configuration file
+    bindsym $mod+Shift+r reload
+    # Restart i3 (preserve layout/session)
+    # bindsym $mod+Shift+r restart
+    # exit i3 (logs you out of your X session)
+    bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+    # kill focused window
+    bindsym Mod4+Shift+q kill
+    # drag floating windows with mouse and modifier to their wanted position and resize them
+    floating_modifier $mod
+    # move tiling windows via drag & drop by left-clicking into the title bar, or left-clicking anywhere into the window while holding the floating modifier.
+    tiling_drag modifier titlebar
+# Moving around
+    # Move focus
+    bindsym $mod+$left focus left
+    bindsym $mod+$down focus down
+    bindsym $mod+$up focus up
+    bindsym $mod+$right focus right
+    # alternatively, you can use the cursor keys:
+    bindsym $mod+Left focus left
+    bindsym $mod+Down focus down
+    bindsym $mod+Up focus up
+    bindsym $mod+Right focus right
+
+    # Move the focused window with the same, but add Shift
+    bindsym $mod+Shift+$left move left
+    bindsym $mod+Shift+$down move down
+    bindsym $mod+Shift+$up move up
+    bindsym $mod+Shift+$right move right
+    # Ditto, with arrow keys
+    bindsym $mod+Shift+Left move left
+    bindsym $mod+Shift+Down move down
+    bindsym $mod+Shift+Up move up
+    bindsym $mod+Shift+Right move right
+# Resizing container
+mode "resize" {
+    bindsym $left       resize shrink width 40 px
+    bindsym $down       resize grow height 40 px
+    bindsym $up         resize shrink height 40 px
+    bindsym $right      resize grow width 40 px
+
+    bindsym Left        resize shrink width 40 px
+    bindsym Down        resize grow height 40 px
+    bindsym Up          resize shrink height 40 px
+    bindsym Right       resize grow width 40 px
+
+    # back to normal: Enter or Escape or Mod4+r
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+    bindsym Mod4+r mode "default"
+}
+bindsym $mod+r mode "resize"
+# Lock screen
 mode "lock" {
-    bindsym l exec i3lock --ignore-empty-password --tiling --image='~/.config/backgrounds/signalis_wallpaper_2.png' 2>/dev/null, mode "default"
+    bindsym l exec i3lock --ignore-empty-password --tiling --image='$HOME/.config/backgrounds/signalis_wallpaper_2.png' 2>/dev/null, mode "default"
     bindsym s exec --no-startup-id sleep 1 && xset dpms force suspend , mode "default"
     bindsym Return mode "default"
     bindsym Escape mode "default"
-    bindsym Mod4+x mode "default"
+    bindsym $mod+x mode "default"
 }
-
-# NetworkManager is the most popular way to manage wireless networks on Linux,
-# and nm-applet is a desktop environment-independent system tray GUI for it.
-exec --no-startup-id nm-applet
-
-# Use pactl to adjust volume in PulseAudio.
-set $refresh_i3status killall -SIGUSR1 i3status
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
-bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
-
-# use these keys for focus, movement, and resize directions when reaching for
-# the arrows is not convenient
-set $right l
-set $up k
-set $down j
-set $left h
-
-# use Mouse+Mod4 to drag floating windows to their wanted position
-floating_modifier Mod4
-
-# move tiling windows via drag & drop by left-clicking into the title bar,
-# or left-clicking anywhere into the window while holding the floating modifier.
-tiling_drag modifier titlebar
-
-# Screenshots
-bindsym Print exec --no-startup-id maim "/home/$USER/Screenshots/$(date)"
-bindsym Mod4+Print exec --no-startup-id maim --window $(xdotool getactivewindow) "/home/$USER/Screenshots/$(date)"
-bindsym Shift+Print exec --no-startup-id maim --select "/home/$USER/Screenshots/$(date)"
-
-## Clipboard Screenshots
-bindsym Ctrl+Print exec --no-startup-id maim | xclip -selection clipboard -t image/png
-bindsym Ctrl+Mod4+Print exec --no-startup-id maim --window $(xdotool getactivewindow) | xclip -selection clipboard -t image/png
-bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection clipboard -t image/png
-
-# start a terminal
-bindsym Mod4+Return exec ghostty
-
-# Move to second monitor
-bindsym Mod4+p move workspace to output right
-
-# kill focused window
-bindsym Mod4+Shift+q kill
-
-# start dmenu (a program launcher)
-bindsym Mod4+d exec --no-startup-id dmenu_run -b
-
-# change focus
-bindsym Mod4+$left focus left
-bindsym Mod4+$down focus down
-bindsym Mod4+$up focus up
-bindsym Mod4+$right focus right
-
-# alternatively, you can use the cursor keys:
-bindsym Mod4+Left focus left
-bindsym Mod4+Down focus down
-bindsym Mod4+Up focus up
-bindsym Mod4+Right focus right
-
-# move focused window
-bindsym Mod4+Shift+$left move left
-bindsym Mod4+Shift+$down move down
-bindsym Mod4+Shift+$up move up
-bindsym Mod4+Shift+$right move right
-
-# alternatively, you can use the cursor keys:
-bindsym Mod4+Shift+Left move left
-bindsym Mod4+Shift+Down move down
-bindsym Mod4+Shift+Up move up
-bindsym Mod4+Shift+Right move right
-
-# split in horizontal orientation
-# bindsym Mod4+h split h
-
-# split in vertical orientation
-bindsym Mod4+v split v
-
-# enter fullscreen mode for the focused container
-bindsym Mod4+f fullscreen toggle
-
-# change container layout (stacked, tabbed, toggle split)
-bindsym Mod4+s layout stacking
-bindsym Mod4+w layout tabbed
-bindsym Mod4+e layout toggle split
-
-# toggle tiling / floating
-bindsym Mod4+Shift+space floating toggle
-
-# change focus between tiling / floating windows
-bindsym Mod4+space focus mode_toggle
-
-# focus the parent container
-bindsym Mod4+a focus parent
-
-# focus the child container
-#bindsym Mod4+d focus child
-
-# move the currently focused window to the scratchpad
-bindsym Mod4+Shift+minus move scratchpad
-
-# Show the next scratchpad window or hide the focused scratchpad window.
-# If there are multiple scratchpad windows, this command cycles through them.
-bindsym Mod4+minus scratchpad show
-
-# Define names for default workspaces for which we configure key bindings later on.
-# We use variables to avoid repeating the names in multiple places.
-set $ws1 "1:  Terminal"
-set $ws2 "2:  Brave"
-set $ws3 "3:  Obsidian"
-set $ws4 "4"
-set $ws5 "5"
-set $ws6 "6"
-set $ws7 "7"
-set $ws8 "8"
-set $ws9 "9"
-set $ws10 "10"
-
-# switch to workspace
-bindsym Mod4+1 workspace number $ws1
-bindsym Mod4+2 workspace number $ws2
-bindsym Mod4+3 workspace number $ws3
-bindsym Mod4+4 workspace number $ws4
-bindsym Mod4+5 workspace number $ws5
-bindsym Mod4+6 workspace number $ws6
-bindsym Mod4+7 workspace number $ws7
-bindsym Mod4+8 workspace number $ws8
-bindsym Mod4+9 workspace number $ws9
-bindsym Mod4+0 workspace number $ws10
-
-# move focused container to workspace
-bindsym Mod4+Shift+1 move container to workspace number $ws1
-bindsym Mod4+Shift+2 move container to workspace number $ws2
-bindsym Mod4+Shift+3 move container to workspace number $ws3
-bindsym Mod4+Shift+4 move container to workspace number $ws4
-bindsym Mod4+Shift+5 move container to workspace number $ws5
-bindsym Mod4+Shift+6 move container to workspace number $ws6
-bindsym Mod4+Shift+7 move container to workspace number $ws7
-bindsym Mod4+Shift+8 move container to workspace number $ws8
-bindsym Mod4+Shift+9 move container to workspace number $ws9
-bindsym Mod4+Shift+0 move container to workspace number $ws10
-
-# reload the configuration file
-bindsym Mod4+Shift+c reload
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym Mod4+Shift+r restart
-# exit i3 (logs you out of your X session)
-bindsym Mod4+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
-
-# resize window (you can also use the mouse for that)
-mode "resize" {
-        # These bindings trigger as soon as you enter the resize mode
-
-        # Pressing left will shrink the window’s width.
-        # Pressing right will grow the window’s width.
-        # Pressing up will shrink the window’s height.
-        # Pressing down will grow the window’s height.
-        bindsym $left       resize shrink width 10 px or 10 ppt
-        bindsym $down       resize grow height 10 px or 10 ppt
-        bindsym $up         resize shrink height 10 px or 10 ppt
-        bindsym $right      resize grow width 10 px or 10 ppt
-
-        # same bindings, but for the arrow keys
-        bindsym Left        resize shrink width 10 px or 10 ppt
-        bindsym Down        resize grow height 10 px or 10 ppt
-        bindsym Up          resize shrink height 10 px or 10 ppt
-        bindsym Right       resize grow width 10 px or 10 ppt
-
-        # back to normal: Enter or Escape or Mod4+r
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-        bindsym Mod4+r mode "default"
-}
-
-# Brightness
-bindsym XF86MonBrightnessUp exec brightnessctl set +5%
-bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
-
-bindsym Mod4+r mode "resize"
-
-# Start i3bar to display a workspace bar (plus the system information i3status
-# finds out, if available)
+bindsym $mod+x mode "lock"
+# Screen Capture
+    # Fullscreen screenshot
+    bindsym Print exec --no-startup-id bash -c 'maim "$HOME/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png" && notify-send "Screenshot saved"'
+    # Active window screenshot
+    bindsym $mod+Print exec --no-startup-id bash -c 'maim --window $(xdotool getactivewindow) "$HOME/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png" && notify-send "Window screenshot saved"'
+    # Area select screenshot
+    bindsym Shift+Print exec --no-startup-id sh -c 'maim --select "$HOME/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png" && notify-send "Area screenshot saved"'
+    # Fullscreen to clipboard
+    bindsym Ctrl+Print exec --no-startup-id sh -c 'maim | xclip -selection clipboard -t image/png && notify-send "Screenshot copied to clipboard"'
+    # Window to clipboard
+    bindsym Ctrl+$mod+Print exec --no-startup-id sh -c 'maim --window $(xdotool getactivewindow) | xclip -selection clipboard -t image/png && notify-send "Window copied to clipboard"'
+    # Area to clipboard
+    bindsym Ctrl+Shift+Print exec --no-startup-id sh -c 'maim --select | xclip -selection clipboard -t image/png && notify-send "Area copied to clipboard"'
+# Scratchpad
+    # move the currently focused window to the scratchpad
+    bindsym $mod+Shift+minus move scratchpad
+    # Show the next scratchpad window or hide the focused scratchpad window. If there are multiple scratchpad windows, this command cycles through them.
+    bindsym $mod+minus scratchpad show
 bar {
-  # i3bar configuration
-    status_command i3status
+    status_command i3blocks -c ~/.config/i3blocks/config
     position top
-    font pango:Ubuntu 10
+    font pango:Iosevka Term 12
     separator_symbol " | "
 }
 
+for_window [class="^.*"] border pixel 4
+
+# Volume adjustment (use pactl to adjust volume in PulseAudio).
+    set $refresh_i3status killall -SIGUSR1 i3status
+    bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5% && $refresh_i3status
+    bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status
+    bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+    bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+# Brightness
+    bindsym XF86MonBrightnessUp exec brightnessctl set +5%
+    bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+# ------------------------------------------------------------------------------
+## Workspaces
+# 1, 2, 3  - Development and web: Terminal(tmux/Nvim), Zen browser and Obsidian
+set $ws1 "1:  "
+set $ws2 "2:  "
+set $ws3 "3:  "
+# Rest of the workspaces are often unused
+set $ws4 "4: 󰏶 "
+set $ws5 "5 "
+set $ws6 "6 "
+set $ws7 "7 "
+set $ws8 "8 "
+set $ws9 "9 "
+set $ws10 "10 "
+# Keybinds:
+    # Switch to workspace
+    bindsym $mod+1 workspace number $ws1
+    bindsym $mod+2 workspace number $ws2
+    bindsym $mod+3 workspace number $ws3
+    bindsym $mod+4 workspace number $ws4
+    bindsym $mod+5 workspace number $ws5
+    bindsym $mod+6 workspace number $ws6
+    bindsym $mod+7 workspace number $ws7
+    bindsym $mod+8 workspace number $ws8
+    bindsym $mod+9 workspace number $ws9
+    bindsym $mod+0 workspace number $ws10
+    # Move focused container to workspace
+    bindsym $mod+Shift+1 move container to workspace number $ws1
+    bindsym $mod+Shift+2 move container to workspace number $ws2
+    bindsym $mod+Shift+3 move container to workspace number $ws3
+    bindsym $mod+Shift+4 move container to workspace number $ws4
+    bindsym $mod+Shift+5 move container to workspace number $ws5
+    bindsym $mod+Shift+6 move container to workspace number $ws6
+    bindsym $mod+Shift+7 move container to workspace number $ws7
+    bindsym $mod+Shift+8 move container to workspace number $ws8
+    bindsym $mod+Shift+9 move container to workspace number $ws9
+    bindsym $mod+Shift+0 move container to workspace number $ws10
+
+# Apps in Workspaces
+assign [class="Brave-browser"] $ws2
+assign [class="obsidian"] $ws3
+
 # Use 'xprop' in the terminal to find the class name, similar to:
 # WM_CLASS(STRING) = "brave-browser", "Brave-browser"
-for_window [class="Brave-browser"] move to workspace $ws2
-for_window [class="obsidian"] move to workspace $ws3
+# for_window [class="Brave-browser"] move to workspace $ws2
+# for_window [class="obsidian"] move to workspace $ws3
 
-# Wallpaper
-exec_always feh --bg-fill ~/.config/backgrounds/afoolmoonnight.jpg &
-
-# Transparency with picom compositor
-exec_always picom -f
-exec_always ./keys
-
-#######################################################################
-# automatically start i3-config-wizard to offer the user to create a
-# keysym-based config which used their favorite modifier (alt or windows)
-#
-# i3-config-wizard will not launch if there already is a config file
-# in ~/.config/i3/config (or $XDG_CONFIG_HOME/i3/config if set) or
-# ~/.i3/config.
-#
-# Please remove the following exec line:
-#######################################################################
+client.focused          #bd93f9   #bd93f9    #282a36   #bd93f9    #bd93f9
+client.focused_inactive #282a36   #282a36    #bd93f9   #282a36    #282a36
+client.unfocused        #282a36   #282a36    #bd93f9   #282a36    #282a36
+client.urgent           #ff5555   #ff5555    #282a36   #ff5555    #ff5555
+client.placeholder      #282a36   #282a36    #bd93f9   #282a36    #282a36
+client.background       #282a36
