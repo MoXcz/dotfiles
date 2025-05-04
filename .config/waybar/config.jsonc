@@ -1,0 +1,291 @@
+[
+  {
+    "layer": "top",
+    "position": "top",
+    "name": "main",
+    "reload_style_on_change": true,
+    "modules-left": [
+      "tray",
+      "custom/spacer1",
+      "custom/spacer2",
+      "sway/workspaces",
+      "custom/spacer2",
+      "custom/spacer3",
+      "sway/mode",
+      "sway/window"
+    ],
+    "modules-right": [
+      "custom/spacer1",
+      "cpu",
+      "custom/spacer1",
+      "temperature",
+      "custom/spacer1",
+      "memory",
+      "custom/spacer1",
+      "disk",
+      "custom/spacer1",
+      "network",
+      "custom/spacer1",
+      "network#info",
+      "custom/spacer1",
+      "pulseaudio",
+      "custom/spacer1",
+      "backlight",
+      "custom/spacer1",
+      "battery",
+      "custom/spacer1",
+      "clock"
+    ],
+    "disk": {
+      "format": "{free} 󰋊 ",
+      "tooltip-format": "{used} used out of {total} on {path}"
+    },
+    "memory": {
+      "interval": 5,
+      "format": "{used}G/{total}G ",
+      "tooltip-format": "{percentage}%",
+      "states": {
+        "warning": 80,
+        "critical": 95
+      }
+    },
+    "cpu": {
+      "interval": 5,
+      "format": "{usage}% 󰍛 ",
+      "tooltip": " {load}",
+      "states": {
+        "warning": 80,
+        "critical": 95
+      }
+    },
+    "network": {
+      "interval": 30,
+      "format-wifi": "{essid}  ",
+      "format-ethernet": "{ipaddr}/{cidr} 󰈁 ",
+      "format-linked": "{ifname} (No IP) 󰈁 ",
+      "format-disconnected": "Disconnected ⚠ ",
+      "tooltip-format": "{ifname}, {ipaddr}, {frequency}Mhz"
+    },
+    "tray": {
+      "icon-size": 21,
+      "spacing": 10
+    },
+    "sway/workspaces": {
+      "disable-scroll": true,
+      "all-outputs": true,
+      "format-icons": {
+        "urgent": " ",
+        "focused": " ",
+        "default": " "
+      }
+    },
+    "sway/mode": {
+      "format": "  {}",
+      "max-length": 100
+    },
+    "pulseaudio": {
+      "scroll-step": 5,
+      "format": "{volume}% {icon} {format_source}",
+      "format-bluetooth": "{volume}% {icon} {format_source}",
+      "format-bluetooth-muted": "󰂲 {icon} {format_source}",
+      "format-muted": "󰂲 {format_source}",
+      "format-source": "{volume}%  ",
+      "format-source-muted": " ",
+      "format-icons": {
+        "headphone": " ",
+        "hands-free": "󰂑 ",
+        "headset": "󰂑 ",
+        "phone": " ",
+        "portable": " ",
+        "car": " ",
+        "default": [
+          " ",
+          " ",
+          "  "
+        ]
+      },
+      "on-click": "pavucontrol"
+    },
+    "backlight": {
+      "format": "{percent}% {icon}",
+      "format-icons": [
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      "scroll-step": 5
+    },
+    "battery": {
+      "interval": 10,
+      "bat": "BAT0",
+      "states": {
+        "good": 95,
+        "warning": 25,
+        "critical": 10
+      },
+      "format": "{capacity}% {icon}",
+      "format-charging": "{capacity}% 󰃨 ",
+      "format-plugged": "{capacity}%  ",
+      "format-icons": [
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      "tooltip-format": "{timeTo}"
+    },
+    "clock": {
+      "timezone": "America/Monterrey",
+      "format": "{:%a %m-%d %H:%M}",
+      "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+      "calendar": {
+        "mode": "year",
+        "mode-mon-col": 3,
+        "weeks-pos": "right",
+        "on-scroll": 1,
+        "on-click-right": "mode",
+        "format": {
+          "months": "<span color='#cba6f7'><b>{}</b></span>",
+          "days": "<span color='#cdd6f4'><b>{}</b></span>",
+          "weeks": "<span color='#94e2d5'> W{}</span>",
+          "weekdays": "<span color='#f9e2af'><b>{}</b></span>",
+          "today": "<span color='#f5e0dc'><b><u>{}</u></b></span>"
+        }
+      },
+      "actions": {
+        "on-click-right": "mode",
+        "on-click-forward": "tz_up",
+        "on-click-backward": "tz_down",
+        "on-scroll-up": "shift_up",
+        "on-scroll-down": "shift_down"
+      }
+    },
+    "temperature": {
+      "hwmon-path": "/sys/class/hwmon/hwmon4/temp1_input",
+      "format": "{temperatureC}°C "
+    },
+    "sway/window": {
+      "format": "{}",
+      "min-length": 5,
+      "rewrite": {
+        "": "<span foreground='#89b4fa'> </span> Sway",
+        "(.*)Zen Browser": "<span foreground='#fab387'>󰺕 </span> Zen Browser",
+        "(.*) — Zen Browser": "<span foreground='#fab387'>󰺕 </span> $1",
+        "(.*)Mozilla Firefox": "<span foreground='#f38ba8'>󰈹 </span> Firefox",
+        "(.*) — Mozilla Firefox": "<span foreground='#f38ba8'>󰈹 </span> $1",
+        "nvim": "<span foreground='#a6e3a1'> </span> Neovim",
+        "nvim (.*)": "<span foreground='#a6e3a1'> </span> $1",
+        "vim": "<span foreground='#a6e3a1'> </span> Vim",
+        "vi": "<span foreground='#a6e3a1'> </span> Vim",
+        "vim (.*)": "<span foreground='#a6e3a1'> </span> $1",
+        "vi (.*)": "<span foreground='#a6e3a1'> </span> $1",
+        "tmux(.*)": "<span foreground='#a6e3a1'> </span> Tmux",
+        "~": "  Terminal",
+        "zsh": "  Terminal",
+        "kitty": "  Terminal",
+        "(.*)Spotify": "<span foreground='#a6e3a1'> </span> Spotify",
+        "(.*)Spotify Premium": "<span foreground='#a6e3a1'> </span> Spotify Premium",
+        "OBS(.*)": "<span foreground='#a6adc8'> </span> OBS Studio",
+        "VLC media player": "<span foreground='#fab387'>󰕼 </span> VLC Media Player",
+        "(.*) - VLC media player": "<span foreground='#fab387'>󰕼 </span> $1",
+        "(.*) - mpv": "<span foreground='#cba6f7'> </span> $1",
+        "qView": "  qView",
+        "(.*).jpg": "  $1.jpg",
+        "(.*).png": "  $1.png",
+        "(.*).svg": "  $1.svg",
+        "vesktop": "<span foreground='#89b4fa'> </span> Discord",
+        "• Discord(.*)": "Discord$1",
+        "(.*)Discord(.*)": "<span foreground='#89b4fa'> </span> $1Discord$2",
+        "ONLYOFFICE Desktop Editors": "<span foreground='#f38ba8'> </span> OnlyOffice Desktop",
+        "(.*).docx": "<span foreground='#89b4fa'> </span> $1.docx",
+        "(.*).xlsx": "<span foreground='#a6e3a1'> </span> $1.xlsx",
+        "(.*).pptx": "<span foreground='#fab387'> </span> $1.pptx",
+        "(.*).pdf": "<span foreground='#f38ba8'> </span> $1.pdf",
+        "Authenticate": "  Authenticate"
+      }
+    },
+    "network#info": {
+      "interval": 1,
+      "format": "󱘖  Offline",
+      "format-wifi": "{icon} {bandwidthDownBits}",
+      "format-ethernet": "󰈀 {bandwidthDownBits}",
+      "min-length": 11,
+      "tooltip": "{}",
+      "tooltip-format-wifi": "{ifname}\n{essid}\n{signalStrength}% \n{frequency} GHz\n󰇚 {bandwidthDownBits}\n󰕒 {bandwidthUpBits}",
+      "tooltip-format-ethernet": "{ifname}\n󰇚 {bandwidthDownBits} \n󰕒 {bandwidthUpBits}",
+      "on-click": "iwgtk",
+      "format-icons": [
+        "󰤫",
+        "󰤟",
+        "󰤢",
+        "󰤥",
+        "󰤨"
+      ],
+      "states": {
+        "normal": 25
+      }
+    },
+    "network#up": {
+      "interval": 5,
+      "format": " ",
+      "format-wifi": "󰕒 {bandwidthUpBits}",
+      "format-ethernet": "󰕒 {bandwidthUpBits}",
+      "format-disconnected": " ",
+      "min-length": 11
+    },
+    "network#down": {
+      "interval": 5,
+      "format": "󰇚 {bandwidthDownBits}",
+      "format-wifi": "󰇚 {bandwidthDownBits}",
+      "format-ethernet": "󰇚 {bandwidthDownBits}",
+      "min-length": 11
+    },
+    "custom/spacer1": {
+      "format": "\\",
+      "tooltip": false
+    },
+    "custom/spacer2": {
+      "format": " ",
+      "tooltip": false
+    },
+    "custom/spacer3": {
+      "format": "/",
+      "tooltip": false
+    }
+  },
+  {
+    "layer": "bottom",
+    "position": "top",
+    "name": "indicator",
+    "modules-left": [
+      "battery",
+      "pulseaudio"
+    ],
+    "modules-right": [
+      "sway/mode"
+    ],
+    "sway/mode": {
+      "always-on": true,
+      "format": "",
+      "tooltip": false
+    },
+    "battery": {
+      "interval": 10,
+      "format": "{} ",
+      "format-critical": " ",
+      "states": {
+        "critical": 25
+      }
+    },
+    "pulseaudio": {
+      "format": "{volume}%"
+    }
+  }
+]
