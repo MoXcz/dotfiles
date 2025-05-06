@@ -112,6 +112,10 @@
   color: @warning;
 }
 
+#waybar.main #battery.charging {
+  color: @resize;
+}
+
 #waybar.main #workspaces button {
   color: @darkgrey;
   background: transparent;
@@ -158,5 +162,10 @@ tooltip {
 #waybar.indicator #battery.critical.discharging,
 #waybar.indicator #battery.warning.discharging {
   background: @warning;
+  margin-right: -2305px;
+}
+
+#waybar.indicator #battery.charging {
+  background: @resize;
   margin-right: -2305px;
 }
