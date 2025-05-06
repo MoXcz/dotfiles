@@ -20,7 +20,7 @@ label=󰁹
 
 [cpu_usage]
 command=~/.config/i3blocks/scripts/cpu_usage.sh
-interval=2
+interval=10
 label=
 
 [cpu_temp]

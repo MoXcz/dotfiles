@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-top -bn1 | grep "Cpu(s)" | awk '{print int($2 + $4)"%"}'
+echo ""$((100-$(vmstat 1 2|tail -1|awk '{print $15}')))"%"
