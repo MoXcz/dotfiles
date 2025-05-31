@@ -9,7 +9,7 @@ set $right l
 # ------------------------------------------------------------------------------
 ## Variables
 set $uifont JetBrainsMono Nerd Font
-set $bg ~/.config/backgrounds/deluge.jpeg
+set $bg ~/.config/backgrounds/paradise_lost_john_martin.jpeg
 # Set terminal and menu
 set $term ghostty
 # set $menu dmenu_path | dmenu -b | xargs swaymsg exec --
