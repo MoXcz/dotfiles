@@ -27,6 +27,7 @@ output HDMI-A-1 mode 1920x1080@120.000hz
 # Rules
 for_window [app_id="Alacritty"] floating enable, resize set 1280 720
 for_window [app_id="nwg-look"] floating enable
+for_window [class="Matplotlib"] floating enable
 
 ## Borders
 client.focused          #bd93f9 #bd93f9 #282a36 #bd93f9 #bd93f9
