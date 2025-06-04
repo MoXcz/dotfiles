@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-rm /usr/local/lib/node_modules/n/bin/n
-rm /usr/local/bin/n
-rm /usr/local/bin/node
-
-# Undo Requirements Install
-sudo apt -y purge curl htop stow tmux build-essential wireshark golang fzf lsof kdenlive i3 gimp ccache ninja-build yarn python3-pip xclip slack dconf-editor brave-browser pavucontrol clangd screenkey lua tldr nodejs npm
