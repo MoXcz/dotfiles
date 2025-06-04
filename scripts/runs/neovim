@@ -33,7 +33,7 @@ nvim_build() {
   fi
   cd "$download_dir"/neovim || exit
   git fetch
-  git checkout v0.10.4
+  git checkout v0.11.2
 
   sudo apt install cmake gettext lua5.1 liblua5.1-0-dev
   make CMAKE_BUILD_TYPE=RelWithDebInfo

@@ -11,3 +11,7 @@ function plug() {
     git clone "https://github.com/zsh-users/$1.git" "$ZDOTDIR/plugins/$plugin_name"
   fi
 }
+
+function py() {
+  python3 "$@"
+}

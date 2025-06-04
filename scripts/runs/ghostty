@@ -11,6 +11,7 @@ fi
 
 if [ -d "$HOME/Downloads/ghostty" ]; then
   cd "$HOME"/Downloads/ghostty || exit
+  git pull
 else
   git clone git@github.com:ghostty-org/ghostty.git "$HOME"/Downloads/ghostty
   cd "$HOME"/Downloads/ghostty || exit

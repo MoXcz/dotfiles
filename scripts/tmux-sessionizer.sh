@@ -7,7 +7,7 @@
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
-    selected=$(find ~/ ~/dev ~/workspace/github.com/ ~/workspace/codecrafter.io/ -mindepth 1 -maxdepth 1 -type d | fzf)
+    selected=$(find ~/ ~/dev ~/workspace/ ~/workspace/github.com/ ~/workspace/codecrafter.io/ -mindepth 1 -maxdepth 1 -type d | fzf)
 fi
 
 if [[ -z $selected ]]; then

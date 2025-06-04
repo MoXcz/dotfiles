@@ -91,6 +91,8 @@ alias lsmount="mount | column -t" # mounted volume spaces in readable format
 alias lsdf="df -h -x squashfx -x tmpfs -x devtmpfs"
 alias mem5="ps auxf | sort -nr -k 4 | head -5"
 alias cpu5="ps auxf | sort -nr -k 3 | head -5"
+alias venv="source ./.venv/bin/activate"
+alias ncit='git add . && git commit -m "$(date)"'
 
 # Git
 alias gs="git status"

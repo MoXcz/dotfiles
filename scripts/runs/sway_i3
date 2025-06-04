@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
 
-
 install_sway() {
-  # sway
   sudo apt install sway sway-notification-center swayidle waybar brightnessctl swaylock clipman bemenu wlogout
 }
 
 install_i3() {
-  # i3
   sudo apt install i3 i3status xclip xfce4-power-manager tlp
 }
 
