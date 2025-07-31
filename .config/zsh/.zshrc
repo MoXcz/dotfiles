@@ -12,6 +12,7 @@ export TERM="xterm-256color"
 export EDITOR="nvim"
 export VISUAL="nvim"
 export MANPAGER="nvim +Man!"
+export ASDF_DATA_DIR="$HOME/.local/.asdf"
 
 ## -- Path
 path $HOME/.local/bin
@@ -22,6 +23,8 @@ path /usr/local/go/bin
 path "$HOME"/.lua/src
 path "$HOME"/scripts
 path /usr/games
+path /usr/pgadmin4/bin
+path "${ASDF_DATA_DIR:-$HOME/.local/.asdf}/shims"
 
 # Use vim keybindings and reduce delay when changing modes
 bindkey -v
@@ -47,6 +50,13 @@ HISTSIZE=100000
 SAVEHIST=16384
 HISTFILE="$XDG_CACHE_HOME/zsh/.zsh_history"
 HISTCONTROL=ignoreboth
+
+# Elixir------------------------------------------------------------------------
+# go install github.com/asdf-vm/asdf/cmd/asdf@v0.18.0
+# mkdir -p "${ASDF_DATA_DIR:-$HOME/.local/.asdf}/completions"
+# asdf completion zsh > "${ASDF_DATA_DIR:-$HOME/.local/.asdf}/completions/_asdf"
+fpath=(${ASDF_DATA_DIR:-$HOME/.local/.asdf}/completions $fpath)
+# ------------------------------------------------------------------------------
 
 # Use modern completion system
 autoload -Uz compinit; compinit
@@ -173,7 +183,7 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd v edit-command-line
 
-# Emacs keybindings that I like (blasphemy? Only on Wednesdays)
+# Emacs keybindings that I like (blasphemy!)
 bindkey "^A" beginning-of-line
 bindkey "^E" end-of-line
 bindkey "^N" down-line-or-history
