@@ -208,6 +208,10 @@ for_window [class="Localsend"] floating enable
 for_window [class="Localsend"] move position center
 for_window [class="Localsend"] resize set 460 800
 
+for_window [class="discord"] floating enable
+for_window [class="discord"] move position center
+for_window [class="discord"] resize set 460 800
+
 # floating windows
 for_window [class="com.mitchellh.ghostty"] floating enable, resize set 1100 700
 
