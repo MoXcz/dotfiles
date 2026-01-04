@@ -1,43 +1,25 @@
-[brightness]
-command=~/.config/i3blocks/scripts/brightness.sh
+[cpu]
+command=/home/mocos/.config/i3blocks/scripts/cpu.sh
 interval=5
-label= 󰃝
 
-[volume]
-command=amixer get Master | awk -F'[][]' '/%/ { print $2; exit }'
-interval=1
-label=
+[gpu]
+command=/home/mocos/.config/i3blocks/scripts/gpu.sh
+interval=5
+
+[memory]
+command=free -h | awk '/Mem:/ {printf "%.1f/%.1f (%.0f%%)\n", $3, $2, ($3/$2)*100}'
+interval=5
+label=Mem:
 
 [disk]
 command=df -h / | awk 'NR==2 {print $4}'
-interval=30
-label=
-
-[battery]
-command=~/.config/i3blocks/scripts/battery.sh
-interval=10
-label=󰁹
-
-[cpu_usage]
-command=~/.config/i3blocks/scripts/cpu_usage.sh
-interval=10
-label=
-
-[cpu_temp]
-command=awk '{print int($1/1000)"°C"}' /sys/class/hwmon/hwmon4/temp1_input
-interval=5
-label=
-
-[memory_mb]
-command=free -m | awk '/Mem:/ { printf "%dMB/%dMB", $3, $2 }'
-interval=1
-label=
-
-[load]
-command=uptime | awk -F'load average:' '{ print "" $2 }' | cut -d',' -f1
-interval=10
+interval=120
+label=Disk:
 
 [time]
-command=date '+ %H:%M:%S'
+command=date '+  %H:%M:%S'
 interval=1
 
+[wifi]
+command=~/.config/i3blocks/scripts/wifi.sh
+interval=5

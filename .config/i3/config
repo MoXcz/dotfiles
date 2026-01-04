@@ -1,8 +1,7 @@
 ## Main settings
-font pango:Iosevka Term 10
-
-gaps inner 6
-gaps outer 4
+font pango:IosevkaTerm Nerd Font Mono 10
+gaps inner 2
+gaps outer 2
 
 default_border pixel
 default_floating_border pixel
@@ -20,9 +19,9 @@ set $down j
 set $up k
 set $right l
 # Wallpaper
-exec_always feh --bg-fill $HOME/.config/backgrounds/deluge.jpeg &
+exec_always feh --bg-fill $HOME/.config/backgrounds/deluge_john_martin.jpeg
 # Terminal
-set $term ghostty
+set $term kitty
 set $note $HOME/scripts/new_note.sh
 # ------------------------------------------------------------------------------
 ## Applications
@@ -30,13 +29,11 @@ set $note $HOME/scripts/new_note.sh
     # Change caps lock and escape (for vim)
     exec --no-startup-id setxkbmap -option caps:escape
     # Second monitor setup
-    exec --no-startup-id xrandr --output HDMI-A-0 --auto --mode 1920x1080 --rate 120.07
-    # Internet
-    exec --no-startup-id nm-applet
+    exec --no-startup-id xrandr --output HDMI-0 --auto --mode 1920x1080 --rate 144.0
     # Notifications
     exec --no-startup-id dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
     exec --no-startup-id dunst
-    bindsym $mod+t exec $note
+    bindsym $mod+t exec xdg-terminal-exec btop
     # Transparency with picom compositor
     exec_always picom -f
 # ------------------------------------------------------------------------------
@@ -45,52 +42,31 @@ set $note $HOME/scripts/new_note.sh
     # Start terminal
     bindsym $mod+Return exec $term
     # Start launcher
-    bindsym $mod+d exec --no-startup-id dmenu_run -b
+    bindsym $mod+d exec rofi -show run
     # Open file manager
-    bindsym $mod+n exec nemo
-    # Open browser
-    bindsym $mod+Shift+b exec i3-msg "exec brave-browser"
+    bindsym $mod+n exec nautilus
     # Open gimp
     bindsym $mod+g exec i3-msg "exec gimp"
     # Open browser and obsidian
-    bindsym $mod+w exec i3-msg "exec obsidian; exec zen"
+    bindsym $mod+o exec i3-msg "exec obsidian"
     # Change output display
     bindsym $mod+p move workspace to output right
 # Layout stuff
-    # vertical
-    bindsym $mod+b split h
-    # horizontal
-    bindsym $mod+v split v
-    # toggle between vertical and horizontal
     bindsym $mod+e layout toggle split
-
-    # change container layout (stacked, tabbed, toggle split)
-    bindsym $mod+s layout stacking
-    # bindsym $mod+w layout tabbed
-
-    # enter fullscreen mode for the focused container
     bindsym $mod+f fullscreen toggle
-
-    # Toggle the current focus between tiling and floating mode
-    bindsym $mod+Shift+space floating toggle
-
-    # Swap focus between the tiling area and the floating area
-    bindsym $mod+space focus mode_toggle
-
-    # Move focus to the parent container
-    bindsym Mod4+a focus parent
-    # Move focus to the child container
-    #bindsym $mod+d focus child
+    bindsym $mod+space floating toggle
+    bindsym $mod+q kill
+    # Swap focus between the tiling and floating
+    bindsym $mod+Shift+space focus mode_toggle
 # Actions
     # Reload configuration file
     bindsym $mod+Shift+r reload
     # Restart i3 (preserve layout/session)
-    # bindsym $mod+Shift+r restart
+    bindsym $mod+Shift+q restart
     # exit i3 (logs you out of your X session)
     bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
     # kill focused window
-    bindsym Mod4+Shift+q kill
-    # drag floating windows with mouse and modifier to their wanted position and resize them
+    # drag floating windows with mouse
     floating_modifier $mod
     # move tiling windows via drag & drop by left-clicking into the title bar, or left-clicking anywhere into the window while holding the floating modifier.
     tiling_drag modifier titlebar
@@ -161,14 +137,15 @@ bindsym $mod+x mode "lock"
     bindsym $mod+Shift+minus move scratchpad
     # Show the next scratchpad window or hide the focused scratchpad window. If there are multiple scratchpad windows, this command cycles through them.
     bindsym $mod+minus scratchpad show
+
 bar {
     status_command i3blocks -c ~/.config/i3blocks/config
     position top
-    font pango:Iosevka Term 12
+    font pango:Iosevka Nerd Font 11
     separator_symbol " | "
 }
 
-for_window [class="^.*"] border pixel 4
+for_window [class="^.*"] border pixel 1
 
 # Volume adjustment (use pactl to adjust volume in PulseAudio).
     set $refresh_i3status killall -SIGUSR1 i3status
@@ -184,15 +161,15 @@ for_window [class="^.*"] border pixel 4
 # 1, 2, 3  - Development and web: Terminal(tmux/Nvim), Zen browser and Obsidian
 set $ws1 "1:  "
 set $ws2 "2:  "
-set $ws3 "3:  "
+set $ws3 "3:  "
 # Rest of the workspaces are often unused
-set $ws4 "4: 󰏶 "
-set $ws5 "5 "
-set $ws6 "6 "
-set $ws7 "7 "
-set $ws8 "8 "
-set $ws9 "9 "
-set $ws10 "10 "
+set $ws4 "4:  "
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
 # Keybinds:
     # Switch to workspace
     bindsym $mod+1 workspace number $ws1
@@ -220,6 +197,19 @@ set $ws10 "10 "
 # Apps in Workspaces
 assign [class="Brave-browser"] $ws2
 assign [class="obsidian"] $ws3
+
+for_window [class="steam"] floating enable
+for_window [class="steam"] move position center
+for_window [class="steam" title="steam"] resize set 1100 700
+for_window [class="steam" title="Friends List"] resize set 460 800
+for_window [class="steam"] opacity 1
+
+for_window [class="Localsend"] floating enable
+for_window [class="Localsend"] move position center
+for_window [class="Localsend"] resize set 460 800
+
+# floating windows
+for_window [class="com.mitchellh.ghostty"] floating enable, resize set 1100 700
 
 # Use 'xprop' in the terminal to find the class name, similar to:
 # WM_CLASS(STRING) = "brave-browser", "Brave-browser"
