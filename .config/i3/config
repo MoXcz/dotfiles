@@ -196,7 +196,11 @@ set $ws10 "10"
 
 # Apps in Workspaces
 assign [class="Brave-browser"] $ws2
+assign [class="zen"] $ws2
 assign [class="obsidian"] $ws3
+assign [class="steam"] $ws4
+assign [class="steam"] $ws4
+assign [class="discord"] $ws5
 
 for_window [class="steam"] floating enable
 for_window [class="steam"] move position center
