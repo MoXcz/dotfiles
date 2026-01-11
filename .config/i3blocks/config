@@ -20,6 +20,11 @@ label=Disk:
 command=date '+  %H:%M:%S'
 interval=1
 
+[volume]
+command=~/.config/i3blocks/scripts/volume.sh
+interval=1
+signal=10
+
 [wifi]
 command=~/.config/i3blocks/scripts/wifi.sh
 interval=5
