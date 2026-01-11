@@ -27,7 +27,7 @@ set $note $HOME/scripts/new_note.sh
 ## Applications
     exec --no-startup-id dex --autostart --environment i3
     # Change caps lock and escape (for vim)
-    exec --no-startup-id setxkbmap -option caps:escape
+    exec_always --no-startup-id setxkbmap -option caps:escape
     # Second monitor setup
     exec --no-startup-id xrandr --output HDMI-0 --auto --mode 1920x1080 --rate 144.0
     # Notifications
