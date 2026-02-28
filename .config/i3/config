@@ -9,6 +9,10 @@ smart_borders on
 hide_edge_borders smart
 exec xset m 26/10 4
 
+exec --no-startup-id xset s off
+exec --no-startup-id xset -dpms
+exec --no-startup-id xset s noblank
+
 # ------------------------------------------------------------------------------
 ## Variables
 # Logo key. Use Mod1 for Alt.
@@ -29,7 +33,9 @@ set $note $HOME/scripts/new_note.sh
     # Change caps lock and escape (for vim)
     exec_always --no-startup-id setxkbmap -option caps:escape
     # Second monitor setup
-    exec --no-startup-id xrandr --output HDMI-0 --auto --mode 1920x1080 --rate 144.0
+    exec --no-startup-id xrandr \
+    --output DP-0 --primary --mode 2560x1440 --rate 180 \
+    --output HDMI-0 --mode 1920x1080 --rate 144 --left-of DP-0
     # Notifications
     exec --no-startup-id dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
     exec --no-startup-id dunst
@@ -112,8 +118,8 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 # Lock screen
 mode "lock" {
-    bindsym l exec i3lock --ignore-empty-password --tiling --image='$HOME/.config/backgrounds/signalis_wallpaper_2.png' 2>/dev/null, mode "default"
-    bindsym s exec --no-startup-id sleep 1 && xset dpms force suspend , mode "default"
+    bindsym l exec i3lock --ignore-empty-password --show-failed-attempts --show-keyboard-layout --tiling --image="$HOME/.config/backgrounds/city.png" 2>/dev/null, mode "default"
+    bindsym x exec systemcl suspend
     bindsym Return mode "default"
     bindsym Escape mode "default"
     bindsym $mod+x mode "default"
