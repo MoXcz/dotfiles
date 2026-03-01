@@ -7,7 +7,7 @@ cd "$SCRIPT_DIR"
 
 TARGET_DIR="$HOME"
 DRY_RUN=false
-SHARED_DIR=".config"
+SHARED_DIR="shared"
 
 for arg in "$@"; do
     case "$arg" in
@@ -65,9 +65,7 @@ stow_profile() {
         exit 1
     fi
 
-    echo
-    echo "Switching to profile: $profile"
-    echo
+    echo -e "\nSwitching to profile: $profile\n"
 
     unstow_others "$profile"
     stow_shared
