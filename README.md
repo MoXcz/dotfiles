@@ -1,8 +1,20 @@
 # My dotfiles
 
+## Installation
+
+To install and set any of the dotfiles in this repo on a new machine, first clone the repo inside `$HOME`:
+
+```Bash
+git clone https://github.com/MoXcz/dotfiles
+cd dotfiles
+./setup.sh
+```
+
+And then select the one you wish to use (which is just a simple symlink with `stow`).
+
 ## paradise-lost
 
-![image](./setup.png)
+![image](./paradise-lost/setup.png)
 
 - OS: Debian 12 Bookworm
 - WM: [Sway](https://swaywm.org/) or [i3](https://i3wm.org/)
@@ -10,35 +22,24 @@
 - Bar: [Waybar](https://github.com/Alexays/Waybar)
 - Shell: [Zsh](https://www.zsh.org/)
 - Editor: [Neovim](https://neovim.io/)
-- Font: Iosevka [Term](https://typeof.net/Iosevka/)
+- Font: [Iosevka Term](https://typeof.net/Iosevka/)
 - Colorscheme: [Kanagawa](https://github.com/rebelot/kanagawa.nvim)
 
-## Requirements
+### Requirements
 
 Ensure you have the following installed on your system:
 
 - [Stow](https://www.gnu.org/software/stow/)
 - Git
 
-For my system (which uses `apt`):
+This configuration requires a Debian-based environment to work (otherwise you will have to tune it yourself):
 
 ```Bash
 sudo apt install git
 sudo apt install stow
 ```
 
-## Installation
-
-To install and set the dotfiles in a new machine clone the repo inside `$HOME` **(personal preference and makes it easy to work with `stow`)**:
-
-```Bash
-git clone https://github.com/MoXcz/dotfiles
-cd dotfiles
-./scripts/runs/sway_i3
-./scripts/run.sh
-```
-
-#### Script
+### Script
 
 Select `Run All` on the menu that appears (if `bemenu` is not installed run `run_bak.sh`; should be installed if running the installation script for sway first):
 
@@ -48,7 +49,7 @@ Then, use GNU stow to create symlinks
 stow .
 ```
 
-## Greatly Inspired by
+### Greatly Inspired by
 
 1. https://github.com/josean-dev/dev-environment-files
 2. https://github.com/ThePrimeagen/init.lua
@@ -56,7 +57,7 @@ stow .
 
 ## Omarchy
 
-![image](./setup.png)
+![image](./omarchy/setup.png)
 
 - OS: [Archlinux](https://archlinux.org/) btw
 - WM: [Hyprland](https://github.com/hyprwm/Hyprland)
@@ -67,18 +68,19 @@ stow .
 - Font: [Iosevka Term](https://typeof.net/Iosevka/)
 - Colorscheme: [Kanagawa](https://github.com/rebelot/kanagawa.nvim)
 
-## Requirements
+### Requirements
 
 - [Stow](https://www.gnu.org/software/stow/)
 - Git
+- Omarchy
 
-## Installation
+### Installation
 
 1. Install Arch
 2. Install Omarchy
 3. Clone repo
 
-## From:
+### From:
 
 1. [Omarchy](https://omarchy.org/)
 
