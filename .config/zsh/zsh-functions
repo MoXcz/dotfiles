@@ -15,3 +15,132 @@ function plug() {
 function py() {
   python3 "$@"
 }
+
+function cursor_mode() {
+    # See https://ttssh2.osdn.jp/manual/4/en/usage/tips/vim.html for cursor shapes
+    cursor_block='\e[2 q'
+    cursor_beam='\e[6 q'
+
+    function zle-keymap-select {
+        if [[ ${KEYMAP} == vicmd ]] ||
+            [[ $1 = 'block' ]]; then
+            echo -ne $cursor_block
+        elif [[ ${KEYMAP} == main ]] ||
+            [[ ${KEYMAP} == viins ]] ||
+            [[ ${KEYMAP} = '' ]] ||
+            [[ $1 = 'beam' ]]; then
+            echo -ne $cursor_beam
+        fi
+    }
+
+    zle-line-init() {
+        echo -ne $cursor_beam
+    }
+
+    zle -N zle-keymap-select
+    zle -N zle-line-init
+}
+
+# don't really use them, still nice when I 'forgor'
+compress() { tar -czf "${1%/}.tar.gz" "${1%/}"; }
+alias decompress="tar -xzf"
+
+web2app() {
+  if [ "$#" -ne 3 ]; then
+    echo "Usage: web2app <AppName> <AppURL> <IconURL> (IconURL must be in PNG -- use https://dashboardicons.com)"
+    return 1
+  fi
+
+  local APP_NAME="$1"
+  local APP_URL="$2"
+  local ICON_URL="$3"
+  local ICON_DIR="$HOME/.local/share/applications/icons"
+  local DESKTOP_FILE="$HOME/.local/share/applications/${APP_NAME}.desktop"
+  local ICON_PATH="${ICON_DIR}/${APP_NAME}.png"
+
+  mkdir -p "$ICON_DIR"
+
+  if ! curl -sL -o "$ICON_PATH" "$ICON_URL"; then
+    echo "Error: Failed to download icon."
+    return 1
+  fi
+
+  cat > "$DESKTOP_FILE" <<EOF
+[Desktop Entry]
+Version=1.0
+Name=$APP_NAME
+Comment=$APP_NAME
+Exec=chromium --new-window --ozone-platform=wayland --app="$APP_URL" --name="$APP_NAME" --class="$APP_NAME"
+Terminal=false
+Type=Application
+Icon=$ICON_PATH
+StartupNotify=true
+EOF
+
+  chmod +x "$DESKTOP_FILE"
+}
+
+web2app-remove() {
+  if [ "$#" -ne 1 ]; then
+    echo "Usage: web2app-remove <AppName>"
+    return 1
+  fi
+
+  local APP_NAME="$1"
+  local ICON_DIR="$HOME/.local/share/applications/icons"
+  local DESKTOP_FILE="$HOME/.local/share/applications/${APP_NAME}.desktop"
+  local ICON_PATH="${ICON_DIR}/${APP_NAME}.png"
+
+  rm "$DESKTOP_FILE"
+  rm "$ICON_PATH"
+}
+
+# Ensure changes to ~/.XCompose are immediately available
+refresh-xcompose() {
+  pkill fcitx5
+  uwsm app -- fcitx5 >/dev/null 2>&1 &
+}
+
+function gcl() {
+  if [ "$#" -ne 1 ]; then
+    echo "Usage: gcl <github-repo>"
+    return 1
+  fi
+
+  local REPO="$1"
+  local WORK_DIR="$HOME/workspace/github.com"
+  local REPO_NAME=$(basename "$REPO" .git)
+  local CLONE_DIR="$WORK_DIR/$REPO_NAME"
+
+  if [ ! -d $WORK_DIR ]; then
+    mkdir -p $WORK_DIR
+  fi
+
+  git clone $REPO $CLONE_DIR
+}
+
+function book() {
+  if [ "$#" -ne 0 ]; then
+    echo "Usage: book"
+    return 1
+  fi
+
+  local BOOK_DIR="$HOME/Documents/books"
+  if [ ! -d $BOOK_DIR ]; then
+    echo "No books available"
+    mkdir -p $BOOK_DIR
+    return 1
+  fi
+
+  local BOOK=$(find ~/Documents/books -maxdepth 1 -name "*pdf" | fzf)
+  if [[ -z $BOOK ]]; then
+      return 0
+  fi
+
+  if ! pacman -Q "zathura" &>/dev/null; then
+      echo "zathura is not installed"
+      sudo pacman -S zathura zathura-pdf-poppler
+  fi
+
+  zathura $BOOK &
+}

@@ -10,9 +10,10 @@ path() {
 ## -- Environment Variables
 export TERM="xterm-256color"
 export EDITOR="nvim"
+export SUDO_EDITOR="$EDITOR"
 export VISUAL="nvim"
 export MANPAGER="nvim +Man!"
-export ASDF_DATA_DIR="$HOME/.local/.asdf"
+export OMARCHY_PATH="/home/$USER/.local/share/omarchy"
 
 ## -- Path
 path $HOME/.local/bin
@@ -24,7 +25,7 @@ path "$HOME"/.lua/src
 path "$HOME"/scripts
 path /usr/games
 path /usr/pgadmin4/bin
-path "${ASDF_DATA_DIR:-$HOME/.local/.asdf}/shims"
+path $HOME/.local/share/omarchy/bin
 
 # Use vim keybindings and reduce delay when changing modes
 bindkey -v
@@ -50,13 +51,6 @@ HISTSIZE=100000
 SAVEHIST=16384
 HISTFILE="$XDG_CACHE_HOME/zsh/.zsh_history"
 HISTCONTROL=ignoreboth
-
-# Elixir------------------------------------------------------------------------
-# go install github.com/asdf-vm/asdf/cmd/asdf@v0.18.0
-# mkdir -p "${ASDF_DATA_DIR:-$HOME/.local/.asdf}/completions"
-# asdf completion zsh > "${ASDF_DATA_DIR:-$HOME/.local/.asdf}/completions/_asdf"
-fpath=(${ASDF_DATA_DIR:-$HOME/.local/.asdf}/completions $fpath)
-# ------------------------------------------------------------------------------
 
 # Use modern completion system
 autoload -Uz compinit; compinit
@@ -85,9 +79,33 @@ zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
 ## -- Aliases
-alias v="nvim"
+# Filesystem
 alias ls='ls -F --color=auto'
 alias l='ls -lF --color=auto'
+alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
+alias cd="zd"
+
+zd() {
+  if [ $# -eq 0 ]; then
+    builtin cd ~ && return
+  elif [ -d "$1" ]; then
+    builtin cd "$1"
+  else
+    z "$@" && printf " \U000F17A9 " && pwd || echo "Error: Directory not found"
+  fi
+}
+
+open() {
+  xdg-open "$@" >/dev/null 2>&1 &
+}
+
+# Directories
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# Tools
+alias v="nvim"
 # nice for workspace/dir management
 alias vi='pushd $(fd . -t d | fzf) && nvim $(fzf --preview "bat --color=always --style=numbers --line-range=:500 {}") && popd'
 alias df='df -h'               # human-readable sizes
@@ -103,6 +121,7 @@ alias mem5="ps auxf | sort -nr -k 4 | head -5"
 alias cpu5="ps auxf | sort -nr -k 3 | head -5"
 alias venv="source ./.venv/bin/activate"
 alias ncit='git add . && git commit -m "$(date)"'
+alias f="yay -Slq | fzf --multi --preview 'yay -Sii {1}' --preview-window=down:75% | xargs -ro yay -S"
 
 # Git
 alias gs="git status"
@@ -122,35 +141,6 @@ alias tobash="sudo chsh $USER -s /bin/bash && echo 'Log out and log back in for 
 alias tozsh="sudo chsh $USER -s /bin/zsh && echo 'Log out and log back in for change to take effect.'"
 alias tofish="sudo chsh $USER -s /bin/fish && echo 'Log out and log back in for change to take effect.'"
 
-## -- Functions
-
-# Show a different cursor depending on the current mode (visual or insert)
-cursor_mode() {
-    # See https://ttssh2.osdn.jp/manual/4/en/usage/tips/vim.html for cursor shapes
-    cursor_block='\e[2 q'
-    cursor_beam='\e[6 q'
-
-    function zle-keymap-select {
-        if [[ ${KEYMAP} == vicmd ]] ||
-            [[ $1 = 'block' ]]; then
-            echo -ne $cursor_block
-        elif [[ ${KEYMAP} == main ]] ||
-            [[ ${KEYMAP} == viins ]] ||
-            [[ ${KEYMAP} = '' ]] ||
-            [[ $1 = 'beam' ]]; then
-            echo -ne $cursor_beam
-        fi
-    }
-
-    zle-line-init() {
-        echo -ne $cursor_beam
-    }
-
-    zle -N zle-keymap-select
-    zle -N zle-line-init
-}
-
-cursor_mode
 
 # Text objects, similar to ci', to change what is inside single quotes
 autoload -Uz select-bracketed select-quoted
@@ -193,10 +183,34 @@ bindkey "^['" quote-line
 
 ## -- Plugins
 source "$ZDOTDIR/zsh-functions"
+# show a different cursor depending on the current mode (visual or insert)
+cursor_mode
+# suggest command stored in history
 plug "zsh-autosuggestions"
+# highlight when a command is right/wrong
 plug "zsh-syntax-highlighting"
+# some completions for some commands (e.g. yarn)
 plug "zsh-completions"
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=7"
-eval "$(starship init zsh)"
-eval "$(zoxide init zsh)"
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+if command -v mise &> /dev/null; then
+  eval "$(mise activate zsh)"
+fi
+
+if command -v starship &> /dev/null; then
+  eval "$(starship init zsh)"
+fi
+
+if command -v zoxide &> /dev/null; then
+  eval "$(zoxide init zsh)"
+fi
+
+if command -v fzf &> /dev/null; then
+  if [[ -f /usr/share/fzf/completion.zsh ]]; then
+    source /usr/share/fzf/completion.zsh
+  fi
+  if [[ -f /usr/share/fzf/key-bindings.zsh ]]; then
+    source /usr/share/fzf/key-bindings.zsh
+  fi
+fi
+

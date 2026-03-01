@@ -3,5 +3,3 @@ export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
 
 ZDOTDIR="$HOME/.config/zsh"
-
-. "$HOME/.local/share/../bin/env"
