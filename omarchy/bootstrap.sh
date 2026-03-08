@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-read -rp "This will modify Omarchy default installation. Continue? [y/N] " confirm
+read -rp "This will modify Omarchy default installation. Continue? [y/N] " confirm </dev/tty
 [[ "$confirm" != "y" ]] && exit 0
 
 echo "Starting system post-omarchy script..."
