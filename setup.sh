@@ -76,10 +76,24 @@ stow_profile() {
         stow -n -v -t "$TARGET_DIR" "$profile"
     else
         stow -v -t "$TARGET_DIR" "$profile"
+        setup_nvim
     fi
 
-    echo
-    echo "Done."
+    echo -e "\nDone."
+}
+
+setup_nvim() {
+    NVIM_REPO="https://github.com/MoXcz/nvim"
+    NVIM_DIR="$HOME/.config/nvim"
+    echo "Setting up Neovim config..."
+
+    if [[ -d "$NVIM_DIR/.git" ]]; then
+        echo "Neovim config already exists. Updating..."
+        git -C "$NVIM_DIR" pull
+    else
+        echo "Cloning Neovim config..."
+        git clone "$NVIM_REPO" "$NVIM_DIR"
+    fi
 }
 
 if [[ -n "$PROFILE" ]]; then
