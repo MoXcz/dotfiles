@@ -86,21 +86,12 @@ PS3=$'\nSelect a profile to stow: '
 options=("omarchy" "paradise-lost" "Quit")
 
 select opt in "${options[@]}"; do
-    case "$REPLY" in
-        1)
-            stow_profile "omarchy"
-            break
-            ;;
-        2)
-            stow_profile "paradise-lost"
-            break
-            ;;
-        3)
-            echo "Exiting."
-            break
-            ;;
-        *)
-            echo "Invalid selection."
-            ;;
-    esac
+    [[ "$opt" == "Quit" ]] && exit
+
+    if [[ -n "$opt" ]]; then
+        stow_profile "$opt"
+        break
+    else
+        echo "Invalid selection."
+    fi
 done
