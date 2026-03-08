@@ -7,20 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 TARGET_DIR="$HOME"
-DRY_RUN=false
 SHARED_DIR="shared"
-
-for arg in "$@"; do
-    case "$arg" in
-        --dry-run|-n)
-            DRY_RUN=true
-            ;;
-        *)
-            echo "Unknown option: $arg"
-            exit 1
-            ;;
-    esac
-done
 
 if ! command -v stow >/dev/null 2>&1; then
     echo "Error: stow is not installed."
@@ -40,22 +27,14 @@ unstow_others() {
     for p in "${PROFILES[@]}"; do
         if [[ "$p" != "$selected" ]] && [[ -d "$p" ]]; then
             echo "Unstowing $p..."
-            if $DRY_RUN; then
-                stow -D -n -v -t "$TARGET_DIR" "$p"
-            else
-                stow -D -v -t "$TARGET_DIR" "$p" || true
-            fi
+            stow -D -v -t "$TARGET_DIR" "$p" || true
         fi
     done
 }
 
 stow_shared() {
     echo "Stowing shared config (.config)..."
-    if $DRY_RUN; then
-        stow -n -v -t "$TARGET_DIR" "$SHARED_DIR"
-    else
-        stow -v -t "$TARGET_DIR" "$SHARED_DIR"
-    fi
+    stow -v -t "$TARGET_DIR" "$SHARED_DIR"
 }
 
 stow_profile() {
@@ -72,12 +51,8 @@ stow_profile() {
     stow_shared
 
     echo "Stowing $profile..."
-    if $DRY_RUN; then
-        stow -n -v -t "$TARGET_DIR" "$profile"
-    else
-        stow -v -t "$TARGET_DIR" "$profile"
-        setup_nvim
-    fi
+    stow -v -t "$TARGET_DIR" "$profile"
+    setup_nvim
 
     echo -e "\nDone."
 }
@@ -96,14 +71,14 @@ setup_nvim() {
     fi
 }
 
+options=("omarchy" "paradise-lost" "Quit")
+
 if [[ -n "$PROFILE" ]]; then
     stow_profile "$PROFILE"
     exit 0
 fi
 
 PS3=$'\nSelect a profile to stow: '
-
-options=("omarchy" "paradise-lost" "Quit")
 
 select opt in "${options[@]}"; do
     [[ "$opt" == "Quit" ]] && exit
