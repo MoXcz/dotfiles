@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+PROFILE="${1:-}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
@@ -80,6 +81,11 @@ stow_profile() {
     echo
     echo "Done."
 }
+
+if [[ -n "$PROFILE" ]]; then
+    stow_profile "$PROFILE"
+    exit 0
+fi
 
 PS3=$'\nSelect a profile to stow: '
 

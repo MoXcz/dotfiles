@@ -41,7 +41,7 @@ rm -f ~/.config/starship.toml
 echo "Deploying dotfiles with stow..."
 
 cd "$REPO_NAME"
-./setup.sh
+./setup.sh omarchy
 
 echo "Installing packages..."
 
