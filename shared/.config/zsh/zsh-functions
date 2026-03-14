@@ -137,10 +137,10 @@ function book() {
       return 0
   fi
 
-  if ! pacman -Q "zathura" &>/dev/null; then
-      echo "zathura is not installed"
-      sudo pacman -S zathura zathura-pdf-poppler
+  if ! pacman -Q "sioyek" &>/dev/null; then
+      echo "sioyek is not installed"
+      yay -S sioyek
   fi
 
-  zathura $BOOK &
+  sioyek $BOOK &
 }
