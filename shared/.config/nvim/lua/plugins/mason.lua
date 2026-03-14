@@ -34,3 +34,7 @@ require("mason-tool-installer").setup({
     "phpactor",
   },
 })
+
+require("mason-lspconfig").setup {
+  automatic_enable = false
+}
