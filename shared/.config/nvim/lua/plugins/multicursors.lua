@@ -5,30 +5,30 @@ local map = vim.keymap.set
 
 -- Add or skip cursor above/below the main cursor.
 map({ "n", "x" }, "<M-k>", function()
-	mc.lineAddCursor(-1)
+  mc.lineAddCursor(-1)
 end)
 map({ "n", "x" }, "<M-j>", function()
-	mc.lineAddCursor(1)
+  mc.lineAddCursor(1)
 end)
 map({ "n", "x" }, "<leader><M-k>", function()
-	mc.lineSkipCursor(-1)
+  mc.lineSkipCursor(-1)
 end)
 map({ "n", "x" }, "<leader><M-j>", function()
-	mc.lineSkipCursor(1)
+  mc.lineSkipCursor(1)
 end)
 
 -- Add or skip adding a new cursor by matching word/selection
 map({ "n", "x" }, "<M-l>", function()
-	mc.matchAddCursor(1)
+  mc.matchAddCursor(1)
 end)
 map({ "n", "x" }, "<leader>s", function()
-	mc.matchSkipCursor(1)
+  mc.matchSkipCursor(1)
 end)
 map({ "n", "x" }, "<M-h>", function()
-	mc.matchAddCursor(-1)
+  mc.matchAddCursor(-1)
 end)
 map({ "n", "x" }, "<leader>S", function()
-	mc.matchSkipCursor(-1)
+  mc.matchSkipCursor(-1)
 end)
 
 -- Add and remove cursors with control + left click.
@@ -42,21 +42,21 @@ map({ "n", "x" }, "<c-q>", mc.toggleCursor)
 -- Mappings defined in a keymap layer only apply when there are
 -- multiple cursors. This lets you have overlapping mappings.
 mc.addKeymapLayer(function(layerSet)
-	-- Select a different cursor as the main one.
-	layerSet({ "n", "x" }, "<left>", mc.prevCursor)
-	layerSet({ "n", "x" }, "<right>", mc.nextCursor)
+  -- Select a different cursor as the main one.
+  layerSet({ "n", "x" }, "<left>", mc.prevCursor)
+  layerSet({ "n", "x" }, "<right>", mc.nextCursor)
 
-	-- Delete the main cursor.
-	layerSet({ "n", "x" }, "<leader>x", mc.deleteCursor)
+  -- Delete the main cursor.
+  layerSet({ "n", "x" }, "<leader>x", mc.deleteCursor)
 
-	-- Enable and clear cursors using escape.
-	layerSet("n", "<esc>", function()
-		if not mc.cursorsEnabled() then
-			mc.enableCursors()
-		else
-			mc.clearCursors()
-		end
-	end)
+  -- Enable and clear cursors using escape.
+  layerSet("n", "<esc>", function()
+    if not mc.cursorsEnabled() then
+      mc.enableCursors()
+    else
+      mc.clearCursors()
+    end
+  end)
 end)
 
 -- Customize how cursors look.
