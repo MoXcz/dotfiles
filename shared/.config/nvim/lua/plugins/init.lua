@@ -17,6 +17,7 @@ vim.pack.add({
   "https://github.com/nvim-lualine/lualine.nvim",
   "https://github.com/christoomey/vim-tmux-navigator",
   "https://github.com/jake-stewart/multicursor.nvim",
+  "https://github.com/folke/lazydev.nvim",
 })
 
 vim.cmd.colorscheme("kanagawa-dragon")
@@ -24,6 +25,7 @@ vim.cmd.colorscheme("kanagawa-dragon")
 local map = vim.keymap.set
 map("n", "<leader>fu", vim.cmd.UndotreeToggle, { desc = "Undo history" })
 
+require("plugins.lazydev")
 require("plugins.mason")
 require("plugins.lsp")
 require("plugins.snacks")
