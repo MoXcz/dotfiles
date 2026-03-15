@@ -1,4 +1,3 @@
-.config/tmux/plugins/
-.config/zsh/plugins
-.config/zsh/.zcompdump
-.config/nvim
+shared/.config/tmux/plugins/
+shared/.config/zsh/plugins
+shared/.config/zsh/.zcompdump
