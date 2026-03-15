@@ -52,7 +52,7 @@ stow_profile() {
 
     echo "Stowing $profile..."
     stow -v -t "$TARGET_DIR" "$profile"
-    setup_nvim
+    # setup_nvim
 
     echo -e "\nDone."
 }
