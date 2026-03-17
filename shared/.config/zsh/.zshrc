@@ -26,6 +26,7 @@ path "$HOME"/scripts
 path /usr/games
 path /usr/pgadmin4/bin
 path $HOME/.local/share/omarchy/bin
+path $HOME/.local/bin/odin
 
 # Use vim keybindings and reduce delay when changing modes
 bindkey -v
