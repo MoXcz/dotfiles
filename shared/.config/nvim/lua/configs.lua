@@ -23,12 +23,14 @@ opt.relativenumber = true
 opt.wrap = false
 opt.cursorline = true
 opt.scrolloff = 10
+opt.sidescrolloff = 10
 opt.inccommand = "split"
 opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 opt.undofile = true
 opt.completeopt = { "menuone", "popup", "noinsert" }
 opt.winborder = "rounded"
 opt.hlsearch = false
+opt.incsearch = true
 opt.showmode = false
 
 local map = vim.keymap.set
@@ -38,6 +40,15 @@ map("n", "<C-j>", "<C-w><C-j>")
 map("n", "<C-k>", "<C-w><C-k>")
 map("n", "<C-l>", "<C-w><C-l>")
 map("n", "<C-h>", "<C-w><C-h>")
+
+-- center cursor after jump and search
+map("n", "<C-d>", "<C-d>zz")
+map("n", "<C-u>", "<C-u>zz")
+map('n', 'n', 'nzzzv')
+map('n', 'N', 'Nzzzv')
+
+-- cd into current file dir
+map("n", "<leader>cd", '<cmd>lua vim.fn.chdir(vim.fn.expand("%:p:h"))<CR>')
 
 -- Move highlighted text
 map("v", "J", ":m '>+1<CR>gv=gv")
@@ -61,34 +72,15 @@ map("n", "<leader>xc", "<cmd>!chmod +x %<CR>", { silent = true })
 map("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer.sh<CR>")
 map("n", "Q", "<nop>")
 map("n", "<Esc>", "<cmd>nohlsearch<CR>")
+map("n", "<leader>ps", '<cmd>lua vim.pack.update()<CR>')
 
-vim.api.nvim_create_autocmd("TextYankPost", {
-  group = vim.api.nvim_create_augroup("highlight-yank", { clear = true }),
+local autocmd = vim.api.nvim_create_autocmd
+local augroup = vim.api.nvim_create_augroup
+autocmd("TextYankPost", {
+  group = augroup("highlight-yank", { clear = true }),
   callback = function()
     vim.highlight.on_yank()
   end,
 })
 
 vim.cmd.filetype("plugin indent on")
-vim.diagnostic.config({
-  virtual_text = true, -- Show diagnostics inline
-  underline = true,
-  update_in_insert = false,
-  severity_sort = true,
-  float = {
-    border = "rounded",
-    source = true,
-  },
-  signs = {
-    text = {
-      [vim.diagnostic.severity.ERROR] = "󰅚 ",
-      [vim.diagnostic.severity.WARN] = "󰀪 ",
-      [vim.diagnostic.severity.INFO] = "󰋽 ",
-      [vim.diagnostic.severity.HINT] = "󰌶 ",
-    },
-    numhl = {
-      [vim.diagnostic.severity.ERROR] = "ErrorMsg",
-      [vim.diagnostic.severity.WARN] = "WarningMsg",
-    },
-  },
-})
