@@ -23,20 +23,20 @@ autocmd("BufWinEnter", {
   end,
 })
 
-vim.keymap.set("n", "gu", "<cmd>diffget //2<CR>")
-vim.keymap.set("n", "gh", "<cmd>diffget //3<CR>")
-vim.keymap.set("n", "<leader>gd", "<cmd>Gdiffsplit!<CR>", { desc = "Split current buffer changes (current branch)" })
-vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
+local map = vim.keymap.set
+map("n", "gu", "<cmd>diffget //2<CR>")
+map("n", "gh", "<cmd>diffget //3<CR>")
+map("n", "<leader>gd", "<cmd>Gdiffsplit!<CR>", { desc = "Split current buffer changes (current branch)" })
+map("n", "<leader>gs", vim.cmd.Git)
 
 require("gitsigns").setup({
   current_line_blame = true,
   signs = {
-    add = { text = "▎" },
-    change = { text = "▎" },
-    delete = { text = "" },
-    topdelete = { text = "" },
-    changedelete = { text = "▎" },
-    untracked = { text = "▎" },
+    add = { text = '+' },
+    change = { text = '~' },
+    delete = { text = '_' },
+    topdelete = { text = '‾' },
+    changedelete = { text = '~' },
   },
   signs_staged = {
     add = { text = "▎" },
