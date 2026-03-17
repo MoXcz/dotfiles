@@ -5,7 +5,11 @@ require('blink-cmp').setup({
     enabled = true,
     completion = { menu = { auto_show = true } },
   },
-  keymap = { preset = 'default' },
+  keymap = {
+    ["<C-d>"] = { "show_documentation", "fallback" },
+    ["<C-f>"] = { "scroll_documentation_down", "fallback" },
+    ["<C-b>"] = { "scroll_documentation_up", "fallback" },
+  },
   appearance = {
     use_nvim_cmp_as_default = false,
     nerd_font_variant = 'mono',
@@ -13,8 +17,7 @@ require('blink-cmp').setup({
   completion = {
     trigger = { show_on_trigger_character = true },
     documentation = {
-      auto_show = true,
-      auto_show_delay_ms = 500,
+      auto_show = false,
       window = {
         border = nil,
         scrollbar = false,
