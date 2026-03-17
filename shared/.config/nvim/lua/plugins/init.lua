@@ -18,6 +18,7 @@ vim.pack.add({
   "https://github.com/christoomey/vim-tmux-navigator",
   "https://github.com/jake-stewart/multicursor.nvim",
   "https://github.com/folke/lazydev.nvim",
+  "https://github.com/folke/todo-comments.nvim",
 })
 
 vim.cmd.colorscheme("kanagawa-dragon")
