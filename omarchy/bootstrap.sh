@@ -13,23 +13,23 @@ REPO_NAME="dotfiles"
 echo "Checking dependencies..."
 
 if ! command -v stow >/dev/null; then
-    echo "stow not found. Install it first:"
-    echo "  sudo pacman -S stow"
-    exit 1
+  echo "stow not found. Install it first:"
+  echo "  sudo pacman -S stow"
+  exit 1
 fi
 
 if ! command -v yay >/dev/null; then
-    echo "yay not found. Install it first."
-    exit 1
+  echo "yay not found. Install it first."
+  exit 1
 fi
 
 cd "$HOME"
 
 if [[ -d "$REPO_NAME" ]]; then
-    echo "Repository '$REPO_NAME' already exists. Skipping clone."
+  echo "Repository '$REPO_NAME' already exists. Skipping clone."
 else
-    echo "Cloning dotfiles..."
-    git clone "$REPO_URL" "$REPO_NAME"
+  echo "Cloning dotfiles..."
+  git clone "$REPO_URL" "$REPO_NAME"
 fi
 
 echo "Removing conflicting configs..."
@@ -56,7 +56,8 @@ yay -S --needed \
   vulkan-tools \
   ttf-iosevka-term \
   ttf-iosevkaterm-nerd \
-  sioyek
+  sioyek \
+  nemo
 
 echo "Change shell to zsh"
 
