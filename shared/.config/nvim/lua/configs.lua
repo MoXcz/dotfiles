@@ -74,6 +74,12 @@ map("n", "Q", "<nop>")
 map("n", "<Esc>", "<cmd>nohlsearch<CR>")
 map("n", "<leader>ps", '<cmd>lua vim.pack.update()<CR>')
 
+-- control size of splits (width/height)
+map('n', '<M-,>', '<c-w>5<')
+map('n', '<M-.>', '<c-w>5>')
+map('n', '<M-t>', '<C-W>+')
+map('n', '<M-s>', '<C-W>-')
+
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 autocmd("TextYankPost", {
