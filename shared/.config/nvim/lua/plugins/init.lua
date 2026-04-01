@@ -22,12 +22,29 @@ vim.pack.add({
   "https://github.com/jake-stewart/multicursor.nvim",
   "https://github.com/folke/lazydev.nvim",
   "https://github.com/folke/todo-comments.nvim",
+  "https://github.com/MunifTanjim/nui.nvim",
+  "https://github.com/m4xshen/hardtime.nvim",
+  "https://github.com/m4xshen/smartcolumn.nvim",
+  "https://github.com/Bekaboo/dropbar.nvim",
 })
 
 vim.cmd.colorscheme("kanagawa-dragon")
 
 local map = vim.keymap.set
 map("n", "<leader>fu", vim.cmd.UndotreeToggle, { desc = "Undo history" })
+require("hardtime").setup({})
+require("smartcolumn").setup({
+  disabled_filetypes = {
+    "netrw",
+    "Oil",
+    "mason",
+    "help",
+    "text",
+    "markdown",
+    "tex",
+    "html",
+  },
+})
 
 require("plugins.lazydev")
 require("plugins.mason")
