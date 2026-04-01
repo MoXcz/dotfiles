@@ -7,7 +7,10 @@ vim.pack.add({
   "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim",
   "https://github.com/folke/snacks.nvim",
   "https://github.com/nvim-tree/nvim-web-devicons",
-  { src = "https://github.com/saghen/blink.cmp", version = vim.version.range("^1") },
+  {
+    src = "https://github.com/saghen/blink.cmp",
+    version = vim.version.range("^1")
+  },
   "https://github.com/stevearc/oil.nvim",
   "https://github.com/nvim-treesitter/nvim-treesitter-textobjects",
   "https://github.com/nvim-treesitter/nvim-treesitter",
