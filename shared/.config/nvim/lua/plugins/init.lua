@@ -1,6 +1,5 @@
 vim.pack.add({
   "https://github.com/rebelot/kanagawa.nvim",
-  "https://github.com/mbbill/undotree",
   "https://github.com/neovim/nvim-lspconfig",
   "https://github.com/mason-org/mason.nvim",
   "https://github.com/mason-org/mason-lspconfig.nvim",
@@ -29,9 +28,10 @@ vim.pack.add({
 })
 
 vim.cmd.colorscheme("kanagawa-dragon")
+vim.cmd.packadd("nvim.undotree")
 
 local map = vim.keymap.set
-map("n", "<leader>fu", vim.cmd.UndotreeToggle, { desc = "Undo history" })
+map("n", "<leader>fu", vim.cmd.Undotree, { desc = "Undo history" })
 require("hardtime").setup({})
 require("smartcolumn").setup({
   disabled_filetypes = {
