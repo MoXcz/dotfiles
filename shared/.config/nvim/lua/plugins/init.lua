@@ -31,8 +31,15 @@ vim.cmd.colorscheme("kanagawa-dragon")
 vim.cmd.packadd("nvim.undotree")
 
 local map = vim.keymap.set
+
 map("n", "<leader>fu", vim.cmd.Undotree, { desc = "Undo history" })
-require("hardtime").setup({})
+
+require("hardtime").setup({
+  disabled_filetypes = {
+    "nvim-undotree",
+  }
+})
+
 require("smartcolumn").setup({
   disabled_filetypes = {
     "netrw",
