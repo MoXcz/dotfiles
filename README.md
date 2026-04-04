@@ -1,86 +1,116 @@
-# My dotfiles
+# My Dotfiles
+
+Personal configuration files for Linux desktop environments, managed with [GNU Stow](https://www.gnu.org/software/stow/).
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Directory Structure](#directory-structure)
+- [Installation](#installation)
+- [Profiles](#profiles)
+- [Shared Config](#shared-config)
+
+## Overview
+
+This repository contains two distinct desktop environment profiles, plus a set of shared configurations used by both.
+
+| Profile                               | Base OS    | WM        | Target                          |
+| ------------------------------------- | ---------- | --------- | ------------------------------- |
+| [**Omarchy**](./omarchy/)             | Arch Linux | Hyprland  | Modern Wayland desktop          |
+| [**Paradise Lost**](./paradise-lost/) | Debian 12  | Sway / i3 | Lightweight X11/Wayland desktop |
+
+Both profiles share:
+
+- **Shell**: [Zsh](https://www.zsh.org/)
+- **Terminal**: [Ghostty](https://ghostty.org/) / [Kitty](https://sw.kovidgoyal.net/kitty/) with [Tmux](https://github.com/tmux/tmux)
+- **Editor**: [Neovim](https://neovim.io/)
+- **Font**: [Iosevka Term](https://typeof.net/Iosevka/)
+- **Colorscheme**: [Kanagawa](https://github.com/rebelot/kanagawa.nvim)
+- **Bar**: [Waybar](https://github.com/Alexays/Waybar)
+
+## Directory Structure
+
+```
+.
+├── setup.sh            # Main entry point — stows a selected profile
+├── shared/             # Config shared between all profiles
+│   ├── .config/        # Neovim, Zsh, Tmux, Ghostty, Starship, etc.
+│   └── scripts/        # Utility scripts (sessionizer, cht.sh, …)
+├── omarchy/            # Arch Linux + Hyprland + Omarchy profile
+│   ├── bootstrap.sh    # Post-install script
+│   └── .config/        # Hyprland, Alacritty, Waybar, …
+└── paradise-lost/      # Debian 12 + Sway/i3 profile
+    ├── scripts/        # Setup & utility scripts
+    └── .config/        # Sway, i3, Waybar, i3blocks, …
+```
 
 ## Installation
 
-To install and set any of the dotfiles in this repo on a new machine, first clone the repo inside `$HOME`:
+### Prerequisites
 
-```Bash
-git clone https://github.com/MoXcz/dotfiles
-cd dotfiles
+- [Git](https://git-scm.com/)
+- [GNU Stow](https://www.gnu.org/software/stow/)
+
+```bash
+sudo apt install git stow   # Debian/Ubuntu
+sudo pacman -S git stow     # Arch
+```
+
+### Quick Start
+
+Clone the repository inside `$HOME` and run the interactive setup:
+
+```bash
+git clone https://github.com/MoXcz/dotfiles ~/dotfiles
+cd ~/dotfiles
 ./setup.sh
 ```
 
-And then select the one you wish to use (which is just a simple symlink with `stow`).
+A menu will appear to select the profile you want to deploy. The script will:
 
-## paradise-lost
+1. Unstow any previously active profile
+2. Stow the shared configuration
+3. Stow the selected profile
 
-![image](./paradise-lost/setup.png)
+You can also pass the profile name directly:
 
-- OS: Debian 12 Bookworm
-- WM: [Sway](https://swaywm.org/) or [i3](https://i3wm.org/)
-- Terminal: [Tmux](https://github.com/tmux/tmux) inside [Ghostty](https://ghostty.org/)
-- Bar: [Waybar](https://github.com/Alexays/Waybar)
-- Shell: [Zsh](https://www.zsh.org/)
-- Editor: [Neovim](https://neovim.io/)
-- Font: [Iosevka Term](https://typeof.net/Iosevka/)
-- Colorscheme: [Kanagawa](https://github.com/rebelot/kanagawa.nvim)
-
-### Requirements
-
-Ensure you have the following installed on your system:
-
-- [Stow](https://www.gnu.org/software/stow/)
-- Git
-
-This configuration requires a Debian-based environment to work (otherwise you will have to tune it yourself):
-
-```Bash
-sudo apt install git
-sudo apt install stow
+```bash
+./setup.sh omarchy
+./setup.sh paradise-lost
 ```
 
-### Script
+## Profiles
 
-Select `Run All` on the menu that appears (if `bemenu` is not installed run `run_bak.sh`; should be installed if running the installation script for sway first):
+### Omarchy
 
-Then, use GNU stow to create symlinks
+> Arch Linux + Hyprland via [Omarchy](https://omarchy.org/)
 
-```Bash
-stow .
-```
+See [omarchy/README.md](./omarchy/README.md) for detailed setup instructions.
 
-### Greatly Inspired by
+### Paradise Lost
 
-1. https://github.com/josean-dev/dev-environment-files
-2. https://github.com/ThePrimeagen/init.lua
-3. https://github.com/tjdevries/config.nvim
+> Debian 12 + Sway / i3
 
-## Omarchy
+See [paradise-lost/README.md](./paradise-lost/README.md) for detailed setup instructions.
 
-![image](./omarchy/setup.png)
+## Shared Config
 
-- OS: [Archlinux](https://archlinux.org/) btw
-- WM: [Hyprland](https://github.com/hyprwm/Hyprland)
-- Terminal: [Tmux](https://github.com/tmux/tmux) inside [Ghostty](https://ghostty.org/)
-- Bar: [Waybar](https://github.com/Alexays/Waybar)
-- Shell: [Zsh](https://www.zsh.org/)
-- Editor: [Neovim](https://neovim.io/)
-- Font: [Iosevka Term](https://typeof.net/Iosevka/)
-- Colorscheme: [Kanagawa](https://github.com/rebelot/kanagawa.nvim)
+The `shared/` directory contains configuration used by both profiles:
 
-### Requirements
+| Component | Path                           |
+| --------- | ------------------------------ |
+| Neovim    | `shared/.config/nvim/`         |
+| Zsh       | `shared/.config/zsh/`          |
+| Tmux      | `shared/.config/tmux/`         |
+| Ghostty   | `shared/.config/ghostty/`      |
+| Kitty     | `shared/.config/kitty/`        |
+| Starship  | `shared/.config/starship.toml` |
+| Sioyek    | `shared/.config/sioyek/`       |
+| Zathura   | `shared/.config/zathura/`      |
+| Scripts   | `shared/scripts/`              |
 
-- [Stow](https://www.gnu.org/software/stow/)
-- Git
-- Omarchy
+## Greatly Inspired By
 
-### Installation
-
-1. Install Arch
-2. Install Omarchy
-3. Clone repo
-
-### From:
-
-1. [Omarchy](https://omarchy.org/)
-
+1. [josean-dev/dev-environment-files](https://github.com/josean-dev/dev-environment-files)
+2. [ThePrimeagen/init.lua](https://github.com/ThePrimeagen/init.lua)
+3. [tjdevries/config.nvim](https://github.com/tjdevries/config.nvim)
