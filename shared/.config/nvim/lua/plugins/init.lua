@@ -25,10 +25,13 @@ vim.pack.add({
   "https://github.com/m4xshen/hardtime.nvim",
   "https://github.com/m4xshen/smartcolumn.nvim",
   "https://github.com/Bekaboo/dropbar.nvim",
+  "https://github.com/iamcco/markdown-preview.nvim",
 })
 
 vim.cmd.colorscheme("kanagawa-dragon")
 vim.cmd.packadd("nvim.undotree")
+-- run cd ~/.local/share/nvim/site/pack/core/opt/markdown-preview.nvim/app && npx --yes yarn install
+vim.cmd.packadd("markdown-preview.nvim")
 
 local map = vim.keymap.set
 
