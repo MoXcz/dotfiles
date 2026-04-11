@@ -4,7 +4,7 @@ languages="c cpp python golang rust typescript"
 
 selected=$(
   cat ~/.config/tmux/.tmux-cht-languages \
-      ~/.config/tmux/.tmux-cht-command 2>/dev/null | fzf
+    ~/.config/tmux/.tmux-cht-command 2>/dev/null | fzf
 )
 
 [[ -z "$selected" ]] && exit 0

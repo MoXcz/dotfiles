@@ -11,11 +11,13 @@ check_disk() {
 }
 
 case "$1" in
-  disk) check_disk
+disk)
+  check_disk
   ;;
-  mem) free -h | awk '/^Mem/ {print $3}'
+mem)
+  free -h | awk '/^Mem/ {print $3}'
   ;;
-  *) echo "Pick disk or mem" && exit 0
+*)
+  echo "Pick disk or mem" && exit 0
   ;;
 esac
-
