@@ -8,24 +8,23 @@ Personal configuration files for Linux desktop environments, managed with [GNU S
 - [Directory Structure](#directory-structure)
 - [Installation](#installation)
 - [Profiles](#profiles)
-- [Shared Config](#shared-config)
 
 ## Overview
 
 This repository contains two distinct desktop environment profiles, plus a set of shared configurations used by both.
 
-| Profile                               | Base OS    | WM        | Target                          |
-| ------------------------------------- | ---------- | --------- | ------------------------------- |
-| [**Omarchy**](./omarchy/)             | Arch Linux | Hyprland  | Modern Wayland desktop          |
-| [**Paradise Lost**](./paradise-lost/) | Debian 12  | Sway / i3 | Lightweight X11/Wayland desktop |
+| Profile                               | Base OS    | WM        |
+| ------------------------------------- | ---------- | --------- |
+| [**Omarchy**](./omarchy/)             | Arch Linux | Hyprland  |
+| [**Paradise Lost**](./paradise-lost/) | Debian 12  | Sway / i3 |
 
 Both profiles share:
 
 - **Shell**: [Zsh](https://www.zsh.org/)
-- **Terminal**: [Ghostty](https://ghostty.org/) / [Kitty](https://sw.kovidgoyal.net/kitty/) with [Tmux](https://github.com/tmux/tmux)
+- **Terminal**: [Ghostty](https://ghostty.org/) / [Kitty](https://sw.kovidgoyal.net/kitty/) with [tmux](https://github.com/tmux/tmux)
 - **Editor**: [Neovim](https://neovim.io/)
 - **Font**: [Iosevka Term](https://typeof.net/Iosevka/)
-- **Colorscheme**: [Kanagawa](https://github.com/rebelot/kanagawa.nvim)
+- **Colorscheme**: [Kanagawa](https://github.com/rebelot/kanagawa.nvim) (though not completely)
 - **Bar**: [Waybar](https://github.com/Alexays/Waybar)
 
 ## Directory Structure
@@ -93,21 +92,9 @@ See [omarchy/README.md](./omarchy/README.md) for detailed setup instructions.
 
 See [paradise-lost/README.md](./paradise-lost/README.md) for detailed setup instructions.
 
-## Shared Config
+### Shared Config
 
-The `shared/` directory contains configuration used by both profiles:
-
-| Component | Path                           |
-| --------- | ------------------------------ |
-| Neovim    | `shared/.config/nvim/`         |
-| Zsh       | `shared/.config/zsh/`          |
-| Tmux      | `shared/.config/tmux/`         |
-| Ghostty   | `shared/.config/ghostty/`      |
-| Kitty     | `shared/.config/kitty/`        |
-| Starship  | `shared/.config/starship.toml` |
-| Sioyek    | `shared/.config/sioyek/`       |
-| Zathura   | `shared/.config/zathura/`      |
-| Scripts   | `shared/scripts/`              |
+The `shared/` directory contains configuration used by both profiles (Neovim, zsh, tmux, Kitty, etc.).
 
 ## Greatly Inspired By
 
