@@ -10,7 +10,7 @@ function _G.get_oil_winbar()
 end
 
 require('oil').setup({
-  columns = { "icon", "permissions", "size", "mtime" },
+  columns = { "permissions", "size", "mtime", "icon" },
   keymaps = {
     ["<C-h>"] = false,
     ["<C-l>"] = false,
