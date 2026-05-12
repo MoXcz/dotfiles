@@ -1,9 +1,12 @@
 vim.pack.add({
+  -- Themes
   "https://github.com/rebelot/kanagawa.nvim",
+  -- LSP
   "https://github.com/neovim/nvim-lspconfig",
   "https://github.com/mason-org/mason.nvim",
   "https://github.com/mason-org/mason-lspconfig.nvim",
   "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim",
+  -- Tooling
   "https://github.com/folke/snacks.nvim",
   "https://github.com/nvim-tree/nvim-web-devicons",
   {
@@ -26,6 +29,8 @@ vim.pack.add({
   "https://github.com/m4xshen/smartcolumn.nvim",
   "https://github.com/Bekaboo/dropbar.nvim",
   "https://github.com/iamcco/markdown-preview.nvim",
+  "https://github.com/wakatime/vim-wakatime",
+  "https://github.com/github/copilot.vim",
 })
 
 vim.cmd.colorscheme("kanagawa-dragon")
