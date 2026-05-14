@@ -7,8 +7,8 @@ vim.lsp.enable({
   "html",
   "cssls",
   "clangd",
-  "pyright",
   "ts_ls",
+  "ty"
 })
 
 vim.diagnostic.config({

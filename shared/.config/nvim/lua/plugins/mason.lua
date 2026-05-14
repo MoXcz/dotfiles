@@ -9,7 +9,7 @@ require("mason-tool-installer").setup({
     "typescript-language-server",
     "gopls",
     "templ",
-    "pyright",
+    "ty",
     "ols",
     'htmx-lsp',
     "tailwindcss-language-server",
@@ -32,6 +32,7 @@ require("mason-tool-installer").setup({
     "shfmt",
     "pretty-php",
     "phpactor",
+    "ruff",
   },
 })
 
