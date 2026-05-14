@@ -88,7 +88,7 @@ local keymaps = {
   { "gri",        function() Snacks.picker.lsp_implementations() end,                                    desc = "Goto Implementation" },
   { "gt",         function() Snacks.picker.lsp_type_definitions() end,                                   desc = "Goto T[y]pe Definition" },
   {
-    "gv",
+    "grv",
     function()
       local params = vim.lsp.util.make_position_params()
       vim.lsp.buf_request(0, "textDocument/definition", params, function(err, result, ctx)
