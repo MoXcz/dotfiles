@@ -1,0 +1,205 @@
+/* Kanagawa theme for rofi */
+
+* {
+    /* Kanagawa color palette */
+    kanagawa-bg:         #1f1f28;
+    kanagawa-bg-alt:     #2a2a37;
+    kanagawa-fg:         #dcd7ba;
+    kanagawa-fg-dim:     #c5c1aa;
+    kanagawa-fg-alt:     #a6a69c;
+
+    /* Status colors */
+    kanagawa-ok:         #98bb6c;
+    kanagawa-warn:       #e6b450;
+    kanagawa-err:        #e46876;
+    kanagawa-info:       #7aa89f;
+    kanagawa-accent:     #7fb4ca;
+    kanagawa-accent2:    #957fb8;
+
+    background-color:    @kanagawa-bg;
+    foreground-color:    @kanagawa-fg;
+    border-color:        @kanagawa-accent;
+    separatorcolor:      @kanagawa-accent2;
+    scrollbar-handle:    @kanagawa-accent;
+
+    normal-background:   @kanagawa-bg;
+    normal-foreground:   @kanagawa-fg-dim;
+    alternate-normal-background: @kanagawa-bg-alt;
+    alternate-normal-foreground: @kanagawa-fg;
+
+    selected-background: @kanagawa-accent2;
+    selected-foreground: @kanagawa-bg;
+
+    active-background:   @kanagawa-ok;
+    active-foreground:   @kanagawa-bg;
+    alternate-active-background: @kanagawa-ok;
+    alternate-active-foreground: @kanagawa-bg;
+
+    urgent-background:   @kanagawa-err;
+    urgent-foreground:   @kanagawa-bg;
+    alternate-urgent-background: @kanagawa-err;
+    alternate-urgent-foreground: @kanagawa-bg;
+}
+
+/* Layout */
+window {
+    background-color: @background-color;
+    border:           1px;
+    border-color:     @border-color;
+    border-radius:    0;
+    padding:          8;
+    width:            15%;
+    height:           30%;
+    location:         center;
+    x-offset:         0;
+    y-offset:         0;
+}
+
+mainbox {
+    background-color: @background-color;
+    spacing:          8;
+    margin:           0;
+    padding:          0;
+    border:           0;
+}
+
+inputbar {
+    background-color: @kanagawa-bg-alt;
+    border:           1px;
+    border-color:     @kanagawa-accent;
+    border-radius:    4;
+    padding:          8px 12px;
+    spacing:          8;
+    text-color:       @kanagawa-fg;
+}
+
+prompt {
+    background-color: transparent;
+    text-color:       @kanagawa-accent;
+    font:             "Iosevka Nerd Font Mono 11";
+    padding:          0 8px 0 0;
+}
+
+entry {
+    background-color: transparent;
+    text-color:       @kanagawa-fg;
+    placeholder-color: @kanagawa-fg-alt;
+    font:             "Iosevka Nerd Font Mono 11";
+    padding:          0;
+    margin:           0;
+}
+
+case-indicator {
+    background-color: transparent;
+    text-color:       @kanagawa-warn;
+}
+
+listview {
+    background-color: @background-color;
+    spacing:          4;
+    scrollbar:        false;
+    padding:          2px 0;
+    dynamic:          true;
+    fixed-height:     false;
+}
+
+scrollbar {
+    background-color: @kanagawa-bg-alt;
+    handle-color:     @scrollbar-handle;
+    handle-width:     6px;
+    border-radius:    3;
+    margin:           4px 0;
+}
+
+element {
+    background-color: transparent;
+    text-color:       @normal-foreground;
+    border-radius:    4;
+    padding:          6px 8px;
+    spacing:          8px;
+}
+
+element normal {
+    background-color: transparent;
+    text-color:       @normal-foreground;
+}
+
+element normal active {
+    background-color: @kanagawa-accent;
+    text-color:       @kanagawa-bg;
+}
+
+element normal urgent {
+    background-color: transparent;
+    text-color:       @urgent-background;
+}
+
+element alternate normal {
+    background-color: transparent;
+    text-color:       @normal-foreground;
+}
+
+element alternate normal active {
+    background-color: @kanagawa-accent2;
+    text-color:       @kanagawa-bg;
+}
+
+element alternate normal urgent {
+    background-color: transparent;
+    text-color:       @urgent-background;
+}
+
+element selected {
+    background-color: @selected-background;
+    text-color:       @selected-foreground;
+}
+
+element selected active {
+    background-color: @kanagawa-ok;
+    text-color:       @kanagawa-bg;
+}
+
+element selected urgent {
+    background-color: @urgent-background;
+    text-color:       @kanagawa-bg;
+}
+
+element-icon {
+    background-color: transparent;
+    text-color:       @kanagawa-accent;
+    size:             24px;
+    border:           0;
+}
+
+element-text {
+    background-color: transparent;
+    text-color:       inherit;
+    highlight:        @kanagawa-ok;
+    vertical-align:   0.5;
+}
+
+message {
+    background-color: @background-color;
+    border:           1px;
+    border-color:     @kanagawa-accent;
+    border-radius:    4;
+    padding:          8px;
+    spacing:          8px;
+}
+
+textbox {
+    background-color: transparent;
+    text-color:       @kanagawa-fg;
+    vertical-align:   0.5;
+    horizontal-align: 0.0;
+    highlight:        @kanagawa-ok;
+}
+
+error-message {
+    background-color: @kanagawa-err;
+    text-color:       @kanagawa-bg;
+    border:           1px;
+    border-color:     @kanagawa-err;
+    border-radius:    4;
+    padding:          12px;
+}
