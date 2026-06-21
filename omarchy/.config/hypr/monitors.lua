@@ -1,11 +1,21 @@
+local hostname = io.popen("hostname")
+
 local gdk_scale = 1
 local monitor_scale = "auto"
 
-hl.env("GDK_SCALE", tostring(gdk_scale))
-
--- List current monitors and resolutions possible: hyprctl monitors all
-hl.monitor({ output = "DP-1", mode = "2560x1440@180", position = "auto", scale = monitor_scale })
-hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@120", position = "auto", scale = monitor_scale })
+if hostname == "house" then
+  hl.env("GDK_SCALE", tostring(gdk_scale))
+  hl.monitor({ output = "DP-1", mode = "2560x1440@180", position = "1920x0", scale = monitor_scale })
+  hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@120", position = "0x0", scale = monitor_scale })
+elseif hostname == "laptop" then
+  hl.env("GDK_SCALE", tostring(gdk_scale))
+  hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = monitor_scale })
+else
+  -- Fallback default config
+  hl.env("GDK_SCALE", tostring(gdk_scale))
+  hl.monitor({ output = "DP-1", mode = "2560x1440@180", position = "1920x0", scale = monitor_scale })
+  hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@120", position = "0x0", scale = monitor_scale })
+end
 
 -- Portrait/rotated secondary monitor (transform: 1 = 90°, 3 = 270°)
 -- hl.monitor({ output = "DP-2", mode = "preferred", position = "auto", scale = 1, transform = 1 })
