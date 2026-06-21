@@ -130,4 +130,4 @@ function o.files(dir, module_prefix, options)
 end
 
 o.home = os.getenv("HOME")
-o.config_home = os.getenv("XDG_CONFIG_HOME") or (home .. "/.config")
+o.config_home = os.getenv("XDG_CONFIG_HOME") or (o.home .. "/.config")
