@@ -110,7 +110,7 @@ end
 -- Pass nil as the prefix when the directory itself has been added to package.path.
 
 function o.files(dir, module_prefix, options)
-  local handle = io.popen("find " ..
+  local handle = io.popen("find -L " ..
     shell_quote(dir) .. " -maxdepth 1 -type f -name '*.lua' -printf '%f\\n' 2>/dev/null | sort")
   if handle then
     for filename in handle:lines() do
@@ -127,6 +127,15 @@ function o.files(dir, module_prefix, options)
     end
     handle:close()
   end
+end
+
+function o.file_exists(path)
+  local file = io.open(path, "r")
+  if file then
+    file:close()
+    return true
+  end
+  return false
 end
 
 o.home = os.getenv("HOME")

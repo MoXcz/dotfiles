@@ -1,5 +1,5 @@
 -- Load user modules from ~/.config
-package.path = os.getenv("HOME")
+package.path = package.path .. ";" .. os.getenv("HOME")
     .. "/.config/?.lua;"
 
 require("hypr.helpers")
