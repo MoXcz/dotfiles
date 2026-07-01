@@ -1,4 +1,10 @@
-local hostname = io.popen("hostname")
+local handle = io.popen("hostname")
+local hostname
+if not handle then
+  hostname = "unknown"
+else
+  hostname = handle:read("*a"):gsub("%s+", "")
+end
 
 local gdk_scale = 1
 local monitor_scale = "auto"
