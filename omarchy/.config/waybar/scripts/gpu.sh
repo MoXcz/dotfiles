@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if ! command -v nvidia-smi &> /dev/null; then
+  echo ""
+  exit 0
+fi
+
 GPU_USAGE=$(/usr/bin/nvidia-smi \
   --query-gpu=utilization.gpu \
   --format=csv,noheader,nounits 2>/dev/null)
