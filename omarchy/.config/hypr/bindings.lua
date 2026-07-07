@@ -184,7 +184,7 @@ o.bind(modCtrlAlt .. " + Z", "Reset zoom", function()
 end)
 
 -- Lock system
-if o.file_exists("~/.local/share/quickshell-lockscreen/lock.sh") then
+if o.file_exists(o.home .. "/.local/share/quickshell-lockscreen/lock.sh") then
   o.bind(modCtrl .. " + L", "Lock system", hl.dsp.exec_cmd("~/.local/share/quickshell-lockscreen/lock.sh"))
 else
   o.bind(modCtrl .. " + L", "Lock system", hl.dsp.exec_cmd("omarchy-system-lock"))
