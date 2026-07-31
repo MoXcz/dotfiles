@@ -29,8 +29,11 @@ vim.pack.add({
   "https://github.com/m4xshen/smartcolumn.nvim",
   "https://github.com/Bekaboo/dropbar.nvim",
   "https://github.com/iamcco/markdown-preview.nvim",
-  "https://github.com/wakatime/vim-wakatime",
   "https://github.com/github/copilot.vim",
+  {
+    src = "https://github.com/ryanmab/onoma.nvim",
+    version = vim.version.range("*")
+  },
 })
 
 vim.cmd.colorscheme("kanagawa-dragon")
@@ -72,3 +75,4 @@ require("plugins.conform")
 require("plugins.git")
 require("plugins.statusline")
 require("plugins.multicursors")
+require("plugins.onoma")

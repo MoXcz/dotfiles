@@ -85,6 +85,11 @@
       "rev": "b73018b75affd13fa38e2fc94ef753b465f770d7",
       "src": "https://github.com/stevearc/oil.nvim"
     },
+    "onoma.nvim": {
+      "rev": "be866cb865a9d6ede71c4815fcd4888abb265af3",
+      "src": "https://github.com/ryanmab/onoma.nvim",
+      "version": ">=0.0.0"
+    },
     "smartcolumn.nvim": {
       "rev": "5351ae24e992a397d2abac48b7774dc8ef0acf40",
       "src": "https://github.com/m4xshen/smartcolumn.nvim"
