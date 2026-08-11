@@ -8,7 +8,8 @@ vim.lsp.enable({
   "cssls",
   "clangd",
   "ts_ls",
-  "ty"
+  "ty",
+  "svelte",
 })
 
 vim.diagnostic.config({

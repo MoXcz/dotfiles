@@ -5,6 +5,7 @@ require("mason-tool-installer").setup({
     "lua-language-server",
     "rust-analyzer",
     "html-lsp",
+    "svelte-language-server",
     "emmet-ls",
     "typescript-language-server",
     "gopls",
