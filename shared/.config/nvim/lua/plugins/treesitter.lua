@@ -1,9 +1,10 @@
-vim.g.no_plugin_maps = true
+-- vim.g.no_plugin_maps = true
 
 require("nvim-treesitter").install({
   "c", "cpp", "cmake", "comment", "go", "java", "javascript",
   "jsx", "lua", "ledger", "markdown", "markdown_inline",
-  "python", "rust", "typescript", "tsx", "vim", "vue", "zsh", "odin"
+  "python", "rust", "typescript", "tsx", "vim", "vue", "zsh", "odin",
+  "svelte", "css", "html"
 })
 
 require('nvim-treesitter-textobjects').setup {
@@ -19,7 +20,7 @@ require('nvim-treesitter-textobjects').setup {
 vim.api.nvim_create_autocmd("FileType", {
   pattern = {
     "cpp", "cmake", "go", "java", "javascript", "javascriptreact", "ledger",
-    "lua", "markdown", "python", "rust", "typescript", "typescriptreact", "vue", "odin"
+    "lua", "markdown", "python", "rust", "typescript", "typescriptreact", "vue", "odin", "svelte"
   },
   callback = function()
     vim.treesitter.start()
@@ -73,7 +74,10 @@ vim.keymap.set('n', '<leader>sT', function()
   end
 end, { noremap = true, silent = true, desc = "Toggle treesitter indent" })
 
--- Select keymappings
+-- most of the keybinds below are more or less made redundant by the use of '}'
+-- and '{' blocks, but they do fill help fill small gaps
+
+-- useful for refactoring and code navigation
 vim.keymap.set({ "x", "o" }, "af", function()
   require('nvim-treesitter-textobjects.select').select_textobject("@function.outer", "textobjects")
 end, { desc = "Function outer region" })
@@ -81,13 +85,7 @@ vim.keymap.set({ "x", "o" }, "if", function()
   require('nvim-treesitter-textobjects.select').select_textobject("@function.inner", "textobjects")
 end, { desc = "Function inner region" })
 
-vim.keymap.set({ "x", "o" }, "ac", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@class.outer", "textobjects")
-end, { desc = "Class outer region" })
-vim.keymap.set({ "x", "o" }, "ic", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@class.inner", "textobjects")
-end, { desc = "Class inner region" })
-
+-- I really like this one to move quickly between function parameters
 vim.keymap.set({ "x", "o" }, "aa", function()
   require('nvim-treesitter-textobjects.select').select_textobject("@parameter.outer", "textobjects")
 end, { desc = "Parameter outer region" })
@@ -102,10 +100,10 @@ vim.keymap.set({ "x", "o" }, "ik", function()
   require('nvim-treesitter-textobjects.select').select_textobject("@block.inner", "textobjects")
 end, { desc = "Block inner region" })
 
-vim.keymap.set({ "x", "o" }, "ai", function()
+vim.keymap.set({ "x", "o" }, "ac", function()
   require('nvim-treesitter-textobjects.select').select_textobject("@conditional.outer", "textobjects")
 end, { desc = "Conditional outer region" })
-vim.keymap.set({ "x", "o" }, "ii", function()
+vim.keymap.set({ "x", "o" }, "ic", function()
   require('nvim-treesitter-textobjects.select').select_textobject("@conditional.inner", "textobjects")
 end, { desc = "Conditional inner region" })
 
@@ -124,31 +122,18 @@ vim.keymap.set({ "x", "o" }, "i=", function()
 end, { desc = "Assignment inner region" })
 
 -- Move keymappings
-vim.keymap.set({ "n", "x", "o" }, "]m", function()
+vim.keymap.set({ "n", "x", "o" }, "]f", function()
   require('nvim-treesitter-textobjects.move').goto_next_start("@function.outer", "textobjects")
 end, { desc = "Next function" })
-vim.keymap.set({ "n", "x", "o" }, "]M", function()
+vim.keymap.set({ "n", "x", "o" }, "]F", function()
   require('nvim-treesitter-textobjects.move').goto_next_end("@function.outer", "textobjects")
 end, { desc = "End of next function" })
-vim.keymap.set({ "n", "x", "o" }, "[m", function()
+vim.keymap.set({ "n", "x", "o" }, "[f", function()
   require('nvim-treesitter-textobjects.move').goto_previous_start("@function.outer", "textobjects")
 end, { desc = "Previous function" })
-vim.keymap.set({ "n", "x", "o" }, "[M", function()
+vim.keymap.set({ "n", "x", "o" }, "[F", function()
   require('nvim-treesitter-textobjects.move').goto_previous_end("@function.outer", "textobjects")
 end, { desc = "End of previous function" })
-
-vim.keymap.set({ "n", "x", "o" }, "]]", function()
-  require('nvim-treesitter-textobjects.move').goto_next_start("@class.outer", "textobjects")
-end, { desc = "Next class" })
-vim.keymap.set({ "n", "x", "o" }, "][", function()
-  require('nvim-treesitter-textobjects.move').goto_next_end("@class.outer", "textobjects")
-end, { desc = "End of next class" })
-vim.keymap.set({ "n", "x", "o" }, "[[", function()
-  require('nvim-treesitter-textobjects.move').goto_previous_start("@class.outer", "textobjects")
-end, { desc = "Previous class" })
-vim.keymap.set({ "n", "x", "o" }, "[]", function()
-  require('nvim-treesitter-textobjects.move').goto_previous_end("@class.outer", "textobjects")
-end, { desc = "End of previous class" })
 
 vim.keymap.set({ "n", "x", "o" }, "]k", function()
   require('nvim-treesitter-textobjects.move').goto_next_start("@block.outer", "textobjects")
