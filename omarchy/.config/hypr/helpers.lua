@@ -6,6 +6,43 @@ local function shell_quote(value)
   return "'" .. tostring(value):gsub("'", "'\\''") .. "'"
 end
 
+o.shell_quote = shell_quote
+
+-- Hyprland reaps its own children, so os.execute() can't retrieve an exit status
+-- from inside the compositor. Read a marker off stdout instead.
+function o.shell_succeeds(command)
+  -- Subshell, so the redirection covers every command rather than binding to
+  -- the last one and letting an earlier one write its own OK into the pipe.
+  local pipe = io.popen("( " .. command .. " ) >/dev/null 2>&1 && echo OK")
+  if not pipe then
+    return false
+  end
+
+  local output = pipe:read("*a") or ""
+  pipe:close()
+
+  return output:find("OK", 1, true) ~= nil
+end
+
+function o.cmd_present(command)
+  if command:find("/", 1, true) then
+    return file_exists(command)
+  end
+
+  local path = os.getenv("PATH") or "/usr/local/bin:/usr/bin"
+  for directory in (path .. ":"):gmatch("([^:]*):") do
+    if file_exists((directory ~= "" and directory or ".") .. "/" .. command) then
+      return true
+    end
+  end
+
+  return false
+end
+
+function o.cmd_missing(command)
+  return not o.cmd_present(command)
+end
+
 local function command_from(value, description)
   if type(value) ~= "table" then
     return value
@@ -32,6 +69,14 @@ local function command_from(value, description)
   end
 
   return value
+end
+
+function o.preinstalled_bindings_enabled()
+  if _G.omarchy_preinstalled_bindings ~= nil then
+    return _G.omarchy_preinstalled_bindings == true
+  end
+
+  return not file_exists((os.getenv("HOME") or "") .. "/.local/state/omarchy/preinstalls-removed")
 end
 
 function o.bind(keys, description, dispatcher, options)
@@ -108,7 +153,6 @@ end
 -- Pass a module prefix for normal package.path modules, e.g.
 --   require_all.files(paths.omarchy_path .. "/default/hypr/apps", "default.hypr.apps")
 -- Pass nil as the prefix when the directory itself has been added to package.path.
-
 function o.files(dir, module_prefix, options)
   local handle = io.popen("find -L " ..
     shell_quote(dir) .. " -maxdepth 1 -type f -name '*.lua' -printf '%f\\n' 2>/dev/null | sort")
@@ -140,3 +184,5 @@ end
 
 o.home = os.getenv("HOME")
 o.config_home = os.getenv("XDG_CONFIG_HOME") or (o.home .. "/.config")
+o.state_home = os.getenv("XDG_STATE_HOME") or (o.home .. "/.local/state")
+o.omarchy_path = os.getenv("OMARCHY_PATH") or "/usr/share/omarchy"

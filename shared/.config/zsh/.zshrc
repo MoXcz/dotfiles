@@ -13,7 +13,7 @@ export EDITOR="nvim"
 export SUDO_EDITOR="$EDITOR"
 export VISUAL="nvim"
 export MANPAGER="nvim +Man!"
-export OMARCHY_PATH="/home/$USER/.local/share/omarchy"
+export OMARCHY_PATH="/usr/share/omarchy"
 
 ## -- Path
 path $HOME/.local/bin

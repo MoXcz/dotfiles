@@ -1,3 +1,11 @@
+-- Add a new binding.
+-- o.bind("SUPER + SHIFT + R", "SSH", "alacritty -e ssh your-server")
+
+-- Logitech MX Keys examples:
+-- o.bind("SUPER + SHIFT + S", nil, "omarchy-capture-screenshot")
+-- o.bind("SUPER + H", nil, "voxtype record toggle")
+-- o.bind("SUPER + PERIOD", nil, "omarchy-shell shell toggle omarchy.emojis")
+
 local mod = "SUPER"
 local modAlt = mod .. " + ALT"
 local modShift = mod .. " + SHIFT"
@@ -18,24 +26,19 @@ o.bind_menu(modCtrl .. " + S", "Share", "share")
 o.bind(modCtrl .. " + PERIOD", "Transcode", hl.dsp.exec_cmd("omarchy-transcode"))
 
 -- ─── Menus ─────────────────────
-o.bind(mod .. " + D", "Launch apps", { omarchy = "walker" })
-o.bind(mod .. " + E", "Emoji picker", { omarchy = "walker -m symbols" })
-o.bind_menu(modCtrl .. " + O", "Toggle menu", "toggle")
-o.bind_menu(modCtrl .. " + H", "Hardware menu", "hardware")
-o.bind_menu(modAlt .. " + SPACE", "Omarchy menu", nil)
-o.bind_menu(mod .. " + ESCAPE", "System menu", "system")
-o.bind_menu("XF86PowerOff", "Power menu", "system", { locked = true })
+o.bind(mod .. " + D", "Launch apps", "omarchy-menu toggle apps")
+o.bind_menu(modShift .. " + D", "Toggle menu", "toggle")
+o.bind(mod .. " + E", "Emoji picker", "omarchy-shell shell toggle omarchy.emojis")
 o.bind(modCtrl .. " + K", "Show key bindings", hl.dsp.exec_cmd("omarchy-menu-keybindings"))
 o.bind("XF86Calculator", "Calculator", hl.dsp.exec_cmd("gnome-calculator"))
 
 -- ─── Aesthetics ─────────────────────
-o.bind(modShift .. " + SPACE", "Toggle top bar", hl.dsp.exec_cmd("omarchy-toggle-waybar"))
-o.bind_menu(modCtrl .. " + SPACE", "Background switcher", "background")
-o.bind_menu(modShiftCtrl .. " + SPACE", "Theme menu", "theme")
+o.bind_toggle(modShift .. " + SPACE", "Toggle top bar", "bar")
+o.bind_menu(modCtrl .. " + SPACE", "Background switcher", "toggle background")
+o.bind_menu(modShiftCtrl .. " + SPACE", "Theme menu", "toggle theme")
 o.bind(mod .. " + BACKSPACE", "Toggle window transparency", "omarchy-hyprland-window-transparency-toggle")
-o.bind(modShift .. " + BACKSPACE", "Toggle window gaps", "omarchy-hyprland-window-gaps-toggle")
 o.bind(modCtrl .. " + BACKSPACE", "Toggle single-window square aspect",
-  hl.dsp.exec_cmd("omarchy-hyprland-window-single-square-aspect-toggle"))
+  "omarchy-hyprland-window-single-square-aspect-toggle")
 
 -- ─── Window bindings ─────────────────────
 o.bind(mod .. " + Q", "Close window", hl.dsp.window.close())
@@ -146,14 +149,15 @@ o.bind(mod .. " + XF86AudioMute", "Switch audio output", hl.dsp.exec_cmd("omarch
   { locked = true })
 
 -- ─── Notifications ─────────────────────
-o.bind(mod .. " + COMMA", "Dismiss last notification", hl.dsp.exec_cmd("makoctl dismiss"))
-o.bind(modShift .. " + COMMA", "Dismiss all notifications", hl.dsp.exec_cmd("makoctl dismiss --all"))
-o.bind(modCtrl .. " + COMMA", "Toggle silencing notifications", hl.dsp.exec_cmd("omarchy-toggle-notification-silencing"))
-o.bind(modAlt .. " + COMMA", "Invoke last notification", hl.dsp.exec_cmd("makoctl invoke"))
-o.bind(modShiftAlt .. " + COMMA", "Restore last notification", hl.dsp.exec_cmd("makoctl restore"))
+o.bind(mod .. " + COMMA", "Dismiss last notification", "omarchy-shell notification dismissOne")
+o.bind(modShift .. " + COMMA", "Dismiss all notifications", "omarchy-shell notifications dismissAll")
+o.bind_toggle(modCtrl .. " + COMMA", "Toggle silencing notifications", "notification-silencing")
+o.bind(modAlt .. " + COMMA", "Invoke last notification", "omarchy-shell notifications invokeLast")
+o.bind(modShiftAlt .. " + COMMA", "Restore last notification", "omarchy-shell notifications showHistory")
 
 -- ─── Captures ─────────────────────
 o.bind("PRINT", "Screenshot", hl.dsp.exec_cmd("omarchy-capture-screenshot"))
+o.bind("SUPER + SHIFT + S", nil, "omarchy-capture-screenshot")
 o.bind_menu("ALT + PRINT", "Screenrecording", "screenrecord")
 o.bind(mod .. " + PRINT", "Color picker", hl.dsp.exec_cmd("pkill hyprpicker || hyprpicker -a"))
 o.bind(modCtrl .. " + PRINT", "Extract text (OCR) from screenshot", hl.dsp.exec_cmd("omarchy-capture-text-extraction"))
@@ -170,9 +174,9 @@ o.bind(modCtrlAlt .. " + B", "Show battery remaining", hl.dsp.exec_cmd("omarchy-
 o.bind(modCtrlAlt .. " + W", "Show weather", hl.dsp.exec_cmd("omarchy-notification-weather"))
 
 -- Control panels
-o.bind(mod .. " + A", "Audio controls", { omarchy = "audio" })
-o.bind(mod .. " + B", "Bluetooth controls", { omarchy = "bluetooth" })
-o.bind(mod .. " + W", "Wifi controls", { omarchy = "wifi" })
+o.bind(mod .. " + A", "Audio controls", "omarchy-shell shell toggle omarchy.audio")
+o.bind(mod .. " + B", "Bluetooth controls", "omarchy-shell shell toggle omarchy.bluetooth")
+o.bind(mod .. " + W", "Wifi controls", "omarchy-shell shell toggle omarchy.network")
 
 -- Zoom
 o.bind(modCtrl .. " + Z", "Zoom in", function()
@@ -184,11 +188,11 @@ o.bind(modCtrlAlt .. " + Z", "Reset zoom", function()
 end)
 
 -- Lock system
-if o.file_exists(o.home .. "/.local/share/quickshell-lockscreen/lock.sh") then
+if o.file_exists(o.home .. "~/.local/share/quickshell-lockscreen/lock.sh") then
   o.bind(modCtrl .. " + L", "Lock system", hl.dsp.exec_cmd("~/.local/share/quickshell-lockscreen/lock.sh"))
 else
   o.bind(modCtrl .. " + L", "Lock system", hl.dsp.exec_cmd("omarchy-system-lock"))
 end
 
 -- Clipboard
-o.bind(mod .. " + C", "Clipboard manager", { omarchy = "walker -m clipboard" }, { locked = true })
+o.bind(mod .. " + C", "Clipboard manager", "omarchy-shell shell toggle omarchy.clipboard")

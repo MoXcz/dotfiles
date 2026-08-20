@@ -1,14 +1,61 @@
 -- Control your input devices.
 -- See https://wiki.hypr.land/Configuring/Basics/Variables/#input
+
+local function read_vconsole()
+  local values = {}
+  local file = io.open("/etc/vconsole.conf", "r")
+  if not file then
+    return values
+  end
+
+  for line in file:lines() do
+    local key, value = line:match("^%s*([%w_]+)%s*=%s*(.-)%s*$")
+    if key and value then
+      value = value:gsub("%s+#.*$", "")
+      value = value:gsub('^"(.*)"$', "%1")
+      value = value:gsub("^'(.*)'$", "%1")
+      values[key] = value
+    end
+  end
+
+  file:close()
+  return values
+end
+
+-- Layouts that can't type Latin letters. Keep in sync with the list in
+-- etc/mkinitcpio.conf.d/omarchy_hooks.conf.
+local non_latin_layouts =
+" af am ara bd bg by et ge gr il in iq ir kg kh kz la lk mk mm mn mv np rs ru sy th tj ua "
+
+local vconsole = read_vconsole()
+
+local kb_layout = vconsole.XKBLAYOUT or "us,latam"
+local kb_variant = vconsole.XKBVARIANT or ""
+local kb_options = "caps:escape,grp:alt_space_toggle"
+
+-- Hyprland resolves keybindings against the first entry in kb_layout, not the
+-- layout that's currently active, so Omarchy's Latin-keysym bindings (SUPER + W
+-- and friends) only fire when a Latin layout leads. Installing with a non-Latin
+-- one would otherwise leave the desktop unusable.
+if non_latin_layouts:find(" " .. kb_layout:match("^[^,]*") .. " ", 1, true) then
+  kb_layout = "us," .. kb_layout
+  kb_variant = "," .. kb_variant
+  -- Reach the original layout with Left Alt + Right Alt.
+  kb_options = kb_options .. ",grp:alts_toggle"
+end
+
 hl.config({
   input = {
     -- Use multiple keyboard layouts and switch between them with Left Alt + Right Alt.
-    kb_layout = "us,latam",
+    kb_layout = kb_layout,
 
     -- Use a specific keyboard variant if needed (e.g. intl for international keyboards).
-    -- kb_variant = "intl",
-
-    kb_options = "caps:escape,grp:alt_space_toggle", -- ,grp:alts_toggle
+    kb_variant = kb_variant,
+    kb_model = "",
+    kb_options = kb_options, -- ,grp:alts_toggle
+    kb_rules = "",
+    follow_mouse = 1,
+    sensitivity = 0,
 
     -- Change speed of keyboard repeat.
     repeat_rate = 40,
@@ -16,9 +63,6 @@ hl.config({
 
     -- Start with numlock on by default.
     numlock_by_default = true,
-
-    -- Increase sensitivity for mouse/trackpad (default: 0).
-    -- sensitivity = 0.35,
 
     -- Turn off mouse acceleration (default: adaptive).
     accel_profile = "flat",
@@ -39,6 +83,11 @@ hl.config({
       -- Left-click-and-drag with three fingers.
       -- drag_3fg = 1,
     },
+  },
+
+  misc = {
+    key_press_enables_dpms = true,
+    mouse_move_enables_dpms = true,
   },
 })
 
