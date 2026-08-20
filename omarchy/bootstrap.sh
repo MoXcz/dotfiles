@@ -57,7 +57,8 @@ yay -S --needed \
   ttf-iosevka-term \
   ttf-iosevkaterm-nerd \
   sioyek \
-  nemo
+  nemo \
+  hyprmoncfg
 
 echo "Change shell to zsh"
 
