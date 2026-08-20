@@ -1,6 +1,7 @@
 vim.pack.add({
   -- Themes
   "https://github.com/rebelot/kanagawa.nvim",
+  "https://github.com/ficd0/ashen.nvim",
   -- LSP
   "https://github.com/neovim/nvim-lspconfig",
   "https://github.com/mason-org/mason.nvim",
@@ -30,13 +31,13 @@ vim.pack.add({
   "https://github.com/Bekaboo/dropbar.nvim",
   "https://github.com/iamcco/markdown-preview.nvim",
   "https://github.com/github/copilot.vim",
-  {
-    src = "https://github.com/ryanmab/onoma.nvim",
-    version = vim.version.range("*")
-  },
+  -- {
+  --   src = "https://github.com/ryanmab/onoma.nvim",
+  --   version = vim.version.range("*")
+  -- },
 })
 
-vim.cmd.colorscheme("kanagawa-dragon")
+vim.cmd.colorscheme("ashen")
 vim.cmd.packadd("nvim.undotree")
 -- run cd ~/.local/share/nvim/site/pack/core/opt/markdown-preview.nvim/app && npx --yes yarn install
 vim.cmd.packadd("markdown-preview.nvim")
@@ -75,4 +76,4 @@ require("plugins.conform")
 require("plugins.git")
 require("plugins.statusline")
 require("plugins.multicursors")
-require("plugins.onoma")
+-- require("plugins.onoma")
