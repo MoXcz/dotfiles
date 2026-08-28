@@ -15,6 +15,7 @@ mkdir -p "$HOME/.local/bin"
 tar -C "$HOME/.local/bin" -xzf "$FILE"
 
 EXTRACTED_DIR=$(tar -tzf "$FILE" | head -1 | cut -f1 -d"/")
+rm -rf "$HOME/.local/bin/odin"
 mv "$HOME/.local/bin/$EXTRACTED_DIR" "$HOME/.local/bin/odin"
 
 rm "$FILE"
