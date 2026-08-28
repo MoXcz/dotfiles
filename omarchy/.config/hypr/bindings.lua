@@ -149,7 +149,7 @@ o.bind(mod .. " + XF86AudioMute", "Switch audio output", hl.dsp.exec_cmd("omarch
   { locked = true })
 
 -- ─── Notifications ─────────────────────
-o.bind(mod .. " + COMMA", "Dismiss last notification", "omarchy-shell notification dismissOne")
+o.bind(mod .. " + COMMA", "Dismiss last notification", "omarchy-shell notifications dismissOne")
 o.bind(modShift .. " + COMMA", "Dismiss all notifications", "omarchy-shell notifications dismissAll")
 o.bind_toggle(modCtrl .. " + COMMA", "Toggle silencing notifications", "notification-silencing")
 o.bind(modAlt .. " + COMMA", "Invoke last notification", "omarchy-shell notifications invokeLast")
