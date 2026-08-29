@@ -58,7 +58,11 @@ yay -S --needed \
   ttf-iosevkaterm-nerd \
   sioyek \
   nemo \
-  hyprmoncfg
+  hyprmoncfg \
+  imagemagick \
+  ghostscript \
+  poppler \
+  tectonic
 
 echo "Change shell to zsh"
 
