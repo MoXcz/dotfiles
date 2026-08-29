@@ -1,5 +1,9 @@
 {
   "plugins": {
+    "arpon.nvim": {
+      "rev": "7d19abd52806bf1335e6bcaba7a445998fcb7e13",
+      "src": "https://github.com/MoXcz/arpon.nvim"
+    },
     "ashen.nvim": {
       "rev": "bfb04bd50b69d863469b2deb9fb361cf0d945ba7",
       "src": "https://github.com/ficd0/ashen.nvim"
@@ -46,7 +50,7 @@
       "src": "https://github.com/iamcco/markdown-preview.nvim"
     },
     "mason-lspconfig.nvim": {
-      "rev": "9d28935aa95fa6c1dc7c4d6747f101a72a8a4bec",
+      "rev": "40276c4df7e6bdce6801d6c035c6227f9115a855",
       "src": "https://github.com/mason-org/mason-lspconfig.nvim"
     },
     "mason-tool-installer.nvim": {
@@ -62,7 +66,7 @@
       "src": "https://github.com/jake-stewart/multicursor.nvim"
     },
     "nui.nvim": {
-      "rev": "a25dd472316d806eb38a5dd667c2e40da5570c75",
+      "rev": "10fc361835c856ba4233ef5ea135b919bf3dce97",
       "src": "https://github.com/MunifTanjim/nui.nvim"
     },
     "nvim": {
@@ -70,11 +74,11 @@
       "src": "https://github.com/catppuccin/nvim"
     },
     "nvim-lspconfig": {
-      "rev": "6fc041976833841cc9d991f45193533fe2a2e09b",
+      "rev": "684cb45c2faa24ce463b4fe9aaf011bfe1e0fb26",
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-treesitter": {
-      "rev": "074aa4422bf029908338e855d0c0f71470a971bb",
+      "rev": "857651fce37eba032ebe28f3a206283cdc65c45a",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
     },
     "nvim-treesitter-textobjects": {
@@ -90,9 +94,13 @@
       "src": "https://github.com/stevearc/oil.nvim"
     },
     "onoma.nvim": {
-      "rev": "33150f6f557a66f1457576b6b9d321e88dd3b561",
+      "rev": "c8d605ccb2fd050c6b3e876743687042171743c8",
       "src": "https://github.com/ryanmab/onoma.nvim",
       "version": ">=0.0.0"
+    },
+    "render-markdown.nvim": {
+      "rev": "4663eb3ecd538bd5062628fb6d95bbe6bdca78f6",
+      "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
     },
     "smartcolumn.nvim": {
       "rev": "5351ae24e992a397d2abac48b7774dc8ef0acf40",

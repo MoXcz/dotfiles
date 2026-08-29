@@ -1,6 +1,12 @@
 local Snacks = require("snacks")
 require("todo-comments").setup({})
 
+-- used in case terminal query is answered by tmux
+if vim.env.SNACKS_KITTY == nil
+    and (vim.env.KITTY_WINDOW_ID or vim.env.KITTY_PID or vim.env.KITTY_INSTALLATION_DIR) then
+  vim.env.SNACKS_KITTY = "1"
+end
+
 Snacks.setup({
   bigfile = { enabled = true },
   animate = { enabled = false },
@@ -19,6 +25,27 @@ Snacks.setup({
   gitbrowse = { enabled = true },
   git = { enabled = true },
   bufdelete = { enabled = true },
+  image = {
+    enabled = true,
+    doc = {
+      enabled = true,
+      inline = true, -- draw in the buffer (kitty graphics protocol)
+      float = true,  -- fall back to a float when inline is unsupported
+      max_width = 60,
+      max_height = 25,
+    },
+    math = { enabled = true }, -- needs `tectonic` or `pdflatex` on PATH
+    img_dirs = { "img", "images", "assets", "static", "public", "media", "attachments", "Resources/Files" },
+    --- Obsidian embeds are bare filenames: ![[Pasted image.png]]. Ask the
+    --- vault index where the file actually lives.
+    resolve = function(file, src)
+      local ok, config = pcall(require, "knapp.config")
+      if not ok or not config.in_vault(file) then return nil end
+      local index = require("knapp.index")
+      index.ensure()
+      return index.resolve_file(require("knapp.link").decode(src), config.rel(file))
+    end,
+  },
   zen = { enabled = false },
   dashboard = { enabled = false },
 })

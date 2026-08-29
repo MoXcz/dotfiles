@@ -2,7 +2,7 @@
 
 require("nvim-treesitter").install({
   "c", "cpp", "cmake", "comment", "go", "java", "javascript",
-  "jsx", "lua", "ledger", "markdown", "markdown_inline",
+  "jsx", "latex", "lua", "ledger", "markdown", "markdown_inline",
   "python", "rust", "typescript", "tsx", "vim", "vue", "zsh", "odin",
   "svelte", "css", "html"
 })

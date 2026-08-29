@@ -30,6 +30,7 @@ vim.pack.add({
   "https://github.com/m4xshen/smartcolumn.nvim",
   "https://github.com/Bekaboo/dropbar.nvim",
   "https://github.com/iamcco/markdown-preview.nvim",
+  "https://github.com/MeanderingProgrammer/render-markdown.nvim",
   "https://github.com/github/copilot.vim",
   -- {
   --   src = "https://github.com/ryanmab/onoma.nvim",
@@ -76,4 +77,6 @@ require("plugins.conform")
 require("plugins.git")
 require("plugins.statusline")
 require("plugins.multicursors")
+require("plugins.markdown")
+require("plugins.knapp")
 -- require("plugins.onoma")
