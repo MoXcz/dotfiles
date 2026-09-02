@@ -63,6 +63,7 @@ require("smartcolumn").setup({
     "markdown",
     "tex",
     "html",
+    "snacks_dashboard"
   },
 })
 
