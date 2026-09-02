@@ -19,7 +19,7 @@ if [[ ! -d "$SHARED_DIR" ]]; then
   exit 1
 fi
 
-PROFILES=("omarchy" "paradise-lost")
+PROFILES=("omarchy" "solitude" "paradise-lost")
 
 unstow_others() {
   local selected="$1"
@@ -27,14 +27,14 @@ unstow_others() {
   for p in "${PROFILES[@]}"; do
     if [[ "$p" != "$selected" ]] && [[ -d "$p" ]]; then
       echo "Unstowing $p..."
-      stow -D -v -t "$TARGET_DIR" "$p" || true
+      stow -D -v --no-folding -t "$TARGET_DIR" "$p" || true
     fi
   done
 }
 
 stow_shared() {
   echo "Stowing shared config (.config)..."
-  stow -v -t "$TARGET_DIR" "$SHARED_DIR"
+  stow -v --no-folding -t "$TARGET_DIR" "$SHARED_DIR"
 }
 
 stow_profile() {
@@ -51,7 +51,7 @@ stow_profile() {
   stow_shared
 
   echo "Stowing $profile..."
-  stow -v -t "$TARGET_DIR" "$profile"
+  stow -v --no-folding -t "$TARGET_DIR" "$profile"
   # setup_nvim
 
   echo -e "\nDone."
