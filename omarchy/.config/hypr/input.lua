@@ -29,7 +29,8 @@ local non_latin_layouts =
 
 local vconsole = read_vconsole()
 
-local kb_layout = vconsole.XKBLAYOUT or "us,latam"
+-- local kb_layout = vconsole.XKBLAYOUT or "us,latam"
+local kb_layout = "us,latam"
 local kb_variant = vconsole.XKBVARIANT or ""
 local kb_options = "caps:escape,grp:alt_space_toggle"
 
