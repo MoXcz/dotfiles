@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+# Set the desktop background with swaybg.
+# Usage: background [current|list|set <path>|next|restore]
+#
+# `list` prints the backgrounds of every installed theme, so the menu can offer
+# them all rather than only the active theme's. `restore` is for autostart: it
+# re-applies whatever was set last.
+
+set -euo pipefail
+
+THEMES_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/shell/themes"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/shell"
+PATH_FILE="$STATE_DIR/background"
+THUMB_DIR="$STATE_DIR/thumbnails"
+
+# The menu shows previews. Decoding a 2880px wallpaper per tile is wasteful,
+# and Qt cannot read webp at all without qt6-imageformats, so every preview is
+# a small cached JPEG instead. Keyed by path and mtime, so replacing an image
+# under the same name still re-renders.
+thumbnail() {
+  local image=$1
+  command -v magick >/dev/null 2>&1 || { printf '%s' "$image"; return; }
+
+  local key thumb
+  key=$(printf '%s %s' "$image" "$(stat -c %Y "$image" 2>/dev/null)" | md5sum | cut -d' ' -f1)
+  thumb="$THUMB_DIR/$key.jpg"
+
+  if [[ ! -f $thumb ]]; then
+    mkdir -p "$THUMB_DIR"
+    magick "$image" -auto-orient -thumbnail 600x400^ -gravity center \
+      -extent 600x400 -quality 82 "$thumb" >/dev/null 2>&1 || { printf '%s' "$image"; return; }
+  fi
+  printf '%s' "$thumb"
+}
+
+backgrounds() {
+  find -L "$THEMES_DIR" -mindepth 3 -maxdepth 3 -type f -path '*/backgrounds/*' 2>/dev/null | sort
+}
+
+current() {
+  [[ -f $PATH_FILE ]] && cat "$PATH_FILE" || true
+}
+
+apply() {
+  local image=$1
+  command -v swaybg >/dev/null 2>&1 || {
+    notify-send -a shell -u critical "Backgrounds need swaybg"
+    exit 1
+  }
+  # swaybg has no reload, so the new one is started before the old is killed:
+  # the other order flashes the bare compositor between wallpapers.
+  swaybg -i "$image" -m fill >/dev/null 2>&1 &
+  local new=$!
+  sleep 0.3
+  for pid in $(pgrep -x swaybg); do
+    [[ $pid == "$new" ]] || kill "$pid" 2>/dev/null || true
+  done
+}
+
+set_background() {
+  local image=$1
+  [[ -f $image ]] || { echo "No such image: $image" >&2; exit 1; }
+  mkdir -p "$STATE_DIR"
+  printf '%s\n' "$image" >"$PATH_FILE"
+  apply "$image"
+}
+
+case "${1:-current}" in
+  current) current ;;
+  list)
+    active=$(current)
+    while read -r image; do
+      [[ -n $image ]] || continue
+      theme=$(basename "$(dirname "$(dirname "$image")")")
+      title=$(basename "${image%.*}")
+      if [[ $image == "$active" ]]; then mark="$theme · active"; else mark="$theme"; fi
+      # Fifth column is the preview the menu renders: a cached thumbnail.
+      printf '󰋩\t%s\t%s\t%s\t%s\n' "$title" "$image" "$mark" "$(thumbnail "$image")"
+    done < <(backgrounds)
+    ;;
+  set)
+    [[ $# -ge 2 ]] || { echo "Usage: background set <path>" >&2; exit 1; }
+    set_background "$2"
+    ;;
+  next)
+    mapfile -t images < <(backgrounds)
+    ((${#images[@]} > 0)) || exit 1
+    active=$(current)
+    index=0
+    for i in "${!images[@]}"; do
+      [[ ${images[$i]} == "$active" ]] && index=$(((i + 1) % ${#images[@]}))
+    done
+    set_background "${images[$index]}"
+    ;;
+  thumbnail)
+    # Used by theme so both lists share one cache.
+    [[ $# -ge 2 ]] || { echo "Usage: background thumbnail <path>" >&2; exit 1; }
+    thumbnail "$2"
+    echo
+    ;;
+  restore)
+    image=$(current)
+    [[ -n $image && -f $image ]] || exit 0
+    apply "$image"
+    ;;
+  *) echo "Usage: background [current|list|set <path>|next|restore|thumbnail <path>]" >&2; exit 1 ;;
+esac

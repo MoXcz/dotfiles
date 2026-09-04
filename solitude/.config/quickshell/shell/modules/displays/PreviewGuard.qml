@@ -1,0 +1,508 @@
+pragma Singleton
+import QtQuick
+import Quickshell
+import Quickshell.Hyprland
+import Quickshell.Io
+import Quickshell.Wayland
+import qs.Commons
+import qs.Ui
+import "Model.js" as Model
+
+// Ported from omarchy-hyprmoncfg (MIT, Carmine Paolino).
+//
+// Applying a display layout can tear down the per-screen bar (and with it
+// the popup that started the preview). This singleton owns the preview
+// transaction and the Keep/Revert dialog on its own overlay surfaces, so the
+// confirmation is already on screen before the topology changes and it
+// survives the change. The Displays bar widget references it so it exists
+// for as long as the widget does; being a singleton, one instance serves
+// every screen's widget.
+Singleton {
+  id: root
+
+  readonly property string runtimeDir: String(Quickshell.env("XDG_RUNTIME_DIR") || "")
+  readonly property string socketPath: root.runtimeDir + "/hyprmoncfgd.sock"
+  readonly property bool connected: backendSocket.connected
+
+  property int requestSequence: 0
+  property var pendingMethods: ({})
+  property string transactionId: ""
+  property string profileName: ""
+  property string deadline: ""
+  property int seconds: 0
+  property bool saveOnCommit: false
+  property bool draftApply: false
+  property bool requestPending: false
+  property bool actionPending: false
+  property bool yieldingToPanel: false
+  property bool yieldedPreviewSeen: false
+  property string stage: "idle"
+  property string errorMessage: ""
+  property string actionError: ""
+  property string targetScreenName: ""
+
+  readonly property bool opened: root.stage !== "idle"
+  readonly property string dialogScreenName: {
+    var screens = Quickshell.screens || []
+    for (var i = 0; i < screens.length; i++) {
+      if (String(screens[i].name || "") === root.targetScreenName) return root.targetScreenName
+    }
+    var focused = Hyprland.focusedMonitor
+    var focusedName = focused ? String(focused.name || "") : ""
+    for (var j = 0; j < screens.length; j++) {
+      if (String(screens[j].name || "") === focusedName) return focusedName
+    }
+    return screens.length > 0 ? String(screens[0].name || "") : ""
+  }
+
+  signal requestFinished(bool success, string message)
+
+  function send(method, params) {
+    if (!backendSocket.connected) return ""
+    root.requestSequence++
+    var id = String(root.requestSequence)
+    var request = { type: "request", protocol_version: 1, id: id, method: method }
+    if (params !== undefined && params !== null) request.params = params
+    root.pendingMethods[id] = method
+    backendSocket.write(JSON.stringify(request) + "\n")
+    backendSocket.flush()
+    return id
+  }
+
+  function rememberScreen() {
+    var focused = Hyprland.focusedMonitor
+    root.targetScreenName = focused ? String(focused.name || "") : ""
+  }
+
+  // The panel may run a preview over its own socket (when this service is
+  // reconnecting). Step aside until that transaction has been seen and
+  // cleared so two dialogs never compete for the same decision.
+  function yieldToPanel() {
+    root.yieldingToPanel = true
+    root.yieldedPreviewSeen = false
+    panelYieldTimeout.restart()
+    root.clear()
+  }
+
+  function beginPreview(params, name, save, draft) {
+    if (root.opened || root.requestPending || root.actionPending) {
+      root.errorMessage = "Finish the current display preview first."
+      root.requestFinished(false, root.errorMessage)
+      return false
+    }
+    if (!backendSocket.connected) {
+      root.errorMessage = "The display confirmation service is reconnecting. Try again in a moment."
+      root.requestFinished(false, root.errorMessage)
+      return false
+    }
+
+    root.rememberScreen()
+    root.yieldingToPanel = false
+    root.yieldedPreviewSeen = false
+    panelYieldTimeout.stop()
+    root.profileName = String(name || "Display layout")
+    root.saveOnCommit = save === true
+    root.draftApply = draft === true
+    root.errorMessage = ""
+    root.actionError = ""
+    root.requestPending = true
+    root.stage = "applying"
+    if (root.send("preview", params) !== "") return true
+
+    root.requestPending = false
+    root.stage = "error"
+    root.errorMessage = "Could not start the display preview."
+    root.requestFinished(false, root.errorMessage)
+    return false
+  }
+
+  function startDraftPreview(profile, timeoutSeconds) {
+    var value = profile || ({})
+    return root.beginPreview({
+      profile: value,
+      timeout_seconds: Math.max(1, Number(timeoutSeconds || 10)),
+      save_on_commit: true
+    }, String(value.name || "Display layout"), true, true)
+  }
+
+  function startDraftApply(profile, timeoutSeconds) {
+    var value = profile || ({})
+    return root.beginPreview({
+      profile: value,
+      timeout_seconds: Math.max(1, Number(timeoutSeconds || 10)),
+      save_on_commit: false
+    }, String(value.name || "Display layout"), false, true)
+  }
+
+  function startSavedProfilePreview(name, timeoutSeconds) {
+    var selected = String(name || "")
+    if (selected === "") return false
+    return root.beginPreview({
+      profile_name: selected,
+      timeout_seconds: Math.max(1, Number(timeoutSeconds || 10))
+    }, selected, false, false)
+  }
+
+  function keep() {
+    if (root.actionPending) return false
+    if (root.transactionId === "") { root.actionError = "The display preview is no longer available."; return false }
+    if (!backendSocket.connected) {
+      root.actionError = "The display confirmation service is reconnecting. Try again in a moment."
+      return false
+    }
+    root.actionPending = true
+    root.actionError = ""
+    if (root.send("commit", { transaction_id: root.transactionId, save: root.saveOnCommit }) !== "") return true
+    root.actionPending = false
+    root.actionError = "Could not keep this display layout."
+    return false
+  }
+
+  function revert() {
+    if (root.actionPending) return false
+    if (root.transactionId === "") { root.actionError = "The display preview is no longer available."; return false }
+    if (!backendSocket.connected) {
+      root.actionError = "The display confirmation service is reconnecting. Try again in a moment."
+      return false
+    }
+    root.actionPending = true
+    root.actionError = ""
+    if (root.send("revert", { transaction_id: root.transactionId }) !== "") return true
+    root.actionPending = false
+    root.actionError = "Could not restore the previous display layout."
+    return false
+  }
+
+  function clear() {
+    root.transactionId = ""
+    root.profileName = ""
+    root.deadline = ""
+    root.seconds = 0
+    root.saveOnCommit = false
+    root.draftApply = false
+    root.requestPending = false
+    root.actionPending = false
+    root.stage = "idle"
+    root.errorMessage = ""
+    root.actionError = ""
+    previewClock.stop()
+  }
+
+  function updateClock() {
+    var at = Date.parse(root.deadline)
+    if (!isFinite(at)) return
+    root.seconds = Math.max(0, Math.ceil((at - Date.now()) / 1000))
+  }
+
+  function syncPreview(pending) {
+    var id = pending ? String(pending.transaction_id || "") : ""
+    if (root.yieldingToPanel) {
+      if (id !== "") {
+        root.yieldedPreviewSeen = true
+        panelYieldTimeout.stop()
+      } else if (root.yieldedPreviewSeen) {
+        root.yieldingToPanel = false
+        root.yieldedPreviewSeen = false
+      }
+      return
+    }
+    if (id !== "") {
+      if (root.transactionId !== id) root.actionError = ""
+      root.transactionId = id
+      root.profileName = String(pending.profile_name
+        || (pending.profile ? pending.profile.name : "")
+        || root.profileName || "Display layout")
+      root.deadline = String(pending.deadline || root.deadline || "")
+      root.saveOnCommit = pending.save_on_commit === true || root.saveOnCommit
+      root.requestPending = false
+      root.actionPending = false
+      root.stage = "confirm"
+      root.updateClock()
+      previewClock.start()
+      return
+    }
+    if (root.transactionId !== "" && !root.requestPending) root.clear()
+  }
+
+  function updateDocument(value) {
+    if (!value || typeof value !== "object") return
+    root.syncPreview(value.daemon ? value.daemon.preview : null)
+  }
+
+  function handleMessage(line) {
+    var envelope = Model.parseEnvelope(line)
+    if (!envelope) return
+    if (envelope.type === "event") {
+      if (envelope.event === "status") root.updateDocument(envelope.data)
+      return
+    }
+
+    var method = root.pendingMethods[String(envelope.id)] || ""
+    delete root.pendingMethods[String(envelope.id)]
+    if (envelope.error) {
+      var message = String(envelope.error.message || "hyprmoncfg request failed")
+      if (method === "preview") {
+        root.requestPending = false
+        root.stage = "error"
+        root.errorMessage = message
+        root.requestFinished(false, message)
+      } else if (method === "commit" || method === "revert") {
+        root.actionPending = false
+        root.actionError = message
+      }
+      return
+    }
+
+    if (method === "subscribe" || method === "status") {
+      root.updateDocument(envelope.result)
+    } else if (method === "preview") {
+      var transaction = envelope.result || ({})
+      root.transactionId = String(transaction.id || root.transactionId || "")
+      root.deadline = String(transaction.deadline || root.deadline || "")
+      root.requestPending = false
+      root.stage = "confirm"
+      root.updateClock()
+      previewClock.start()
+      root.requestFinished(true, "")
+    } else if (method === "commit" || method === "revert") {
+      root.clear()
+    }
+  }
+
+  Component.onCompleted: backendSocket.connected = root.socketPath !== "/hyprmoncfgd.sock"
+
+  Socket {
+    id: backendSocket
+    path: root.socketPath
+    connected: false
+    parser: SplitParser {
+      splitMarker: "\n"
+      onRead: function(line) { root.handleMessage(line) }
+    }
+    onConnectedChanged: {
+      if (connected) root.send("subscribe", {})
+      else {
+        var shouldYield = root.opened || root.requestPending || root.transactionId !== ""
+        root.pendingMethods = ({})
+        root.requestPending = false
+        root.actionPending = false
+        if (shouldYield) root.yieldToPanel()
+      }
+    }
+    onError: function(error) { backendSocket.connected = false }
+  }
+
+  // The daemon may not be installed or running; keep knocking cheaply.
+  Timer {
+    interval: 750
+    repeat: true
+    running: root.socketPath !== "/hyprmoncfgd.sock" && !backendSocket.connected
+    onTriggered: backendSocket.connected = true
+  }
+
+  Timer {
+    id: panelYieldTimeout
+    interval: 15000
+    onTriggered: {
+      if (!root.yieldingToPanel || root.yieldedPreviewSeen) return
+      root.yieldingToPanel = false
+    }
+  }
+
+  Timer {
+    id: previewClock
+    interval: 250
+    repeat: true
+    onTriggered: root.updateClock()
+  }
+
+  Variants {
+    model: root.opened ? Quickshell.screens : []
+
+    PanelWindow {
+      id: guardWindow
+      required property var modelData
+      readonly property bool ownsDialog: !!modelData && String(modelData.name || "") === root.dialogScreenName
+      property bool focusPrimed: false
+      // Hyprland leaves an already-mapped layer surface at its old global
+      // position when its monitor moves within the layout. Pulse the window
+      // unmapped when the screen origin moves so it is re-placed.
+      property bool remapping: false
+
+      function restoreInputFocus() {
+        if (!guardWindow.ownsDialog || !guardWindow.backingWindowVisible) return
+        guardWindow.focusPrimed = false
+        focusPrimeTimer.restart()
+        Qt.callLater(function() {
+          if (guardWindow.ownsDialog && guardWindow.backingWindowVisible) keyCatcher.forceActiveFocus()
+        })
+      }
+
+      screen: modelData
+      visible: root.opened && !remapping
+      color: "transparent"
+      exclusionMode: ExclusionMode.Ignore
+      WlrLayershell.namespace: "shell-displays-guard"
+      WlrLayershell.layer: WlrLayer.Overlay
+      // Exclusive briefly so the dialog takes focus even from a pointer-locked
+      // app, then OnDemand so pointer hit-testing on other outputs works.
+      WlrLayershell.keyboardFocus: ownsDialog
+        ? (focusPrimed ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.Exclusive)
+        : WlrKeyboardFocus.None
+      anchors { top: true; bottom: true; left: true; right: true }
+
+      onBackingWindowVisibleChanged: {
+        if (backingWindowVisible) guardWindow.restoreInputFocus()
+        else { focusPrimeTimer.stop(); focusPrimed = false }
+      }
+      onOwnsDialogChanged: guardWindow.restoreInputFocus()
+      Component.onCompleted: guardWindow.restoreInputFocus()
+
+      Timer {
+        id: focusPrimeTimer
+        interval: 75
+        onTriggered: {
+          if (!guardWindow.ownsDialog || !guardWindow.backingWindowVisible) return
+          guardWindow.focusPrimed = true
+          Qt.callLater(function() {
+            if (guardWindow.ownsDialog && guardWindow.backingWindowVisible) keyCatcher.forceActiveFocus()
+          })
+        }
+      }
+
+      // Let a multi-step layout reshuffle settle before the single remap pulse.
+      Timer { id: settleTimer; interval: 200; onTriggered: guardWindow.remapping = true }
+      Timer { interval: 50; running: guardWindow.remapping; onTriggered: guardWindow.remapping = false }
+      Connections {
+        target: guardWindow.screen
+        function onXChanged() { settleTimer.restart() }
+        function onYChanged() { settleTimer.restart() }
+      }
+
+      Rectangle {
+        anchors.fill: parent
+        color: Util.alpha(Theme.background, 0.72)
+      }
+
+      // Swallow every press: an outside click must not dismiss the only
+      // surface that can answer the countdown.
+      MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.AllButtons
+        onClicked: function(mouse) { mouse.accepted = true }
+      }
+
+      BorderSurface {
+        id: dialog
+        visible: guardWindow.ownsDialog
+        width: Math.min(parent.width - 32, 460)
+        height: 188
+        anchors.centerIn: parent
+        color: Theme.surface
+        borderSpec: Border.flat(Theme.accent, Math.max(1, Theme.borderWidth))
+        radius: Theme.cornerRadius
+        padding: 20
+
+        MouseArea { anchors.fill: parent; onClicked: function(mouse) { mouse.accepted = true } }
+
+        Item {
+          id: keyCatcher
+          anchors.fill: parent
+          anchors.topMargin: dialog.contentTopInset
+          anchors.rightMargin: dialog.contentRightInset
+          anchors.bottomMargin: dialog.contentBottomInset
+          anchors.leftMargin: dialog.contentLeftInset
+          focus: guardWindow.ownsDialog
+
+          Keys.priority: Keys.BeforeItem
+          Keys.onPressed: function(event) {
+            if (root.stage === "confirm"
+                && (event.key === Qt.Key_Escape || event.text === "n" || event.text === "N"
+                  || event.text === "q" || event.text === "Q")) {
+              root.revert()
+              event.accepted = true
+            } else if (root.stage === "confirm"
+                && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                  || event.text === "y" || event.text === "Y")) {
+              root.keep()
+              event.accepted = true
+            } else if (root.stage === "error" && event.key === Qt.Key_Escape) {
+              root.clear()
+              event.accepted = true
+            }
+          }
+
+          Column {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            spacing: 7
+
+            Text {
+              textFormat: Text.PlainText
+              width: parent.width
+              text: root.stage === "applying"
+                ? "Applying display preview…"
+                : (root.stage === "error"
+                  ? "Couldn’t preview this layout"
+                  : (root.saveOnCommit ? "Keep and save this layout?"
+                    : (root.draftApply ? "Keep this layout?" : "Keep this profile?")))
+              color: root.stage === "error" ? Theme.urgent : Theme.foreground
+              font.family: Theme.fontFamily
+              font.pixelSize: Theme.fontHeading
+              font.bold: true
+              wrapMode: Text.WordWrap
+            }
+
+            Text {
+              textFormat: Text.PlainText
+              width: parent.width
+              text: root.stage === "applying"
+                ? "This confirmation stays open while your displays reconfigure."
+                : (root.stage === "error"
+                  ? root.errorMessage
+                  : (root.actionError !== ""
+                    ? root.actionError
+                    : root.profileName + " · " + root.seconds + " seconds before the previous layout returns"))
+              color: root.stage === "error" || root.actionError !== "" ? Theme.urgent : Theme.muted
+              font.family: Theme.fontFamily
+              font.pixelSize: Theme.fontBody
+              wrapMode: Text.WordWrap
+            }
+          }
+
+          Row {
+            visible: root.stage === "confirm"
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            spacing: 10
+
+            Button {
+              text: root.actionPending ? "Working…" : "Revert"
+              bordered: true
+              enabled: !root.actionPending
+              onClicked: root.revert()
+            }
+
+            Button {
+              text: root.saveOnCommit ? "Keep & save" : "Keep"
+              selected: true
+              bordered: true
+              enabled: !root.actionPending
+              onClicked: root.keep()
+            }
+          }
+
+          Button {
+            visible: root.stage === "error"
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            text: "Close"
+            bordered: true
+            onClicked: root.clear()
+          }
+        }
+      }
+    }
+  }
+}

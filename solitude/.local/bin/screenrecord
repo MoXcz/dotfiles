@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Start a screen recording, or stop the one already running.
+# Usage: screenrecord [region|fullscreen] [--with-audio]
+
+set -euo pipefail
+
+[[ -f ~/.config/user-dirs.dirs ]] && source ~/.config/user-dirs.dirs
+OUTPUT_DIR="${SOLITUDE_SCREENRECORD_DIR:-${XDG_VIDEOS_DIR:-$HOME/Videos}}"
+PID_FILE="${XDG_RUNTIME_DIR:-/tmp}/screenrecord.pid"
+
+# Toggle: a running recorder is stopped, and SIGINT is what finalizes the file.
+if [[ -f $PID_FILE ]] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+  kill -INT "$(cat "$PID_FILE")"
+  rm -f "$PID_FILE"
+  notify-send -a shell -u low "Recording stopped" "Saved to $OUTPUT_DIR"
+  exit 0
+fi
+rm -f "$PID_FILE"
+
+command -v wf-recorder >/dev/null 2>&1 || {
+  notify-send -a shell -u critical "Recording needs wf-recorder"
+  exit 1
+}
+
+mkdir -p "$OUTPUT_DIR"
+FILEPATH="$OUTPUT_DIR/recording-$(date +'%Y-%m-%d_%H-%M-%S').mp4"
+
+args=(-f "$FILEPATH")
+if [[ ${1:-region} == fullscreen ]]; then
+  # wf-recorder prompts for an output when more than one is connected, and a
+  # prompt on stdin is a hang when it is launched from a keybinding.
+  MONITOR=$(hyprctl activeworkspace | awk 'NR == 1 { print $NF }' | tr -d ':')
+  [[ -n $MONITOR ]] && args+=(-o "$MONITOR")
+else
+  GEOMETRY=$(slurp 2>/dev/null) || exit 0
+  [[ -z $GEOMETRY ]] && exit 0
+  args+=(-g "$GEOMETRY")
+fi
+[[ ${*} == *--with-audio* ]] && args+=(--audio)
+
+wf-recorder "${args[@]}" >/dev/null 2>&1 &
+echo $! >"$PID_FILE"
+notify-send -a shell -u low "Recording started" "Same key again to stop"

@@ -71,7 +71,7 @@ setup_nvim() {
   fi
 }
 
-options=("omarchy" "paradise-lost" "Quit")
+options=("omarchy" "paradise-lost" "solitude" "Quit")
 
 if [[ -n "$PROFILE" ]]; then
   stow_profile "$PROFILE"

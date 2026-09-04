@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Print every Hyprland binding as menu rows:
+#   <glyph>\t<keys>\t<payload>\t<description>
+# Selecting a row in the menu copies the key combination.
+
+set -euo pipefail
+
+hyprctl binds | awk '
+  function flush() {
+    if (key == "" && keycode != "" && keycode != "0") key = "code:" keycode
+    if (key != "" && description != "") {
+      combo = mods key
+      printf "󰌌\t%s\t%s\t%s\n", combo, combo, description
+    }
+    mods = ""; key = ""; keycode = ""; description = ""
+  }
+  /^bind/ { flush(); next }
+  /modmask:/ {
+    m = $2
+    mods = ""
+    if (int(m / 64) % 2) mods = mods "SUPER + "
+    if (int(m / 4)  % 2) mods = mods "CTRL + "
+    if (int(m / 8)  % 2) mods = mods "ALT + "
+    if (int(m / 1)  % 2) mods = mods "SHIFT + "
+    next
+  }
+  /key:/ && $1 == "key:" { $1 = ""; sub(/^ +/, ""); key = $0; next }
+  /keycode:/ { keycode = $2; next }
+  /description:/ { $1 = ""; sub(/^ +/, ""); description = $0; next }
+  END { flush() }
+' | sort -u

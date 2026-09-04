@@ -1,0 +1,14 @@
+{
+  "name": "Solitude",
+  "mode": "dark",
+  "background": "#101315",
+  "surface": "#171b1e",
+  "surfaceAlt": "#1f2428",
+  "border": "#2c3338",
+  "foreground": "#cacccc",
+  "muted": "#707880",
+  "accent": "#8fb4d8",
+  "urgent": "#d27878",
+  "success": "#9ac27c",
+  "warning": "#e0b46a"
+}

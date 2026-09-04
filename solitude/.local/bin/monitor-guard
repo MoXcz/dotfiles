@@ -1,0 +1,218 @@
+#!/usr/bin/env python3
+"""Pause hyprmoncfg auto-switching while an unknown monitor is connected.
+
+hyprmoncfgd always applies the best-scoring saved profile, and a saved profile
+writes an explicit *disabled* rule for every connected monitor it does not
+list. With a laptop panel in every profile, some profile always scores above
+zero, so a monitor you have never configured is switched off the moment you
+plug it in, and you cannot arrange it.
+
+This guard listens to Hyprland's event socket. When a connected monitor is
+not part of any saved profile it runs `hyprmoncfg unmanage`: automatic
+switching stops, hyprmoncfg's include leaves the Hyprland config, and the new
+monitor comes up with Hyprland's own preferred/auto defaults. Open the
+Displays panel, arrange it, and save a profile. As soon as every connected
+monitor is covered by a saved profile the guard runs `hyprmoncfg manage` and
+automatic switching resumes.
+
+The guard only re-manages what it paused itself; a manual `hyprmoncfg
+unmanage` is left alone.
+"""
+
+import json
+import os
+import socket
+import subprocess
+import sys
+import time
+
+CONFIG_HOME = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+STATE_HOME = os.environ.get("XDG_STATE_HOME") or os.path.expanduser("~/.local/state")
+PROFILES_DIR = os.path.join(CONFIG_HOME, "hyprmoncfg", "profiles")
+UNMANAGED_MARKER = os.path.join(CONFIG_HOME, "hyprmoncfg", "unmanaged")
+PAUSED_FLAG = os.path.join(STATE_HOME, "shell", "monitor-guard-paused")
+
+# Let a hotplug settle (EDID read, second event) before judging it.
+SETTLE_SECONDS = 1.0
+# While paused, look for a newly saved profile this often.
+PAUSED_POLL_SECONDS = 3.0
+
+
+def log(message):
+    print(f"monitor-guard: {message}", flush=True)
+
+
+def run(argv, timeout=30):
+    try:
+        return subprocess.run(argv, capture_output=True, text=True, timeout=timeout)
+    except (OSError, subprocess.TimeoutExpired) as err:
+        log(f"{' '.join(argv)} failed: {err}")
+        return None
+
+
+def notify(summary, body):
+    run(["notify-send", "-a", "Displays", summary, body], timeout=5)
+
+
+def identity(make, model, serial):
+    """hyprmoncfg's match key: lowercase make|model|serial, serial optional."""
+    parts = [make or "", model or ""]
+    if serial:
+        parts.append(serial)
+    return "|".join(p.strip().lower() for p in parts)
+
+
+def connected_monitors():
+    result = run(["hyprctl", "-j", "monitors", "all"], timeout=5)
+    if not result or result.returncode != 0:
+        return None
+    try:
+        monitors = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return None
+    return [
+        (m.get("name", "?"), m.get("description", ""), identity(m.get("make"), m.get("model"), m.get("serial")))
+        for m in monitors
+    ]
+
+
+def known_identities():
+    keys = set()
+    try:
+        names = os.listdir(PROFILES_DIR)
+    except FileNotFoundError:
+        return keys
+    for name in names:
+        if not name.endswith(".json"):
+            continue
+        try:
+            with open(os.path.join(PROFILES_DIR, name)) as fh:
+                profile = json.load(fh)
+        except (OSError, json.JSONDecodeError):
+            continue
+        for output in profile.get("outputs", []):
+            key = output.get("match_key") or output.get("key")
+            if key:
+                keys.add(key.lower())
+            else:
+                keys.add(identity(output.get("make"), output.get("model"), output.get("serial")))
+    return keys
+
+
+def is_managed():
+    return not os.path.exists(UNMANAGED_MARKER)
+
+
+def paused_by_guard():
+    return os.path.exists(PAUSED_FLAG)
+
+
+def set_paused(paused):
+    if paused:
+        os.makedirs(os.path.dirname(PAUSED_FLAG), exist_ok=True)
+        open(PAUSED_FLAG, "w").close()
+    else:
+        try:
+            os.remove(PAUSED_FLAG)
+        except FileNotFoundError:
+            pass
+
+
+def evaluate():
+    monitors = connected_monitors()
+    if monitors is None:
+        return
+    known = known_identities()
+    unknown = [(name, desc) for name, desc, key in monitors if key not in known]
+
+    if unknown and is_managed():
+        names = ", ".join(f"{name} ({desc})" if desc else name for name, desc in unknown)
+        log(f"unknown monitor(s): {names}; pausing hyprmoncfg")
+        result = run(["hyprmoncfg", "unmanage"])
+        if result and result.returncode == 0:
+            set_paused(True)
+            notify(
+                "New display connected",
+                f"{names}\nAuto-switching paused. Arrange it in Displays and save a profile.",
+            )
+        else:
+            log(f"unmanage failed: {result.stderr.strip() if result else 'no result'}")
+        return
+
+    if not unknown and not is_managed() and paused_by_guard():
+        log("every connected monitor is in a saved profile; resuming hyprmoncfg")
+        result = run(["hyprmoncfg", "manage"])
+        if result and result.returncode == 0:
+            set_paused(False)
+            notify("Displays", "Profile saved. Auto-switching resumed.")
+        else:
+            log(f"manage failed: {result.stderr.strip() if result else 'no result'}")
+        return
+
+    # Someone ran `hyprmoncfg manage` by hand while we were paused.
+    if is_managed() and paused_by_guard():
+        set_paused(False)
+
+
+def event_socket_path():
+    runtime = os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{os.getuid()}"
+    signature = os.environ.get("HYPRLAND_INSTANCE_SIGNATURE")
+    if not signature:
+        hypr_dir = os.path.join(runtime, "hypr")
+        try:
+            signature = max(os.listdir(hypr_dir), key=lambda d: os.path.getmtime(os.path.join(hypr_dir, d)))
+        except (FileNotFoundError, ValueError):
+            return None
+    return os.path.join(runtime, "hypr", signature, ".socket2.sock")
+
+
+def main():
+    path = event_socket_path()
+    if not path:
+        log("no Hyprland instance found")
+        return 1
+
+    while True:
+        try:
+            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            sock.connect(path)
+        except OSError as err:
+            # Hyprland is gone; nothing left to guard.
+            log(f"cannot connect to {path}: {err}")
+            return 0
+
+        evaluate()
+        buffer = b""
+        pending_since = None
+        try:
+            while True:
+                if pending_since is not None:
+                    sock.settimeout(max(0.05, SETTLE_SECONDS - (time.monotonic() - pending_since)))
+                else:
+                    sock.settimeout(PAUSED_POLL_SECONDS)
+                try:
+                    chunk = sock.recv(4096)
+                    if not chunk:
+                        break
+                    buffer += chunk
+                    *lines, buffer = buffer.split(b"\n")
+                    for line in lines:
+                        event = line.split(b">>", 1)[0]
+                        if event in (b"monitoradded", b"monitoraddedv2", b"monitorremoved", b"monitorremovedv2"):
+                            pending_since = time.monotonic()
+                except socket.timeout:
+                    pass
+
+                now = time.monotonic()
+                if pending_since is not None and now - pending_since >= SETTLE_SECONDS:
+                    pending_since = None
+                    evaluate()
+                elif pending_since is None and paused_by_guard():
+                    evaluate()
+        finally:
+            sock.close()
+        time.sleep(1)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

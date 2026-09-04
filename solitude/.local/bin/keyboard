@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+# Switch, list, and edit the session's keyboard layouts.
+# Usage: keyboard [current|layouts|list|set <layout>|next|add <layout>|remove <layout>]
+#
+#   current           the active layout code, e.g. latam
+#   layouts           the configured list, e.g. us,latam
+#   list              menu rows, with the active one marked
+#   set <layout>      make that layout active on every keyboard
+#   next              cycle to the following layout
+#   add <layout>      append to the list and reload Hyprland
+#   remove <layout>   drop it from the list and reload Hyprland
+#
+# The list lives in the state directory because /etc/vconsole.conf holds one
+# console keymap and cannot express a session list; hypr/input.lua reads it.
+# Switching between the entries needs no reload — Left Alt + Space does the
+# same thing.
+
+set -euo pipefail
+
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/shell"
+LAYOUTS_FILE="$STATE_DIR/keyboard-layouts"
+DEFAULT_LAYOUTS="us,latam"
+
+layouts() {
+  if [[ -f $LAYOUTS_FILE ]]; then
+    tr -d '[:space:]' <"$LAYOUTS_FILE"
+    return
+  fi
+  # Match what input.lua falls back to, so both agree before anything is written.
+  local configured
+  configured=$(hyprctl getoption input:kb_layout 2>/dev/null | awk '/^str:/ { print $2 }')
+  printf '%s' "${configured:-$DEFAULT_LAYOUTS}"
+}
+
+layouts_array() {
+  local IFS=,
+  read -r -a _layouts <<<"$(layouts)"
+  printf '%s\n' "${_layouts[@]}"
+}
+
+# Hyprland reports the active layout by its human name ("Spanish (Latin
+# American)"), not its code, so the index is the reliable link back to the list.
+active_index() {
+  hyprctl devices |
+    awk '/main: yes/ { print index_value; found = 1; exit }
+         /active layout index:/ { index_value = $NF }
+         END { if (!found) print 0 }'
+}
+
+current() {
+  mapfile -t names < <(layouts_array)
+  local index
+  index=$(active_index)
+  printf '%s' "${names[$index]:-${names[0]:-us}}"
+}
+
+apply_index() {
+  # "all" covers every keyboard: a dongle usually registers several devices,
+  # and switching only the main one leaves the others on the old layout.
+  hyprctl switchxkblayout all "$1" >/dev/null
+}
+
+set_layout() {
+  local want=$1
+  mapfile -t names < <(layouts_array)
+  for i in "${!names[@]}"; do
+    if [[ ${names[$i]} == "$want" ]]; then
+      apply_index "$i"
+      notify-send -a shell -u low "Keyboard: $want"
+      return
+    fi
+  done
+  echo "Layout not in the list: $want (have: $(layouts))" >&2
+  echo "Add it with: keyboard add $want" >&2
+  exit 1
+}
+
+write_layouts() {
+  mkdir -p "$STATE_DIR"
+  printf '%s\n' "$1" >"$LAYOUTS_FILE"
+  # The list is read at config load, so the session needs a reload to see it.
+  hyprctl reload >/dev/null
+}
+
+case "${1:-current}" in
+  current) current; echo ;;
+  layouts) layouts; echo ;;
+  list)
+    active=$(current)
+    while read -r name; do
+      [[ -n $name ]] || continue
+      if [[ $name == "$active" ]]; then mark="Active"; else mark=""; fi
+      printf '󰌌\t%s\t%s\t%s\n' "$name" "$name" "$mark"
+    done < <(layouts_array)
+    ;;
+  set)
+    [[ $# -ge 2 ]] || { echo "Usage: keyboard set <layout>" >&2; exit 1; }
+    set_layout "$2"
+    ;;
+  next)
+    mapfile -t names < <(layouts_array)
+    ((${#names[@]} > 1)) || exit 0
+    index=$(active_index)
+    apply_index $(((index + 1) % ${#names[@]}))
+    notify-send -a shell -u low "Keyboard: $(current)"
+    ;;
+  add)
+    [[ $# -ge 2 ]] || { echo "Usage: keyboard add <layout>" >&2; exit 1; }
+    existing=$(layouts)
+    for name in $(layouts_array); do
+      [[ $name == "$2" ]] && { echo "Already configured: $2" >&2; exit 0; }
+    done
+    write_layouts "$existing,$2"
+    notify-send -a shell -u low "Keyboard layouts: $existing,$2"
+    ;;
+  remove)
+    [[ $# -ge 2 ]] || { echo "Usage: keyboard remove <layout>" >&2; exit 1; }
+    kept=()
+    for name in $(layouts_array); do
+      [[ $name == "$2" ]] || kept+=("$name")
+    done
+    ((${#kept[@]} > 0)) || { echo "Refusing to remove the last layout" >&2; exit 1; }
+    joined=$(IFS=,; printf '%s' "${kept[*]}")
+    write_layouts "$joined"
+    notify-send -a shell -u low "Keyboard layouts: $joined"
+    ;;
+  *)
+    sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//' >&2
+    exit 1
+    ;;
+esac

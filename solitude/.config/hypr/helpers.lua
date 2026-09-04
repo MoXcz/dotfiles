@@ -10,23 +10,15 @@ o.shell_quote = shell_quote
 
 -- Hyprland reaps its own children, so os.execute() can't retrieve an exit status
 -- from inside the compositor. Read a marker off stdout instead.
-local function command_from(value, description)
+local function command_from(value)
   if type(value) ~= "table" then
     return value
   end
 
-  if value.focus and value.launch then
-    return o.launch_sole(value.focus, value.launch)
-  elseif value.launch then
+  if value.launch then
     return o.launch(value.launch)
-  elseif value.webapp then
-    if value.focus then
-      return o.launch_webapp_sole(description, value.webapp)
-    else
-      return o.launch_webapp(value.webapp)
-    end
   elseif value.tui then
-    return o.launch(value.tui)
+    return o.launch("kitty -e " .. value.tui)
   end
 
   return value
@@ -39,7 +31,7 @@ function o.bind(keys, description, dispatcher, options)
     opts.description = description
   end
 
-  dispatcher = command_from(dispatcher, description)
+  dispatcher = command_from(dispatcher)
 
   if type(dispatcher) == "string" then
     dispatcher = hl.dsp.exec_cmd(dispatcher)
@@ -49,7 +41,7 @@ function o.bind(keys, description, dispatcher, options)
 end
 
 function o.launch(command)
-  return "uwsm-app -- " .. command
+  return command
 end
 
 function o.exec_on_start(command)
@@ -63,7 +55,7 @@ function o.launch_on_start(command)
 end
 
 function o.bind_menu(keys, description, menu, options)
-  o.bind(keys, description, menu or "walker", options)
+  o.bind(keys, description, "shell shell toggle " .. (menu or "launcher"), options)
 end
 
 function o.bind_toggle(keys, description, toggle, options)

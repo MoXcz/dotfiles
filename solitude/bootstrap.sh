@@ -18,12 +18,17 @@ if ! pacman-conf --repo-list | grep -qx "multilib"; then
 fi
 
 sudo pacman -Syu --needed \
-  base-devel git stow hyprland hyprlock hypridle kitty nemo \
-  waybar \
+  base-devel git stow hyprland hypridle kitty nemo \
+  quickshell \
   pipewire pipewire-pulse wireplumber \
   xdg-desktop-portal-hyprland polkit-gnome networkmanager xdg-user-dirs \
-  playerctl pamixer brightnessctl grim slurp \
-  steam zsh
+  playerctl pamixer brightnessctl grim slurp wl-clipboard \
+  hyprpicker satty tesseract tesseract-data-eng wf-recorder hyprsunset \
+  ffmpeg imagemagick zenity \
+  ttf-iosevka-nerd noto-fonts-emoji swaybg qt6-imageformats \
+  gnome-themes-extra adwaita-icon-theme adwaita-fonts \
+  noto-fonts noto-fonts-cjk ttf-liberation \
+  steam zsh tmux starship fzf unzip nodejs tree-sitter-cli npm rustup
 
 if ! command -v yay >/dev/null 2>&1; then
   yay_dir="$(mktemp -d)"
@@ -34,24 +39,66 @@ if ! command -v yay >/dev/null 2>&1; then
 fi
 
 yay -S --needed --noconfirm \
-  walker elephant \
-  ttf-iosevka-term ttf-iosevkaterm-nerd
+  ttf-iosevka-term ttf-iosevkaterm-nerd \
+  hyprmoncfg-bin \
+  localsend-bin \
+  zen-browser-bin
 
-nvidia_packages=(nvidia-utils)
-if pacman -Qq linux >/dev/null 2>&1; then
-  nvidia_packages+=(nvidia)
+install_nvidia="${SOLITUDE_NVIDIA:-}"
+if [[ -z "$install_nvidia" ]]; then
+  if lspci 2>/dev/null | grep -qi 'nvidia'; then
+    nvidia_default="Y/n"
+  else
+    nvidia_default="y/N"
+  fi
+  if [[ -r /dev/tty ]]; then
+    read -r -p "Install NVIDIA drivers? [$nvidia_default] " install_nvidia </dev/tty || install_nvidia=""
+  fi
+  if [[ -z "$install_nvidia" ]]; then
+    [[ "$nvidia_default" == "Y/n" ]] && install_nvidia="y" || install_nvidia="n"
+  fi
 fi
-if pacman -Qq linux-lts >/dev/null 2>&1; then
-  nvidia_packages+=(nvidia-lts)
+
+if [[ "${install_nvidia,,}" == y* ]]; then
+  nvidia_packages=(nvidia-utils)
+  if pacman -Qq linux >/dev/null 2>&1; then
+    nvidia_packages+=(nvidia)
+  fi
+  if pacman -Qq linux-lts >/dev/null 2>&1; then
+    nvidia_packages+=(nvidia-lts)
+  fi
+  if ((${#nvidia_packages[@]} == 1)); then
+    echo "Solitude supports the linux and linux-lts kernels for NVIDIA." >&2
+    exit 1
+  fi
+  sudo pacman -S --needed "${nvidia_packages[@]}"
+else
+  echo "Skipping NVIDIA drivers."
 fi
-if (( ${#nvidia_packages[@]} == 1 )); then
-  echo "Solitude supports the linux and linux-lts kernels for NVIDIA." >&2
-  exit 1
+
+# Boot straight into Hyprland: getty logs the user in on tty1 and .zprofile
+# execs Hyprland there. Anyone at the keyboard gets the session without a
+# password, so this is only asked, never assumed.
+autologin="${SOLITUDE_AUTOLOGIN:-}"
+if [[ -z "$autologin" && -r /dev/tty ]]; then
+  read -r -p "Log in automatically on tty1 and start Hyprland? [y/N] " autologin </dev/tty || autologin=""
 fi
-sudo pacman -S --needed "${nvidia_packages[@]}"
+if [[ "${autologin,,}" == y* ]]; then
+  sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
+  sudo tee /etc/systemd/system/getty@tty1.service.d/autologin.conf >/dev/null <<EOF_UNIT
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin $USER --noclear %I \$TERM
+EOF_UNIT
+  sudo systemctl daemon-reload
+else
+  echo "Skipping autologin; Hyprland still starts after a manual tty1 login."
+fi
 
 sudo systemctl enable --now NetworkManager
 systemctl --user enable --now pipewire pipewire-pulse wireplumber
+# Monitor profiles: the daemon applies the matching layout on hotplug/lid/resume.
+systemctl --user enable --now hyprmoncfgd || true
 
 if [[ -z "${DOTFILES_DIR:-}" ]]; then
   if [[ -d "$REPO_DIR/.git" ]]; then
@@ -70,7 +117,7 @@ xdg-user-dirs-update
 mkdir -p "$HOME/Pictures"
 
 mkdir -p "$BACKUP_DIR"
-for path in .config/hypr .config/waybar .config/walker .config/kitty .config/alacritty; do
+for path in .config/hypr .config/quickshell .config/kitty .config/alacritty .local/bin; do
   if [[ -e "$HOME/$path" && ! -L "$HOME/$path" ]]; then
     mkdir -p "$BACKUP_DIR/$(dirname "$path")"
     mv "$HOME/$path" "$BACKUP_DIR/$path"
@@ -84,4 +131,4 @@ if command -v zsh >/dev/null 2>&1 && [[ "$(getent passwd "$USER" | cut -d: -f7)"
 fi
 
 echo "Setup complete. Previous configuration was backed up to $BACKUP_DIR."
-echo "Select the Hyprland session from your display manager, or run: Hyprland"
+echo "Select the Hyprland session from your display manager, or run: start-hyprland"

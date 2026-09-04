@@ -39,12 +39,12 @@ require('blink-cmp').setup({
     },
   },
   sources = {
-    default = { 'lsp', 'path', 'snippets', 'buffer', 'knapp' },
-    per_filetype = {
-      markdown = { inherit_defaults = true, "knapp" },
-    },
-    providers = {
-      knapp = { name = "knapp", module = "knapp.blink", score_offset = 100 },
-    },
+    default = { 'lsp', 'path', 'snippets', 'buffer' },
+    -- per_filetype = {
+    --   markdown = { inherit_defaults = true, "knapp" },
+    -- },
+    -- providers = {
+    --   knapp = { name = "knapp", module = "knapp.blink", score_offset = 100 },
+    -- },
   },
 })

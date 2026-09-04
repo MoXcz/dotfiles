@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# Switch the shell and window decoration theme.
+# Usage: theme [current|list|set <name>|next]
+#
+# A theme is a directory under ~/.config/shell/themes holding colors.json,
+# an optional hyprland.lua, and a backgrounds/ folder. Setting one writes the
+# name into the state directory, copies its hyprland.lua where hyprland.lua
+# loads it from, and tells the shell to re-read its palette.
+
+set -euo pipefail
+
+THEMES_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/shell/themes"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/shell"
+NAME_FILE="$STATE_DIR/theme"
+LUA_FILE="$STATE_DIR/theme.lua"
+
+list() {
+  find -L "$THEMES_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort
+}
+
+current() {
+  [[ -f $NAME_FILE ]] && cat "$NAME_FILE" || echo "solitude"
+}
+
+set_theme() {
+  local name=$1
+  local dir="$THEMES_DIR/$name"
+  [[ -d $dir ]] || { echo "Unknown theme: $name" >&2; exit 1; }
+
+  mkdir -p "$STATE_DIR"
+  printf '%s\n' "$name" >"$NAME_FILE"
+
+  # Hyprland cannot un-apply what a previous theme set, so an absent
+  # hyprland.lua still needs the old one gone before the reload.
+  if [[ -f $dir/hyprland.lua ]]; then
+    cp "$dir/hyprland.lua" "$LUA_FILE"
+  else
+    rm -f "$LUA_FILE"
+  fi
+  hyprctl reload >/dev/null 2>&1 || true
+
+  # Only follow the theme's own wallpaper when the current one came from a
+  # different theme, so a background picked by hand survives a theme switch.
+  local background
+  background=$(background current 2>/dev/null || true)
+  if [[ -z $background || $background != "$dir"/* ]]; then
+    local first
+    first=$(find -L "$dir/backgrounds" -type f 2>/dev/null | sort | head -1)
+    [[ -n $first ]] && background set "$first" >/dev/null 2>&1 || true
+  fi
+
+  shell shell reloadTheme >/dev/null 2>&1 || true
+  notify-send -a shell -u low "Theme: $name"
+}
+
+case "${1:-current}" in
+  current) current ;;
+  list)
+    # Menu rows: <glyph>\t<title>\t<payload>\t<subtitle>
+    active=$(current)
+    while read -r name; do
+      [[ -n $name ]] || continue
+      if [[ $name == "$active" ]]; then mark="Active"; else mark=""; fi
+      # A theme without a preview.png still lists, just without a thumbnail.
+      preview="$THEMES_DIR/$name/preview.png"
+      if [[ -f $preview ]]; then
+        # Same thumbnail cache the background list uses.
+        preview=$(background thumbnail "$preview" 2>/dev/null || printf '%s' "$preview")
+      else
+        preview=""
+      fi
+      printf '󰉦\t%s\t%s\t%s\t%s\n' "$name" "$name" "$mark" "$preview"
+    done < <(list)
+    ;;
+  set)
+    [[ $# -ge 2 ]] || { echo "Usage: theme set <name>" >&2; exit 1; }
+    set_theme "$2"
+    ;;
+  next)
+    mapfile -t names < <(list)
+    ((${#names[@]} > 0)) || exit 1
+    active=$(current)
+    index=0
+    for i in "${!names[@]}"; do
+      [[ ${names[$i]} == "$active" ]] && index=$(((i + 1) % ${#names[@]}))
+    done
+    set_theme "${names[$index]}"
+    ;;
+  *) echo "Usage: theme [current|list|set <name>|next]" >&2; exit 1 ;;
+esac

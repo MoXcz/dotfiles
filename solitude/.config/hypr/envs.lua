@@ -1,13 +1,5 @@
-local function require_file_if_exists(path, module)
-  local file = io.open(path, "r")
-  if file then
-    file:close()
-    require(module)
-  end
-end
+hl.env("PATH", o.home .. "/.local/bin:" .. (os.getenv("PATH") or "/usr/local/bin:/usr/bin"))
 
--- GUM environment variables for styling purposes.
--- Cursor size.
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 

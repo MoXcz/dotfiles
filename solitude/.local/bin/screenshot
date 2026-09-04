@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# Take a screenshot, copy it, and offer the editor from the notification.
+# Usage: screenshot [region|fullscreen] [--no-edit]
+#
+# Clicking the toast fires the notification's default action, which opens the
+# image in $SOLITUDE_SCREENSHOT_EDITOR. Super + Alt + comma does the same thing
+# from the keyboard (shell notifications invokeLast).
+#
+# The editor is a command template the file path is appended to, because the
+# editors take it as a flag rather than a bare argument: satty wants
+# --filename, swappy wants -f.
+
+set -euo pipefail
+
+MODE="${1:-region}"
+EDITOR_CMD="${SOLITUDE_SCREENSHOT_EDITOR:-satty --filename}"
+
+[[ -f ~/.config/user-dirs.dirs ]] && source ~/.config/user-dirs.dirs
+OUTPUT_DIR="${SOLITUDE_SCREENSHOT_DIR:-${XDG_PICTURES_DIR:-$HOME/Pictures}}"
+mkdir -p "$OUTPUT_DIR"
+
+# A second invocation while the picker is up cancels it rather than stacking
+# another selection layer on screen.
+pkill slurp && exit 0
+
+FREEZE_PID=""
+cleanup() { [[ -n $FREEZE_PID ]] && kill "$FREEZE_PID" 2>/dev/null || true; }
+trap cleanup EXIT
+
+if [[ $MODE == fullscreen ]]; then
+  GEOMETRY=$(hyprctl activeworkspace | awk 'NR==1 {print $NF}' | tr -d ':')
+  GEOMETRY=$(hyprctl monitors | awk -v m="$GEOMETRY" '
+    $1 == "Monitor" && $2 == m { found = 1 }
+    found && $1 ~ /^[0-9]+x[0-9]+@/ { split($1, r, "@"); split($3, o, "x"); print o[1] "," o[2] " " r[1]; exit }')
+  [[ -z $GEOMETRY ]] && exit 1
+else
+  # Freeze the screen so the capture matches what was pointed at. hyprpicker
+  # is optional: without it the picker still works, it just is not frozen.
+  if command -v hyprpicker >/dev/null 2>&1; then
+    hyprpicker -r -z >/dev/null 2>&1 &
+    FREEZE_PID=$!
+    sleep .1
+  fi
+  GEOMETRY=$(slurp 2>/dev/null) || exit 0
+  [[ -z $GEOMETRY ]] && exit 0
+fi
+
+FILEPATH="$OUTPUT_DIR/screenshot-$(date +'%Y-%m-%d_%H-%M-%S').png"
+grim -g "$GEOMETRY" "$FILEPATH" || exit 1
+cleanup
+FREEZE_PID=""
+
+wl-copy --type image/png <"$FILEPATH"
+
+# Word splitting on the template is what turns it into argv, so it is wanted.
+# shellcheck disable=SC2206
+EDITOR_ARGV=($EDITOR_CMD)
+
+if [[ ${2:-} == "--no-edit" ]] || ! command -v "${EDITOR_ARGV[0]}" >/dev/null 2>&1; then
+  notify-send -a shell -u low -i "$FILEPATH" \
+    "Screenshot saved" "$FILEPATH"
+  exit 0
+fi
+
+# notify-send -A implies --wait, so this blocks until the toast is clicked or
+# expires. Detached, so the keybinding is not held open by it.
+setsid -f bash -c '
+  file=$1
+  shift
+  answer=$(notify-send -a shell -u low -i "$file" -A "default=Edit" \
+    "Screenshot saved to clipboard and file" "Click to edit, or Super+Alt+, ")
+  [[ $answer == default ]] && exec "$@" "$file"
+' bash "$FILEPATH" "${EDITOR_ARGV[@]}" >/dev/null 2>&1

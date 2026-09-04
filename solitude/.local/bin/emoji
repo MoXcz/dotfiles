@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Print emoji as menu rows: <emoji>\t<name>\t<emoji>
+# Built from Python's Unicode database, so there is no data file to ship.
+
+set -euo pipefail
+
+exec python3 - <<'PY'
+import sys, unicodedata
+
+# The blocks that hold pictographic emoji. Skipping the rest keeps the list to
+# things worth pasting rather than every symbol Unicode defines.
+ranges = [
+    (0x1F300, 0x1F5FF), (0x1F600, 0x1F64F), (0x1F680, 0x1F6FF),
+    (0x1F900, 0x1F9FF), (0x1FA70, 0x1FAFF), (0x2600, 0x26FF),
+    (0x2700, 0x27BF), (0x1F1E6, 0x1F1FF),
+]
+
+out = []
+for start, end in ranges:
+    for code in range(start, end + 1):
+        char = chr(code)
+        try:
+            name = unicodedata.name(char)
+        except ValueError:
+            continue
+        out.append(f"{char}\t{name.title()}\t{char}")
+
+sys.stdout.write("\n".join(out) + "\n")
+PY

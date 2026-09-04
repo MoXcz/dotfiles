@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Start (or restart) the Quickshell instances, logging to the journal.
+# Usage: launch-shell [--restart] [--restart-lock]
+#
+# Two instances of the same config: shell.qml (bar, launcher, clipboard,
+# notifications, OSD) and lock.qml (the session lock). The lock instance is
+# started once and left alone; restarting it while locked would strand the
+# session behind Hyprland's "lock client died" failsafe.
+
+set -uo pipefail
+
+# No file-watcher reloads; reload deliberately with `shell shell reload`.
+export QS_DISABLE_FILE_WATCHER=1
+export QS_NO_RELOAD_POPUP=1
+
+LOCK_ENTRY="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/shell/lock.qml"
+
+running() { qs -c shell ipc call shell ping >/dev/null 2>&1; }
+lock_running() { qs -p "$LOCK_ENTRY" ipc call shell ping >/dev/null 2>&1; }
+
+if [[ ${1:-} == "--restart-lock" ]]; then
+  if [[ $(qs -p "$LOCK_ENTRY" ipc call lock status 2>/dev/null) == locked ]]; then
+    echo "refusing to restart the lock instance while the session is locked" >&2
+    exit 1
+  fi
+  qs -p "$LOCK_ENTRY" kill >/dev/null 2>&1 || true
+  sleep 0.3
+fi
+
+if ! lock_running; then
+  systemd-cat -t shell-lock -- qs -p "$LOCK_ENTRY" &
+  disown
+fi
+
+if [[ ${1:-} == "--restart" ]] || running; then
+  # Stop the previous supervisor first, or it relaunches its shell the
+  # moment we kill it and two bars end up on screen.
+  for pid in $(pgrep -f "launch-shell" || true); do
+    [[ $pid != "$$" && $pid != "$PPID" ]] && kill "$pid" 2>/dev/null
+  done
+  qs -c shell kill >/dev/null 2>&1 || true
+  # Give the old instance a moment to drop its layer surfaces.
+  sleep 0.3
+fi
+
+attempts=0
+window_started=$SECONDS
+while true; do
+  systemd-cat -t shell -- qs -c shell
+  status=$?
+  ((status == 0)) && exit 0
+
+  # Nothing to restart into once the compositor is gone.
+  hyprctl -j monitors >/dev/null 2>&1 || exit 0
+
+  if ((SECONDS - window_started > 60)); then
+    attempts=0
+    window_started=$SECONDS
+  fi
+  if ((++attempts > 5)); then
+    logger -t shell "giving up after $attempts relaunches in under a minute"
+    exit 1
+  fi
+  logger -t shell "shell exited with status $status; relaunching"
+  sleep 1
+done

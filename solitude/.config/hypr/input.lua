@@ -29,7 +29,31 @@ local non_latin_layouts =
 
 local vconsole = read_vconsole()
 
-local kb_layout = vconsole.XKBLAYOUT or vconsole.KEYMAP or "us"
+-- Layouts available in the session, in order. The first one is what
+-- keybindings resolve against, so a Latin layout has to lead.
+--
+-- The list is state rather than config: `keyboard add|remove` writes
+-- it, the Keyboard route in the menu switches between the entries, and Left
+-- Alt + Space cycles them. /etc/vconsole.conf only wins when it names more
+-- than one layout itself, since a single console keymap cannot express a
+-- session list (and is "us" on most installs).
+local function read_layouts()
+  local file = io.open(o.state_home .. "/shell/keyboard-layouts", "r")
+  if not file then
+    return nil
+  end
+
+  local line = file:read("l")
+  file:close()
+
+  line = (line or ""):gsub("%s+", "")
+  return line ~= "" and line or nil
+end
+
+local vconsole_layout = vconsole.XKBLAYOUT or ""
+local kb_layout = read_layouts()
+  or (vconsole_layout:find(",", 1, true) and vconsole_layout)
+  or "us,latam"
 local kb_variant = vconsole.XKBVARIANT or ""
 local kb_options = "caps:escape"
 

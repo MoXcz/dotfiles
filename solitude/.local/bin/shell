@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Send an IPC call to the running shell.
+# Usage: shell <target> <function> [args...]
+#   shell shell toggle launcher
+#   shell shell toggle clipboard
+#   shell shell toggle keybindings
+#   shell menu toggle [route]  (root, theme, background, keyboard, emoji)
+#   shell shell reload
+#   shell lock lock            (served by the lock.qml instance)
+#   shell notifications dismissAll
+
+set -euo pipefail
+
+if (($# < 2)) || [[ $1 == "-h" || $1 == "--help" ]]; then
+  sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'
+  exit $(($# < 2 ? 1 : 0))
+fi
+
+# Callers from outside the session (hypridle, ssh) may lack WAYLAND_DISPLAY;
+# qs matches instances by display, so recover it from the runtime dir.
+if [[ -z ${WAYLAND_DISPLAY:-} ]]; then
+  socket=$(ls -t "${XDG_RUNTIME_DIR:-/run/user/$UID}"/wayland-[0-9]* 2>/dev/null | grep -v '\.lock$' | head -n1)
+  [[ -n $socket ]] && export WAYLAND_DISPLAY=${socket##*/}
+fi
+
+LOCK_ENTRY="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/shell/lock.qml"
+
+call() {
+  local target=$1
+  shift
+  if [[ $target == lock ]]; then
+    timeout --kill-after=1s 3s qs -p "$LOCK_ENTRY" ipc call -- "$@"
+  else
+    timeout --kill-after=1s 3s qs -c shell ipc call -- "$@"
+  fi
+}
+
+case "$1" in
+  lock)
+    # Overlays hold exclusive keyboard focus; drop them so the lock surface
+    # gets the keyboard. Best effort: the main shell may be down.
+    [[ $2 == lock ]] && call shell overlays closeAll >/dev/null 2>&1 || true
+    exec timeout --kill-after=1s 3s qs -p "$LOCK_ENTRY" ipc call -- "$@"
+    ;;
+  shell)
+    if [[ $2 == reload ]] && [[ $(call lock lock status 2>/dev/null || echo unlocked) == locked ]]; then
+      echo "refused: session is locked" >&2
+      exit 1
+    fi
+    ;;
+esac
+
+exec timeout --kill-after=1s 3s qs -c shell ipc call -- "$@"

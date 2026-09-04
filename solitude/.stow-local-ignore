@@ -1,5 +1,6 @@
 ^/README\.md$
 ^/MIGRATION\.md$
 ^/bootstrap\.sh$
+^/docs$
 ^/\.config/hypr/\.luarc\.json$
 ^/\.config/hypr/hyprmoncfg-monitors\.lua$
