@@ -54,7 +54,7 @@ var routes = {
       // System
       { glyph: "󰌾", title: "Lock", subtitle: "System · Lock the session", argv: ["shell", "lock", "lock"] },
       { glyph: "󰤄", title: "Suspend", subtitle: "System · Sleep", argv: ["systemctl", "suspend"] },
-      { glyph: "󰗽", title: "Log out", subtitle: "System · Ends the Hyprland session", argv: ["hyprctl", "dispatch", "exit"] },
+      { glyph: "󰗽", title: "Log out", subtitle: "System · Ends the Hyprland session", argv: ["hyprctl", "dispatch", "hl.dsp.exit()"] },
       { glyph: "󰜉", title: "Restart", subtitle: "System · Reboot the machine", argv: ["systemctl", "reboot"] },
       { glyph: "󰐥", title: "Power off", subtitle: "System · Shut down", argv: ["systemctl", "poweroff"] }
     ]

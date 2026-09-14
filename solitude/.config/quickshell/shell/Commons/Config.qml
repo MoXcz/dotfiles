@@ -103,8 +103,11 @@ QtObject {
     height: 520,
     rowHeight: 52,
     historyLimit: 300,
-    maxTextBytes: 1048576,       // entries larger than this are not stored
-    pasteOnSelect: true,         // send Ctrl+V to the focused window after copy
+    maxTextBytes: 1048576,
+    pasteOnSelect: true,         // send a paste shortcut to the focused window after copy
+    pasteShortcuts: {
+      "kitty": ["CTRL SHIFT", "V"],
+    },
     placeholder: "Search clipboard…"
   })
 

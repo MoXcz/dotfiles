@@ -212,14 +212,30 @@ Item {
     onExited: if (root.pendingPaste) pasteTimer.restart()
   }
 
-  // Ctrl+V must land after the overlay has released keyboard focus.
+  // The paste chord must land after the overlay has released keyboard focus.
+  // Which chord depends on the focused window's class (Config.clipboard.pasteShortcuts).
   Timer {
     id: pasteTimer
     interval: 80
     onTriggered: {
       root.pendingPaste = null
-      Util.execArgv(["hyprctl", "dispatch", "sendshortcut", "CTRL,V,"])
+      pasteProc.running = true
     }
+  }
+
+  Process {
+    id: pasteProc
+    command: ["sh", "-c", root.pasteScript]
+  }
+
+  readonly property string pasteScript: {
+    var cases = ""
+    var map = Config.clipboard.pasteShortcuts || {}
+    for (var cls in map)
+      cases += "    '" + cls + "') mods='" + map[cls][0] + "'; key='" + map[cls][1] + "' ;;\n"
+    return "mods=CTRL; key=V\n"
+         + "case \"$(hyprctl activewindow -j 2>/dev/null | jq -r .class)\" in\n" + cases + "esac\n"
+         + "hyprctl dispatch \"hl.dsp.send_shortcut({ mods = \\\"$mods\\\", key = \\\"$key\\\" })\""
   }
 
   // Ensure the state files exist before the watcher is attached, and reap
