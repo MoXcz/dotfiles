@@ -166,8 +166,8 @@ PanelWindow {
         opacity: root.expanded ? 1 : 0
         Behavior on opacity {
           SequentialAnimation {
-            PauseAnimation { duration: root.expanded ? root.animationMs * 0.4 : 0 }
-            NumberAnimation { duration: root.expanded ? 160 : 80 }
+            PauseAnimation { duration: root.expanded ? root.animationMs * 0.3 : 0 }
+            NumberAnimation { duration: root.expanded ? 100 : 60 }
           }
         }
 

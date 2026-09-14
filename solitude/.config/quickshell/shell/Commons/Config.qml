@@ -77,13 +77,14 @@ QtObject {
     carouselWidth: 640,
     tileWidth: 180,
     tileHeight: 110,
-    animationMs: 320
+    animationMs: 220
   })
 
   // ---------------------------------------------------------------- dock panels
   // Widget panels (audio, battery, system, …) morph out of their dock.
   readonly property var dockPanel: ({
-    animationMs: 300,
+    animationMs: 220,            // card morph; the unfold is quicker so it is done first
+    unfoldMs: 120,
     collapseDelayMs: 350,        // how long the right dock stays unfolded after the pointer leaves
     linger: 2000                 // and after one of its panels closes
   })

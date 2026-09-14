@@ -258,8 +258,8 @@ Item {
             width: rightDock.unfolded ? moreRow.implicitWidth + rightDock.spacing : 0
             clip: true
             opacity: rightDock.unfolded ? 1 : 0
-            Behavior on width { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-            Behavior on opacity { NumberAnimation { duration: 160 } }
+            Behavior on width { NumberAnimation { duration: Config.dockPanel.unfoldMs; easing.type: Easing.OutCubic } }
+            Behavior on opacity { NumberAnimation { duration: Config.dockPanel.unfoldMs } }
             Row {
               id: moreRow
               anchors.right: parent.right
