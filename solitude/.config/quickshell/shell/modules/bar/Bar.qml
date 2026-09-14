@@ -166,10 +166,15 @@ Item {
       readonly property alias centerRow: centerRow
 
       screen: modelData
-      visible: !root.hidden
+
+      // hide bar on active workspace that has a fullscreen
+      readonly property var hyprMonitor: Hyprland.monitorFor(screen)
+      readonly property bool fullscreen: hyprMonitor && hyprMonitor.activeWorkspace
+                                       && hyprMonitor.activeWorkspace.hasFullscreen
+      visible: !root.hidden && !fullscreen
       color: "transparent"
       implicitHeight: Config.bar.height
-      exclusiveZone: root.hidden ? 0 : Config.bar.height
+      exclusiveZone: root.hidden || fullscreen ? 0 : Config.bar.height
       WlrLayershell.namespace: "shell-bar"
       // Overlay, not Top: the dock-panel card lives on Top and must stay
       // under the docks, which are its header.
