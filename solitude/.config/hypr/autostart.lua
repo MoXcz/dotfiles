@@ -5,6 +5,8 @@ hl.on("hyprland.start", function()
 
   hl.exec_cmd("systemctl --user start hypridle.service")
   hl.exec_cmd("launch-shell")
+  -- Delayed local monitor recovery after suspend and hotplug events.
+  hl.exec_cmd(o.launch("monitor-watch"))
   -- Pauses hyprmoncfg while an unconfigured monitor is plugged in, so it is
   -- not switched off before you can arrange it.
   hl.exec_cmd("systemd-cat -t monitor-guard monitor-guard")
