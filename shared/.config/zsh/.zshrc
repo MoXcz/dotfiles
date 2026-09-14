@@ -207,11 +207,5 @@ if command -v zoxide &> /dev/null; then
 fi
 
 if command -v fzf &> /dev/null; then
-  if [[ -f /usr/share/fzf/completion.zsh ]]; then
-    source /usr/share/fzf/completion.zsh
-  fi
-  if [[ -f /usr/share/fzf/key-bindings.zsh ]]; then
-    source /usr/share/fzf/key-bindings.zsh
-  fi
+  source <(fzf --zsh)
 fi
-
