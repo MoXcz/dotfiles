@@ -1,0 +1,116 @@
+configuration {
+    font: "Iosevka Nerd Font 12";
+    show-icons: true;
+    drun-display-format: "{name}";
+    display-drun: "Applications";
+    display-run: "Run";
+    display-clipboard: "Clipboard";
+}
+
+* {
+    background: #101315;
+    surface: #171b1e;
+    surface-alt: #1f2428;
+    border: #2c3338;
+    foreground: #cacccc;
+    muted: #707880;
+    accent: #8fb4d8;
+    urgent: #d27878;
+}
+
+window {
+    width: 40em;
+    border: 2px;
+    border-color: @border;
+    border-radius: 8px;
+    background-color: @background;
+    padding: 1.2em;
+}
+
+mainbox {
+    background-color: transparent;
+    children: [ inputbar, listview ];
+    spacing: 1em;
+}
+
+inputbar {
+    background-color: @surface-alt;
+    border-radius: 6px;
+    padding: 0.7em;
+    children: [ prompt, entry ];
+}
+
+prompt {
+    text-color: @accent;
+    background-color: transparent;
+    padding: 0 0.6em 0 0;
+}
+
+entry {
+    text-color: @foreground;
+    background-color: transparent;
+}
+
+listview {
+    lines: 8;
+    columns: 1;
+    spacing: 0.3em;
+    background-color: transparent;
+}
+
+element {
+    border-radius: 5px;
+    padding: 0.6em;
+    background-color: transparent;
+    text-color: @foreground;
+}
+
+element selected {
+    background-color: @surface-alt;
+    text-color: @accent;
+}
+
+element alternate {
+    background-color: @surface;
+    text-color: @foreground;
+}
+
+element selected element-text,
+element selected element-icon {
+    background-color: transparent;
+    text-color: @accent;
+}
+
+element alternate element-text,
+element alternate element-icon {
+    background-color: transparent;
+    text-color: @foreground;
+}
+
+/* Override Rofi's built-in light theme state colors. */
+element normal.normal,
+element normal.active,
+element alternate.normal,
+element alternate.active {
+    background-color: @surface;
+    text-color: @foreground;
+}
+
+element selected.normal,
+element selected.active {
+    background-color: @surface-alt;
+    text-color: @accent;
+}
+
+element normal.urgent,
+element alternate.urgent,
+element selected.urgent {
+    background-color: @urgent;
+    text-color: @background;
+}
+
+element-text,
+element-icon {
+    background-color: transparent;
+    text-color: inherit;
+}

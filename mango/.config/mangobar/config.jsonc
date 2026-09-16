@@ -1,0 +1,54 @@
+{
+    "layer": "top",
+    "height": 30,
+    "modules-left": [
+        "workspaces",
+        "layout",
+        "window"
+    ],
+    "modules-right": [
+        "cpu",
+        "memory",
+        "network",
+        "pulseaudio",
+        "clock",
+        "tray"
+    ],
+    "workspaces": {
+        "hide-empty": true,
+        "overview-label": "OVERVIEW",
+        "on-click": "activate",
+        "on-click-right": "toggle"
+    },
+    "layout": {
+        "format": "{}"
+    },
+    "window": {
+        "format": "{}",
+        "max-length": 300
+    },
+    "cpu": {
+        "format": "CPU {}%"
+    },
+    "memory": {
+        "format": "MEM {}%"
+    },
+    "network": {
+        "format": "NET {ifname}",
+        "format-alt": "DOWN {down} UP {up}"
+    },
+    "pulseaudio": {
+        "format": "VOL {volume}%",
+        "format-muted": "MUTE",
+        "on-click": "wpctl set-mute @DEFAULT_SINK@ toggle",
+        "on-scroll-up": "wpctl set-volume @DEFAULT_SINK@ 5%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_SINK@ 5%-"
+    },
+    "clock": {
+        "format": "%Y-%m-%d %H:%M"
+    },
+    "tray": {
+        "icon-size": 20,
+        "spacing": 6
+    }
+}

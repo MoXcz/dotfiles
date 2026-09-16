@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+mode="${1:-region}"
+output_dir="${XDG_PICTURES_DIR:-$HOME/Pictures}"
+mkdir -p "$output_dir"
+
+if [[ "$mode" == fullscreen ]]; then
+    geometry=""
+else
+    geometry="$(slurp 2>/dev/null)"
+fi
+
+file="$output_dir/screenshot-$(date +%Y-%m-%d_%H-%M-%S).png"
+if [[ -n "$geometry" ]]; then
+    grim -g "$geometry" "$file"
+else
+    grim "$file"
+fi
+
+wl-copy --type image/png <"$file"
+
+if command -v notify-send >/dev/null 2>&1; then
+    notify-send -a Mango "Screenshot saved" "$file"
+fi
