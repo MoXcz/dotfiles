@@ -25,6 +25,7 @@ BarButton {
   icon: muted ? "󰝟" : percent === 0 ? "󰕿" : percent < 50 ? "󰖀" : "󰕾"
   label: percent + "%"
   textColor: muted ? Theme.muted : Theme.foreground
+  panelActive: panel.opened
 
   onClicked: function(button) {
     if (button === Qt.LeftButton) togglePanel()

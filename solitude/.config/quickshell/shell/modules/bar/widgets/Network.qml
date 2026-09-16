@@ -47,6 +47,7 @@ BarButton {
   label: compact ? "" : kind === "ethernet" ? (wired.network ? wired.network.name : "Ethernet") : kind === "wifi" ? active.name : ""
   paddingX: compact ? Theme.spaceSm : Theme.space
   textColor: kind === "none" ? Theme.muted : Theme.foreground
+  panelActive: panel.opened
 
   onWifiChanged: refresh()
   Connections {
@@ -69,7 +70,6 @@ BarButton {
 
   NetworkPanel {
     id: panel
-    centered: root.compact
     wifi: root.wifi
     wired: root.wired
     networks: root.networks

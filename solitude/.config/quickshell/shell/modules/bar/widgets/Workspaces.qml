@@ -69,14 +69,14 @@ Item {
     return text.length > 0 && text.length <= 2 ? text : String(id)
   }
 
-  function focus(id) {
+  function activateWorkspace(id) {
     Hyprland.dispatch(Hyprland.usingLua ? 'hl.dsp.focus({ workspace = "' + id + '" })' : "workspace " + id)
   }
 
   function step(delta) {
     var current = active ? active.id : 1
     var next = delta > 0 ? current - 1 : current + 1
-    if (next >= 1 && next <= ids.length) focus(next)
+    if (next >= 1 && next <= ids.length) activateWorkspace(next)
   }
 
   readonly property int size: Config.bar.workspaceSize
@@ -112,10 +112,9 @@ Item {
         border.width: focused ? 0 : Theme.borderWidth
         border.color: urgent ? Theme.urgent : occupied ? Theme.foreground : Theme.border
 
-        // Overshoot makes the stretch read as a bubble rather than a resize.
-        Behavior on width { NumberAnimation { duration: 240; easing.type: Easing.OutBack; easing.overshoot: 1.6 } }
-        Behavior on color { ColorAnimation { duration: 160 } }
-        Behavior on border.color { ColorAnimation { duration: 160 } }
+        Behavior on width { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+        Behavior on color { ColorAnimation { duration: 100 } }
+        Behavior on border.color { ColorAnimation { duration: 100 } }
 
         IconImage {
           anchors.centerIn: parent
@@ -146,7 +145,7 @@ Item {
           id: area
           anchors.fill: parent
           hoverEnabled: true
-          onClicked: root.focus(cell.modelData)
+          onClicked: root.activateWorkspace(cell.modelData)
           onWheel: function(event) { root.step(event.angleDelta.y) }
         }
       }

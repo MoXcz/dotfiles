@@ -12,6 +12,7 @@ Item {
   property color iconColor: textColor
   property color fill: "transparent"
   property bool interactive: true
+  property bool panelActive: false
   property int paddingX: Theme.space
 
   signal clicked(button: int)
@@ -26,7 +27,9 @@ Item {
     anchors.bottomMargin: Theme.spaceSm
     // Pill-shaped, so the highlight follows the dock it sits in.
     radius: height / 2
-    color: root.interactive && area.containsMouse ? Theme.hover : root.fill
+    color: root.panelActive || area.pressed ? Theme.selected
+         : root.interactive && area.containsMouse ? Theme.hover : root.fill
+    Behavior on color { ColorAnimation { duration: 70 } }
   }
 
   Row {

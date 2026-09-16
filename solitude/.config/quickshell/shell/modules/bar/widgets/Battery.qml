@@ -28,6 +28,7 @@ BarButton {
   icon: (charging || full ? chargingGlyphs : glyphs)[Util.clamp(Math.floor((percent - 1) / 10), 0, 9)]
   label: percent + "%"
   textColor: low ? Theme.urgent : Theme.foreground
+  panelActive: panel.opened
 
   onClicked: function(button) { if (button === Qt.LeftButton) togglePanel() }
 

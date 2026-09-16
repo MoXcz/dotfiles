@@ -28,8 +28,8 @@ ShellRoot {
   id: shell
 
   Bar { id: bar }
-  Launcher { id: launcher }
-  Menu { id: menu; onOpening: shell.closeOthers("menu") }
+  Launcher { id: launcher; bar: bar }
+  Menu { id: menu; bar: bar; onOpening: shell.closeOthers("menu") }
   Clipboard { id: clipboard }
   Keybindings { id: keybindings }
   Notifications { id: notifications }
@@ -45,6 +45,19 @@ ShellRoot {
   function closeOthers(name) {
     for (var key in overlays) {
       if (key !== name && overlays[key].opened) overlays[key].close()
+    }
+    Bus.dockPanelsCloseAll()
+  }
+
+  // Bar panels morph into one another, but remain exclusive with the larger
+  // launcher/menu/clipboard overlays.
+  Connections {
+    target: Bus
+    function onDockPanelRequested(panel) {
+      for (var key in shell.overlays) {
+        var overlay = shell.overlays[key]
+        if (overlay.opened && (!overlay.ownsPanel || !overlay.ownsPanel(panel))) overlay.close()
+      }
     }
   }
 

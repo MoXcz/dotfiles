@@ -4,28 +4,22 @@ import Quickshell.Wayland
 import qs.Commons
 import qs.Ui
 
-// Card that a dock morphs into when one of its widgets opens a panel. One
-// instance per screen: the widget's BarPopup content is reparented into
-// `slot`, and the card starts at the dock's rectangle and grows downward.
-//
-// The window is always mapped, full-screen and transparent, on the top
-// layer while the bar sits on the overlay layer, so it stacks underneath:
-// the dock stays in the bar, on top of the card, live and clickable as the
-// card's header. While closed the input mask is empty, so clicks pass
-// through.
+// One persistent surface per screen hosts every bar panel. Switching widgets
+// moves and reshapes this card while old and new contents crossfade, so menus
+// read as states of the bar rather than unrelated popup windows.
 PanelWindow {
   id: root
 
-  required property Item host              // Bar root
-  property var current: null               // BarPopup being shown
-  property var dock: null                  // Dock the card grew from
+  property var current: null
+  property var outgoing: null
+  property var dock: null
+  property var sourceCell: null
   property bool expanded: false
-  // Dock rectangle at open time, screen coordinates. Its width is only a
-  // fallback: the card's minimum width follows the live dock width, so a
-  // dock that unfolds while its panel is up moves the card with it.
+  // Suppress interpolation while placing a closed card at a newly clicked
+  // source. Without this, its old/default x is animated and the card appears
+  // to fly in from a screen edge before it can grow from the widget.
+  property bool geometryReady: false
   property rect origin: Qt.rect(0, 0, 0, 0)
-  readonly property real dockWidth: dock ? dock.width : origin.width
-  readonly property real originRight: origin.x + origin.width
   readonly property bool opened: current !== null
   readonly property bool atBottom: Config.bar.position === "bottom"
   readonly property int animationMs: Config.dockPanel.animationMs
@@ -36,46 +30,119 @@ PanelWindow {
     return it || null
   }
 
+  function clearOutgoing() {
+    if (!outgoing) return
+    outgoing.visible = false
+    outgoing.parent = null
+    outgoing = null
+  }
+
   function show(panel, cell) {
     var win = cell.QsWindow.window
     if (!win || win.screen !== root.screen) return
-    var d = dockOf(cell)
-    if (!d) return
-    host.closeCenter()
+    var nextDock = dockOf(cell)
+    if (!nextDock) return
+
+    var wasOpen = opened && expanded
     hideTimer.stop()
-    if (current && current !== panel) current.visible = false
-    var p = d.mapToItem(null, 0, 0)
-    origin = Qt.rect(Config.bar.marginX + p.x, p.y, d.width, d.height)
-    if (dock && dock !== d) release()
-    dock = d
+    clearOutgoing()
+
+    if (!wasOpen) {
+      geometryReady = false
+      expanded = false
+    }
+
+    if (current && current !== panel) {
+      outgoing = current
+      outgoing.panelOpen = false
+      outgoing.parent = outgoingSlot
+      outgoing.anchors.fill = outgoingSlot
+      outgoingSlot.opacity = 1
+    }
+
+    if (dock && dock !== nextDock) dock.flat = false
+    dock = nextDock
     dock.flat = true
-    panel.parent = slot
-    panel.anchors.fill = slot
+    sourceCell = cell
+    var p = cell.mapToItem(null, 0, 0)
+    origin = Qt.rect(p.x, p.y, cell.width, cell.height)
+
+    panel.parent = incomingSlot
+    panel.anchors.fill = incomingSlot
     panel.visible = true
+    panel.panelOpen = true
     current = panel
-    keys.forceActiveFocus()
-    expanded = true
+    focusTimer.restart()
+    if (wasOpen) {
+      expanded = true
+    } else {
+      // Let the disabled Behaviors commit origin first, then grow around the
+      // clicked item's centre on the next frame.
+      Qt.callLater(function() {
+        if (root.current !== panel) return
+        root.geometryReady = true
+        root.expanded = true
+      })
+    }
+
+    incomingSlot.opacity = 0
+    if (wasOpen) incomingSlot.opacity = 1
+    else revealTimer.restart()
+    if (outgoing) outgoingFade.restart()
   }
 
   function release() {
-    if (!dock) return
-    dock.flat = false
+    if (dock) dock.flat = false
     dock = null
+    sourceCell = null
   }
 
   function close() {
     if (!opened) return
     expanded = false
-    if (current) current.visible = false
-    // The dock folds now, animated, in step with the card shrinking.
+    current.panelOpen = false
+    incomingSlot.opacity = 0
+    revealTimer.stop()
     if (dock) dock.flat = false
     hideTimer.restart()
   }
 
   Timer {
+    id: focusTimer
+    interval: 0
+    onTriggered: keys.forceActiveFocus()
+  }
+
+  Timer {
+    id: revealTimer
+    interval: Math.round(root.animationMs * 0.38)
+    onTriggered: if (root.current && root.expanded) incomingSlot.opacity = 1
+  }
+
+  Timer {
     id: hideTimer
-    interval: root.animationMs
-    onTriggered: { root.release(); root.current = null }
+    interval: root.animationMs + 30
+    onTriggered: {
+      if (root.current) {
+        root.current.visible = false
+        root.current.parent = null
+      }
+      root.current = null
+      root.clearOutgoing()
+      root.release()
+      root.geometryReady = false
+    }
+  }
+
+  NumberAnimation {
+    id: outgoingFade
+    target: outgoingSlot
+    property: "opacity"
+    from: 1
+    to: 0
+    duration: Config.dockPanel.contentFadeMs
+    easing.type: Easing.OutCubic
+    onFinished: root.clearOutgoing()
   }
 
   Connections {
@@ -91,15 +158,15 @@ PanelWindow {
   exclusionMode: ExclusionMode.Ignore
   WlrLayershell.layer: WlrLayer.Top
   WlrLayershell.namespace: "shell-dock-panel"
+  // Every hosted panel has keyboard actions. Exclusive keyboard focus keeps
+  // j/k, arrows, Enter and text input reliable; the input mask still omits
+  // the bar strip, so its widgets remain directly pointer-clickable.
   WlrLayershell.keyboardFocus: opened ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
-  // Input region: nothing while closed, and everything except the bar
-  // strip while open — an exclusive-keyboard layer gets every pointer
-  // event landing on its input region, so leaving the strip out keeps
-  // clicks on the docks (swapping panels) with the bar.
-  mask: opened ? belowBar : none
+  mask: opened ? outsideBar : none
+
   Region { id: none }
   Region {
-    id: belowBar
+    id: outsideBar
     x: 0
     y: root.atBottom ? 0 : Config.bar.height
     width: root.width
@@ -116,7 +183,10 @@ PanelWindow {
     anchors.fill: parent
     focus: true
     Keys.onPressed: function(event) {
-      if (root.current && root.current.handleKey && root.current.handleKey(event)) { event.accepted = true; return }
+      if (root.current && root.current.handleKey && root.current.handleKey(event)) {
+        event.accepted = true
+        return
+      }
       if (event.key === Qt.Key_Escape || event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
         root.close()
         event.accepted = true
@@ -125,57 +195,61 @@ PanelWindow {
 
     Card {
       id: card
-      readonly property int panelWidth: root.current ? Math.max(root.current.panelWidth, root.dockWidth) : root.dockWidth
-      readonly property real fullHeight: root.origin.height + body.implicitHeight + Theme.spaceLg + Theme.space
-      // One animated progress drives the morph, so the card's geometry
-      // tracks the dock instantly (a fold opening, a panel swapping) and
-      // only the growth itself eases.
-      property real grow: root.expanded ? 1 : 0
-      Behavior on grow {
-        NumberAnimation {
-          duration: root.animationMs
-          easing.type: root.expanded ? Easing.OutBack : Easing.InCubic
-          easing.overshoot: 1.08
-        }
-      }
+      readonly property real sourceWidth: Math.max(1, root.origin.width)
+      readonly property real sourceHeight: Math.max(1, root.origin.height)
+      readonly property real panelWidth: root.current ? Math.max(root.current.panelWidth, sourceWidth) : sourceWidth
+      readonly property real panelHeight: sourceHeight + body.implicitHeight + Theme.spaceLg + Theme.space
+      readonly property real desiredX: root.origin.x + (sourceWidth - panelWidth) / 2
+      readonly property real openX: Util.clamp(desiredX, Theme.space, root.width - panelWidth - Theme.space)
+      readonly property real openY: root.atBottom ? root.origin.y + sourceHeight - panelHeight : root.origin.y
 
-      width: root.dockWidth + (panelWidth - root.dockWidth) * grow
-      height: root.origin.height + (fullHeight - root.origin.height) * grow
-      // Grows out of the dock: right-pinned docks keep their right edge,
-      // left-pinned their left, bubbles stay centered.
-      x: !root.dock ? root.origin.x
-       : root.dock.align === "right" ? root.originRight - width
-       : root.dock.align === "left" ? root.origin.x
-       : root.origin.x + (root.origin.width - width) / 2
-      y: root.origin.y
-      radius: root.origin.height / 2 + (Theme.bubbleRadius - root.origin.height / 2) * Math.min(1, grow)
+      x: root.expanded ? openX : root.origin.x
+      y: root.expanded ? openY : root.origin.y
+      width: root.expanded ? panelWidth : sourceWidth
+      height: root.expanded ? panelHeight : sourceHeight
+      radius: root.expanded ? Theme.bubbleRadius : sourceHeight / 2
       clip: true
-      visible: root.expanded || grow > 0
+      visible: root.expanded || hideTimer.running
 
-      // Content sits below the dock's strip, fades in once the card has
-      // most of its size, and drops first on close.
+      Behavior on x { enabled: root.geometryReady; NumberAnimation { duration: root.animationMs; easing.type: Easing.OutCubic } }
+      Behavior on y { enabled: root.geometryReady; NumberAnimation { duration: root.animationMs; easing.type: Easing.OutCubic } }
+      Behavior on width { enabled: root.geometryReady; NumberAnimation { duration: root.animationMs; easing.type: Easing.OutCubic } }
+      Behavior on height { enabled: root.geometryReady; NumberAnimation { duration: root.animationMs; easing.type: Easing.OutCubic } }
+      Behavior on radius { enabled: root.geometryReady; NumberAnimation { duration: root.animationMs; easing.type: Easing.OutCubic } }
+
       Item {
         id: body
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.topMargin: root.origin.height + Theme.space
+        anchors.top: root.atBottom ? undefined : parent.top
+        anchors.bottom: root.atBottom ? parent.bottom : undefined
+        anchors.topMargin: root.atBottom ? 0 : card.sourceHeight + Theme.space
+        anchors.bottomMargin: root.atBottom ? card.sourceHeight + Theme.space : 0
         anchors.leftMargin: Theme.spaceLg
         anchors.rightMargin: Theme.spaceLg
-        implicitHeight: slot.implicitHeight
-        opacity: root.expanded ? 1 : 0
-        Behavior on opacity {
-          SequentialAnimation {
-            PauseAnimation { duration: root.expanded ? root.animationMs * 0.3 : 0 }
-            NumberAnimation { duration: root.expanded ? 100 : 60 }
-          }
+        implicitHeight: root.current ? root.current.implicitHeight : 0
+
+        Behavior on implicitHeight {
+          enabled: root.geometryReady
+          NumberAnimation { duration: root.animationMs; easing.type: Easing.OutCubic }
         }
 
         Item {
-          id: slot
-          width: parent.width
-          height: root.current ? root.current.implicitHeight : 0
-          implicitHeight: height
+          id: outgoingSlot
+          anchors.fill: parent
+          opacity: 0
+        }
+
+        Item {
+          id: incomingSlot
+          anchors.fill: parent
+          opacity: 0
+          Behavior on opacity {
+            NumberAnimation {
+              duration: root.expanded ? Config.dockPanel.contentFadeMs : 80
+              easing.type: root.expanded ? Easing.OutCubic : Easing.InCubic
+            }
+          }
         }
       }
     }

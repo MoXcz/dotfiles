@@ -11,9 +11,9 @@ Item {
 
   property var anchorItem: null
   property int panelWidth: 340
-  property bool centered: false          // kept for callers; layout is the dock's
+  property bool panelOpen: false         // owned by DockPanel; visibility also covers exit fades
   default property alias content: body.data
-  readonly property bool opened: visible
+  readonly property bool opened: panelOpen
   // Keyboard driving. DockPanel hands every key here first; return true to
   // claim it. Escape and Tab close the card when a panel leaves them.
   function handleKey(event) { return false }

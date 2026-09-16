@@ -12,6 +12,8 @@ PanelWindow {
 
   property bool opened: false
   property string namespace: "shell-overlay"
+  // Attached surfaces leave the shell chrome uncovered by their scrim.
+  property int scrimTopInset: 0
   default property alias content: contentItem.data
   signal dismissed()
 
@@ -38,7 +40,8 @@ PanelWindow {
   onOpenedChanged: if (opened) root.screen = focusedScreen()
 
   Rectangle {
-    anchors.fill: parent
+    anchors { left: parent.left; right: parent.right; top: parent.top; bottom: parent.bottom }
+    anchors.topMargin: root.scrimTopInset
     color: Theme.scrim
     MouseArea {
       anchors.fill: parent

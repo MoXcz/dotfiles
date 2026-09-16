@@ -12,7 +12,8 @@ import qs.Ui
 Item {
   id: root
 
-  property bool opened: false
+  required property var bar
+  readonly property bool opened: panel.opened
   // Hover only steers the cursor after the mouse has actually moved; a
   // pointer resting over the list must not steal the selection at open.
   property bool hoverArmed: false
@@ -48,6 +49,8 @@ Item {
   readonly property string argument: mode === "apps" ? filter.trim() : filter.slice(1).trim()
 
   function open() {
+    var anchor = bar.clockSlotForFocus()
+    if (!anchor) return
     filter = ""
     selectedIndex = 0
     calcResult = ""
@@ -55,14 +58,13 @@ Item {
     refresh()
     hoverArmed = false
     hoverOrigin = null
-    opened = true
-    keys.forceActiveFocus()
+    panel.openFor(anchor)
     // The list keeps its scroll offset across opens; start at the top.
     Qt.callLater(function() { list.positionViewAtBeginning() })
   }
 
   function close() {
-    opened = false
+    panel.dismiss()
     calcTimer.stop()
     if (calcProc.running) calcProc.running = false
   }
@@ -70,6 +72,8 @@ Item {
   function toggle() {
     if (opened) close(); else open()
   }
+
+  function ownsPanel(candidate) { return candidate === panel }
 
   function select(index) {
     if (rows.length === 0) { selectedIndex = 0; return }
@@ -242,131 +246,116 @@ Item {
   }
 
   // ---------------------------------------------------------------- ui
-  Overlay {
-    id: overlay
-    opened: root.opened
-    namespace: "shell-launcher"
-    onDismissed: root.close()
+  // The launcher is content in the same persistent host as Wi-Fi, audio and
+  // Bluetooth. DockPanel owns its geometry, clipping, focus and outside-click
+  // behavior, so there is no second overlay pretending to grow from the bar.
+  BarPopup {
+    id: panel
+    panelWidth: root.cfg.width
 
-    Item {
-      id: keys
-      anchors.fill: parent
-      focus: true
-      Keys.onPressed: function(event) { root.handleKey(event) }
+    function handleKey(event) { root.handleKey(event); return event.accepted }
 
-      Card {
-        id: card
-        width: root.cfg.width
-        x: Math.round((parent.width - width) / 2)
-        y: Math.round(parent.height / 4)
-        height: header.implicitHeight + separator.height + list.height + Theme.spaceSm * 2
+    Column {
+      width: parent.width
 
-        Column {
-          anchors.fill: parent
-          anchors.topMargin: Theme.spaceSm
-          anchors.bottomMargin: Theme.spaceSm
+      SearchField {
+        id: header
+        width: parent.width
+        text: root.filter
+        placeholder: root.cfg.placeholder
+      }
 
-          SearchField {
-            id: header
-            width: parent.width
-            text: root.filter
-            placeholder: root.cfg.placeholder
-          }
+      Rectangle {
+        width: parent.width
+        height: Theme.borderWidth
+        color: Theme.border
+      }
+
+      ListView {
+        id: list
+        width: parent.width
+        height: Math.min(root.rows.length, root.cfg.maxRows) * root.cfg.rowHeight
+        model: root.rows
+        currentIndex: root.selectedIndex
+        highlightMoveDuration: 0
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
+
+        delegate: Rectangle {
+          id: row
+          required property int index
+          required property var modelData
+          readonly property bool selected: index === root.selectedIndex
+          width: ListView.view.width
+          height: root.cfg.rowHeight
+          color: selected ? Theme.selected : (hoverArea.containsMouse ? Theme.hover : "transparent")
 
           Rectangle {
-            id: separator
-            width: parent.width
-            height: Theme.borderWidth
-            color: Theme.border
+            width: 2
+            height: parent.height
+            color: Theme.accent
+            visible: row.selected
           }
 
-          ListView {
-            id: list
-            width: parent.width
-            height: Math.min(root.rows.length, root.cfg.maxRows) * root.cfg.rowHeight
-            model: root.rows
-            currentIndex: root.selectedIndex
-            highlightMoveDuration: 0
-            clip: true
-            boundsBehavior: Flickable.StopAtBounds
+          Row {
+            anchors.fill: parent
+            anchors.leftMargin: Theme.spaceLg
+            anchors.rightMargin: Theme.spaceLg
+            spacing: Theme.space
 
-            delegate: Rectangle {
-              id: row
-              required property int index
-              required property var modelData
-              readonly property bool selected: index === root.selectedIndex
-              width: ListView.view.width
-              height: root.cfg.rowHeight
-              color: selected ? Theme.selected : (hoverArea.containsMouse ? Theme.hover : "transparent")
+            Item {
+              width: Theme.fontTitle * 2
+              height: parent.height
 
-              Rectangle {
-                width: 2
-                height: parent.height
-                color: Theme.accent
-                visible: row.selected
+              IconImage {
+                anchors.centerIn: parent
+                implicitSize: Theme.fontTitle * 1.6
+                source: row.modelData.icon
+                visible: row.modelData.icon.length > 0
               }
 
-              Row {
-                anchors.fill: parent
-                anchors.leftMargin: Theme.spaceLg
-                anchors.rightMargin: Theme.spaceLg
-                spacing: Theme.space
-
-                Item {
-                  width: Theme.fontTitle * 2
-                  height: parent.height
-
-                  IconImage {
-                    anchors.centerIn: parent
-                    implicitSize: Theme.fontTitle * 1.6
-                    source: row.modelData.icon
-                    visible: row.modelData.icon.length > 0
-                  }
-
-                  Text {
-                    anchors.centerIn: parent
-                    visible: row.modelData.icon.length === 0
-                    text: row.modelData.glyph
-                    color: row.selected ? Theme.accent : Theme.muted
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontHeading
-                  }
-                }
-
-                Column {
-                  anchors.verticalCenter: parent.verticalCenter
-                  width: parent.width - Theme.fontTitle * 2 - parent.spacing
-
-                  Text {
-                    width: parent.width
-                    text: row.modelData.title
-                    color: Theme.foreground
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontBody
-                    elide: Text.ElideRight
-                  }
-
-                  Text {
-                    width: parent.width
-                    visible: text.length > 0
-                    text: row.modelData.subtitle
-                    color: Theme.muted
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontCaption
-                    elide: Text.ElideRight
-                  }
-                }
-              }
-
-              MouseArea {
-                id: hoverArea
-                anchors.fill: parent
-                hoverEnabled: true
-                onEntered: if (root.hoverArmed) root.selectedIndex = row.index
-                onPositionChanged: function(mouse) { if (root.hoverMoved(this, mouse)) root.selectedIndex = row.index }
-                onClicked: { root.selectedIndex = row.index; root.activate() }
+              Text {
+                anchors.centerIn: parent
+                visible: row.modelData.icon.length === 0
+                text: row.modelData.glyph
+                color: row.selected ? Theme.accent : Theme.muted
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontHeading
               }
             }
+
+            Column {
+              anchors.verticalCenter: parent.verticalCenter
+              width: parent.width - Theme.fontTitle * 2 - parent.spacing
+
+              Text {
+                width: parent.width
+                text: row.modelData.title
+                color: Theme.foreground
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontBody
+                elide: Text.ElideRight
+              }
+
+              Text {
+                width: parent.width
+                visible: text.length > 0
+                text: row.modelData.subtitle
+                color: Theme.muted
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontCaption
+                elide: Text.ElideRight
+              }
+            }
+          }
+
+          MouseArea {
+            id: hoverArea
+            anchors.fill: parent
+            hoverEnabled: true
+            onEntered: if (root.hoverArmed) root.selectedIndex = row.index
+            onPositionChanged: function(mouse) { if (root.hoverMoved(this, mouse)) root.selectedIndex = row.index }
+            onClicked: { root.selectedIndex = row.index; root.activate() }
           }
         }
       }

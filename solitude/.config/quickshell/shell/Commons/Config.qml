@@ -21,17 +21,17 @@ QtObject {
   // ---------------------------------------------------------------- bar
   readonly property var bar: ({
     position: "top",             // "top" | "bottom"
-    height: 44,                  // reserved strip; the docks float inside it
+    height: 44,                  // reserved strip and continuous bar surface
     dockHeight: 34,              // pill height
     marginX: 10,                 // horizontal gap from the screen edge
     marginY: 5,                  // gap between the docks and the screen edge
     // Widget ids: workspaces, activeWindow, clock, tray, system, displays, bluetooth, network, wifi, vpn, windows, audio, battery, spacer
-    // Left and right share one dock each; every center widget floats in its
-    // own bubble. `wifi` is the network widget without the name. The right
-    // dock shows `right` and unfolds `rightMore` to its left on hover.
+    // Left and right share a layout group; center widgets keep individual
+    // anchors for panel morphs. `wifi` is network without the name. The right
+    // group renders both `rightMore` and `right` permanently.
     left: ["workspaces", "activeWindow"],
-    center: ["clock", "wifi"],
-    right: ["system", "audio", "battery"],
+    center: ["clock"],
+    right: ["system", "audio", "battery", "wifi"],
     rightMore: ["tray", "displays", "bluetooth", "vpn", "windows"],
     clockFormat: "W{w}  ddd d MMM  HH:mm",
     clockFormatAlt: "yyyy-MM-dd W{w}  HH:mm:ss",
@@ -76,17 +76,14 @@ QtObject {
     calendarWidth: 300,
     carouselWidth: 640,
     tileWidth: 180,
-    tileHeight: 110,
-    animationMs: 220
+    tileHeight: 110
   })
 
   // ---------------------------------------------------------------- dock panels
   // Widget panels (audio, battery, system, …) morph out of their dock.
   readonly property var dockPanel: ({
-    animationMs: 220,            // card morph; the unfold is quicker so it is done first
-    unfoldMs: 120,
-    collapseDelayMs: 350,        // how long the right dock stays unfolded after the pointer leaves
-    linger: 2000                 // and after one of its panels closes
+    animationMs: 210,            // quick enough for consecutive panel switches
+    contentFadeMs: 110           // overlapping old/new content during a panel switch
   })
 
   // ---------------------------------------------------------------- keybindings

@@ -49,6 +49,8 @@ BarButton {
 
   function togglePanel() { panel.toggleFor(root) }
 
+  panelActive: panel.opened
+
   icon: "󰦝"
   label: !Config.vpn.showLabel ? "" : up ? (connection || "VPN") : connecting ? "…" : ""
   textColor: up ? Theme.accent : connecting ? Theme.warning : Theme.muted

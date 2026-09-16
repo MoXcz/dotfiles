@@ -49,6 +49,8 @@ BarButton {
 
   function togglePanel() { panel.toggleFor(root) }
 
+  panelActive: panel.opened
+
   icon: "󰖳"
   label: !Config.windows.showLabel ? "" : booting ? "…" : ""
   textColor: up ? Theme.accent : booting ? Theme.warning : Theme.muted

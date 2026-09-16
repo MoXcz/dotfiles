@@ -11,9 +11,12 @@ Rectangle {
 
   default property alias content: row.data
   property int paddingX: Theme.space
-  property int spacing: Theme.spaceSm
+  property int spacing: integrated ? 0 : Theme.spaceSm
   property string align: "center"     // left | center | right
   property bool flat: false
+  // A dock can retain its geometry and panel-morph anchor while its paint is
+  // absorbed by the full-width bar that contains it.
+  property bool integrated: false
   readonly property bool isDock: true
   readonly property bool hovered: hover.hovered
 
@@ -21,9 +24,9 @@ Rectangle {
   implicitWidth: Math.max(implicitHeight, row.implicitWidth + paddingX * 2)
   implicitHeight: Config.bar.dockHeight
   radius: height / 2
-  color: flat ? "transparent" : Theme.surface
+  color: flat || integrated ? "transparent" : Theme.surface
   border.width: Theme.borderWidth
-  border.color: flat ? "transparent" : Theme.border
+  border.color: flat || integrated ? "transparent" : Theme.border
   Behavior on color { ColorAnimation { duration: 120 } }
   Behavior on border.color { ColorAnimation { duration: 120 } }
 

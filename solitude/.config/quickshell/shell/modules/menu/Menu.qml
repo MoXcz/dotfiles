@@ -6,7 +6,7 @@ import qs.Ui
 import Quickshell.Widgets
 import "Routes.js" as Routes
 
-// Command palette in the launcher's frame. The root is one flat, searchable
+// Command palette in the bar's shared morphing panel. The root is one searchable
 // list of every action; pickers (keyboard, emoji) are the only nested
 // routes. Routes are plain data (see Routes.js), so adding an entry never
 // means touching the view.
@@ -16,10 +16,8 @@ import "Routes.js" as Routes
 Item {
   id: root
 
-  property bool opened: false
-  // The layer surface stays up until the close animation has played; binding
-  // it straight to `opened` would tear the surface down mid-fade.
-  property bool surfaceUp: false
+  required property var bar
+  readonly property bool opened: panel.opened
   property string filter: ""
   property int selectedIndex: 0
   // Route ids from the root down to the visible one, e.g. ["root", "capture"].
@@ -76,6 +74,8 @@ Item {
 
   // ---------------------------------------------------------------- open/close
   function open(target) {
+    var anchor = bar.clockSlotForFocus()
+    if (!anchor) return
     var start = String(target || "root")
     if (!Routes.node(start)) start = "root"
     stack = start === "root" ? ["root"] : ["root", start]
@@ -84,29 +84,20 @@ Item {
     hoverArmed = false
     hoverOrigin = null
     opening()
-    closeTimer.stop()
-    surfaceUp = true
-    opened = true
-    keys.forceActiveFocus()
+    panel.openFor(anchor)
   }
 
   function close() {
-    opened = false
-    // The surface goes away once the fade has finished, not before.
-    closeTimer.restart()
+    panel.dismiss()
     generator.running = false
     dynamicRows = null
     loadingLabel = ""
   }
 
-  Timer {
-    id: closeTimer
-    interval: root.cfg.animationMs + 40
-    onTriggered: root.surfaceUp = false
-  }
-
   // Raised before opening so the shell can close the other overlays.
   signal opening()
+
+  function ownsPanel(candidate) { return candidate === panel }
 
   function toggle(target) {
     // Re-invoking the bind for the route already on screen closes it; a
@@ -245,41 +236,14 @@ Item {
     function onMenuRequested(route) { root.toggle(route) }
   }
 
-  Overlay {
-    id: overlay
-    opened: root.surfaceUp
-    namespace: "shell-menu"
-    onDismissed: root.close()
+  BarPopup {
+    id: panel
+    panelWidth: root.cfg.width
 
-    Item {
-      id: keys
-      anchors.fill: parent
-      focus: true
-      Keys.onPressed: function(event) { root.handleKey(event) }
+    function handleKey(event) { root.handleKey(event); return event.accepted }
 
-      Card {
-        id: card
-        width: root.cfg.width
-        x: Math.round((parent.width - width) / 2)
-        y: Math.round(parent.height / 4)
-        height: header.implicitHeight + separator.height + body.height + Theme.spaceSm * 2
-
-        // Same spot as the launcher; fades in with a touch of scale.
-        opacity: root.opened ? 1 : 0
-        scale: root.opened ? 1 : 0.96
-        Behavior on opacity { NumberAnimation { duration: root.cfg.animationMs; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: root.cfg.animationMs; easing.type: Easing.OutCubic } }
-
-        // Routes have different row counts, and the height is a binding, so a
-        // Behavior is the whole of it.
-        Behavior on height {
-          NumberAnimation { duration: root.cfg.animationMs; easing.type: Easing.OutCubic }
-        }
-
-        Column {
-          anchors.fill: parent
-          anchors.topMargin: Theme.spaceSm
-          anchors.bottomMargin: Theme.spaceSm
+    Column {
+      width: parent.width
 
           SearchField {
             id: header
@@ -424,8 +388,6 @@ Item {
               }
             }
           }
-        }
-      }
     }
   }
 }

@@ -20,6 +20,7 @@ BarButton {
          + "  󰍛 " + Math.round(stats.memPercent) + "%"
          + (stats.gpuAvailable ? "  󰢮 " + reading(stats.gpuUtil, stats.gpuTemp) : "")
   textColor: hot ? Theme.warning : Theme.foreground
+  panelActive: panel.opened
 
   onClicked: function(button) { if (button === Qt.LeftButton) togglePanel() }
 

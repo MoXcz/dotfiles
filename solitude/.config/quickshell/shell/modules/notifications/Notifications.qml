@@ -199,10 +199,12 @@ Item {
       right: !root.leftCorner
     }
     margins {
-      top: root.cfg.margin
+      // Top notifications begin below the unified bar, sharing its right
+      // alignment instead of appearing as an unrelated corner overlay.
+      top: root.topCorner ? Config.bar.height + Theme.spaceSm : root.cfg.margin
       bottom: root.cfg.margin
       left: root.cfg.margin
-      right: root.cfg.margin
+      right: root.topCorner && !root.leftCorner ? Config.bar.marginX : root.cfg.margin
     }
     implicitWidth: root.cfg.width
     implicitHeight: Math.max(1, column.implicitHeight)

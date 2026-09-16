@@ -6,9 +6,9 @@ import qs.Commons
 import qs.Ui
 import "center"
 
-// One status bar per screen: three floating docks (left, center, right)
-// over a transparent strip. Sections are filled from the widget id lists in
-// Config.bar; WidgetSlot turns each id into a component.
+// One continuous status bar per screen. Transparent layout groups retain the
+// left/center/right structure and provide anchors for the shared morphing
+// panel; WidgetSlot turns configured ids into components.
 Item {
   id: root
 
@@ -33,45 +33,23 @@ Item {
     return instances[0]
   }
 
-  // ---------------------------------------------------------------- center panel
-  // While the panel is up the clock's bubble widens to the panel's width so
-  // the other center bubbles slide aside, and the panel card morphs out of
-  // the bubble's rectangle.
-  property string centerMode: ""
-  property int centerWidth: 0
-  property var centerWin: null
-
-  function centerWidthFor(mode) {
-    return mode === "calendar" ? Config.center.calendarWidth : Config.center.carouselWidth
+  // Screen-local source geometry used by the launcher and command menu. Both
+  // overlays follow the focused monitor, so map the clock from that bar into
+  // its window rather than assuming the screen centre or a fixed width.
+  function clockAnchor() {
+    var win = barForFocus()
+    if (!win) return Qt.rect(0, 0, Config.bar.dockHeight, Config.bar.dockHeight)
+    var clock = win.findSlot("clock")
+    if (!clock) return Qt.rect((win.width - Config.bar.dockHeight) / 2,
+                               (Config.bar.height - Config.bar.dockHeight) / 2,
+                               Config.bar.dockHeight, Config.bar.dockHeight)
+    var p = clock.mapToItem(null, 0, 0)
+    return Qt.rect(p.x, p.y, clock.width, clock.height)
   }
 
-  function centerDocks(win) {
-    var out = []
-    var kids = win.centerRow.children
-    for (var i = 0; i < kids.length; i++) if (typeof kids[i].modelData === "string") out.push(kids[i])
-    return out
-  }
-
-  // Screen-space rectangle the clock's bubble will occupy once widened to
-  // `width`; the panel card animates into it.
-  function centerGeometry(width) {
-    var win = centerWin
-    if (!win) return Qt.rect(0, 0, width, 0)
-    var docks = centerDocks(win)
-    var total = 0, before = -1
-    for (var i = 0; i < docks.length; i++) {
-      var w = docks[i].modelData === "clock" ? width : docks[i].implicitWidth
-      if (docks[i].modelData === "clock") before = total
-      total += w + (i > 0 ? win.centerRow.spacing : 0)
-    }
-    if (before < 0) before = 0
-    var x = Config.bar.marginX + Math.round((win.width - total) / 2) + before
-    return Qt.rect(x, Config.bar.marginY, width, Config.bar.dockHeight)
-  }
-
-  function setCenterMode(mode) {
-    centerMode = mode
-    centerWidth = centerWidthFor(mode)
+  function clockSlotForFocus() {
+    var win = barForFocus()
+    return win ? win.findSlot("clock") : null
   }
 
   function openCenter(mode) {
@@ -80,22 +58,14 @@ Item {
     if (center.opened) { center.switchTo(mode); return "ok" }
     var win = barForFocus()
     if (!win) return "no bar"
-    var docks = centerDocks(win)
-    var clock = null
-    for (var i = 0; i < docks.length; i++) if (docks[i].modelData === "clock") clock = docks[i]
-    if (!clock) return "no clock bubble"
-    Bus.dockPanelsCloseAll()
-    centerWin = win
-    var p = clock.mapToItem(null, 0, 0)
-    var pill = Qt.rect(Config.bar.marginX + p.x, p.y, clock.width, clock.height)
-    setCenterMode(mode)
-    center.open(mode, win.screen, pill)
+    var clock = win.findSlot("clock")
+    if (!clock) return "no clock widget"
+    center.open(mode, clock)
     return "ok on " + (win.screen ? win.screen.name : "?")
   }
 
   function closeCenter() {
     center.close()
-    centerMode = ""
   }
 
   function toggleCenter(mode) {
@@ -106,10 +76,6 @@ Item {
 
   CenterPanel {
     id: center
-    host: root
-    // Closing from inside the panel (outside click, Escape, a pick) has to
-    // shrink the clock's slot too, in step with the card.
-    onExpandedChanged: if (!expanded) root.centerMode = ""
   }
 
   Connections {
@@ -129,11 +95,11 @@ Item {
     return "ok on " + (win.screen ? win.screen.name : "?")
   }
 
-  // One per screen, declared before the bars so it maps first and the
-  // compositor stacks it under them.
+  // One shared morphing panel per screen, declared before the bars so the
+  // compositor stacks its attached surface under them.
   Variants {
     model: Quickshell.screens
-    DockPanel { required property var modelData; screen: modelData; host: root }
+    DockPanel { required property var modelData; screen: modelData }
   }
 
   Variants {
@@ -180,17 +146,23 @@ Item {
       // under the docks, which are its header.
       WlrLayershell.layer: WlrLayer.Overlay
       anchors { left: true; right: true; top: !root.atBottom; bottom: root.atBottom }
-      margins { left: Config.bar.marginX; right: Config.bar.marginX }
 
-      Item {
+      // One continuous surface makes the bar the visual parent of every
+      // widget, while the transparent inner docks retain their panel anchors.
+      Rectangle {
+        id: integratedBar
         anchors.fill: parent
-        anchors.topMargin: root.atBottom ? 0 : Config.bar.marginY
-        anchors.bottomMargin: root.atBottom ? Config.bar.marginY : 0
+        radius: 0
+        color: Theme.surface
+        // The popup card is below this window and overlaps the strip. An
+        // outer border here would draw a seam straight through that junction.
+        border.width: 0
 
         // The center dock is pinned to the screen middle; left and right hug
         // their contents from the edges. A dock with nothing in it hides.
         Dock {
           id: leftDock
+          integrated: true
           align: "left"
           anchors.left: parent.left
           anchors.verticalCenter: parent.verticalCenter
@@ -211,70 +183,29 @@ Item {
             model: Config.bar.center
             Dock {
               id: bubble
+              integrated: true
               required property string modelData
               required property int index
-              // A bubble's card grows away from the clock so it never runs
-              // under the clock pill, which is drawn above it.
               align: modelData === "clock" ? "center"
                    : index > Config.bar.center.indexOf("clock") ? "left" : "right"
-              readonly property bool expanded: modelData === "clock" && root.centerMode !== ""
-              width: expanded ? root.centerWidth : implicitWidth
-              // The panel card covers this bubble; fade it so nothing peeks
-              // out past the card's rounded corners.
-              opacity: expanded ? 0 : 1
-              Behavior on width { NumberAnimation { duration: Config.center.animationMs; easing.type: Easing.OutBack; easing.overshoot: 1.05 } }
-              // Hide at once when the card takes over; on the way back wait
-              // until the card has shrunk into the pill, or both show at once.
-              Behavior on opacity {
-                SequentialAnimation {
-                  PauseAnimation { duration: bubble.expanded ? 0 : Config.center.animationMs * 0.75 }
-                  NumberAnimation { duration: bubble.expanded ? 60 : 120 }
-                }
-              }
               WidgetSlot { widgetId: bubble.modelData; host: root; window: win }
             }
           }
         }
 
-        // The right dock shows its main widgets and unfolds the rest to the
-        // left while hovered, or while one of them has its panel up.
+        // One stable status cluster. Nothing is hidden behind hover: keeping
+        // every configured item present makes direct panel-to-panel clicks
+        // predictable and gives the right side one continuous rhythm.
         Dock {
           id: rightDock
+          integrated: true
           align: "right"
           anchors.right: parent.right
           anchors.verticalCenter: parent.verticalCenter
           visible: Config.bar.right.length > 0 || Config.bar.rightMore.length > 0
-          // A panel opening unfolds the whole dock, like a hover would, and
-          // after it closes the dock stays unfolded a moment before folding.
-          readonly property bool unfolded: hovered || flat || collapse.running
-          onHoveredChanged: if (!hovered) collapse.restart(); else collapse.stop()
-          onFlatChanged: if (!flat) { collapse.interval = Config.dockPanel.linger; collapse.restart() }
-                         else collapse.stop()
-
-          Timer {
-            id: collapse
-            interval: Config.dockPanel.collapseDelayMs
-            onTriggered: interval = Config.dockPanel.collapseDelayMs
-          }
-
-          Item {
-            id: more
-            height: parent.height
-            width: rightDock.unfolded ? moreRow.implicitWidth + rightDock.spacing : 0
-            clip: true
-            opacity: rightDock.unfolded ? 1 : 0
-            Behavior on width { NumberAnimation { duration: Config.dockPanel.unfoldMs; easing.type: Easing.OutCubic } }
-            Behavior on opacity { NumberAnimation { duration: Config.dockPanel.unfoldMs } }
-            Row {
-              id: moreRow
-              anchors.right: parent.right
-              height: parent.height
-              spacing: rightDock.spacing
-              Repeater {
-                model: Config.bar.rightMore
-                WidgetSlot { required property string modelData; widgetId: modelData; host: root; window: win }
-              }
-            }
+          Repeater {
+            model: Config.bar.rightMore
+            WidgetSlot { required property string modelData; widgetId: modelData; host: root; window: win }
           }
           Repeater {
             model: Config.bar.right

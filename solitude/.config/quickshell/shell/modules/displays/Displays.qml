@@ -21,6 +21,7 @@ BarButton {
   icon: monitorCount > 1 ? "󰍺" : "󰍹"
   label: activeProfile !== "" ? Util.truncate(activeProfile, 18) : (monitorCount > 1 ? String(monitorCount) : "")
   iconColor: panel.barIconDimmed ? Theme.muted : Theme.foreground
+  panelActive: panel.opened
 
   function togglePanel() { panel.toggle() }
 
