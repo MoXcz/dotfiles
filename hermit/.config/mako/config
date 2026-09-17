@@ -1,0 +1,25 @@
+# Colors come from the active theme; `theme apply` regenerates the include.
+include=~/.config/mako/theme.conf
+
+font=Iosevka Nerd Font 11
+width=400
+height=160
+margin=12
+padding=12
+border-size=1
+border-radius=8
+icon-path=/usr/share/icons/Adwaita
+max-icon-size=48
+default-timeout=6000
+ignore-timeout=0
+layer=overlay
+anchor=top-right
+max-visible=5
+group-by=app-name
+format=<b>%s</b>\n%b
+
+[urgency=critical]
+default-timeout=0
+
+[mode=do-not-disturb]
+invisible=1

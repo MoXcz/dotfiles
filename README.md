@@ -11,11 +11,13 @@ Personal configuration files for Linux desktop environments, managed with [GNU S
 
 ## Overview
 
-This repository contains two distinct desktop environment profiles, plus a set of shared configurations used by both.
+This repository contains four desktop environment profiles, plus a set of shared configurations used by all of them.
 
 | Profile                               | Base OS    | WM        |
 | ------------------------------------- | ---------- | --------- |
 | [**Omarchy**](./omarchy/)             | Arch Linux | Hyprland  |
+| [**Solitude**](./solitude/)           | Arch Linux | Hyprland + Quickshell |
+| [**Hermit**](./hermit/)               | Arch Linux | Hyprland + Waybar |
 | [**Paradise Lost**](./paradise-lost/) | Debian 12  | Sway / i3 |
 
 Both profiles share:
@@ -38,6 +40,8 @@ Both profiles share:
 ├── omarchy/            # Arch Linux + Hyprland + Omarchy profile
 │   ├── bootstrap.sh    # Post-install script
 │   └── .config/        # Hyprland, Alacritty, Waybar, …
+├── solitude/           # Arch Linux + Hyprland + Quickshell profile
+├── hermit/             # Arch Linux + Hyprland + Waybar profile
 └── paradise-lost/      # Debian 12 + Sway/i3 profile
     ├── scripts/        # Setup & utility scripts
     └── .config/        # Sway, i3, Waybar, i3blocks, …
@@ -75,6 +79,8 @@ You can also pass the profile name directly:
 
 ```bash
 ./setup.sh omarchy
+./setup.sh solitude
+./setup.sh hermit
 ./setup.sh paradise-lost
 ```
 
@@ -86,6 +92,20 @@ You can also pass the profile name directly:
 
 See [omarchy/README.md](./omarchy/README.md) for detailed setup instructions.
 
+### Solitude
+
+> Arch Linux + Hyprland with a single Quickshell desktop shell
+
+See [solitude/README.md](./solitude/README.md) for detailed setup instructions.
+
+### Hermit
+
+> Arch Linux + Hyprland with Waybar, rofi, mako, swayosd, hyprlock
+
+Solitude without Quickshell: the same Hyprland config, scripts and themes,
+with each desktop role handled by a separate small program.
+See [hermit/README.md](./hermit/README.md) for detailed setup instructions.
+
 ### Paradise Lost
 
 > Debian 12 + Sway / i3
@@ -94,7 +114,7 @@ See [paradise-lost/README.md](./paradise-lost/README.md) for detailed setup inst
 
 ### Shared Config
 
-The `shared/` directory contains configuration used by both profiles (Neovim, zsh, tmux, Kitty, etc.).
+The `shared/` directory contains configuration used by every profile (Neovim, zsh, tmux, Kitty, etc.).
 
 ## Greatly Inspired By
 

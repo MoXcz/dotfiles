@@ -1,0 +1,95 @@
+/* Colors come from the active theme; `theme apply` regenerates the file. */
+@import "theme.css";
+
+* {
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  font-family: "Iosevka Nerd Font", "Noto Color Emoji";
+  font-size: 13px;
+}
+
+window#waybar {
+  background-color: @background;
+  color: @foreground;
+}
+
+window#waybar.fullscreen {
+  background-color: transparent;
+}
+
+.modules-left { margin-left: 8px; }
+.modules-right { margin-right: 8px; }
+
+#custom-menu {
+  font-size: 15px;
+  padding: 0 10px 0 4px;
+  color: @accent;
+}
+
+#workspaces button {
+  all: initial;
+  padding: 0 6px;
+  margin: 0 1px;
+  min-width: 10px;
+  color: @foreground;
+}
+
+#workspaces button.empty { color: @muted; }
+#workspaces button.active { color: @accent; }
+#workspaces button.urgent { color: @urgent; }
+
+#window {
+  margin-left: 12px;
+  color: @muted;
+}
+
+window#waybar.empty #window { margin: 0; }
+
+#clock { padding: 0 8px; }
+
+#custom-recording,
+#tray,
+#language,
+#custom-gpu,
+#cpu,
+#memory,
+#bluetooth,
+#network,
+#pulseaudio,
+#backlight,
+#battery {
+  padding: 0 7px;
+}
+
+#tray { margin-right: 6px; }
+#tray > .passive { -gtk-icon-effect: dim; }
+#tray > .needs-attention { -gtk-icon-effect: highlight; }
+
+#custom-recording { color: @urgent; }
+#custom-recording.idle { padding: 0; }
+
+#network.disconnected,
+#bluetooth.off,
+#bluetooth.disabled,
+#pulseaudio.muted { color: @muted; }
+
+#bluetooth.connected { color: @accent; }
+
+#battery.warning:not(.charging) { color: @warning; }
+#battery.critical:not(.charging) { color: @urgent; }
+#battery.charging, #battery.plugged { color: @success; }
+
+#cpu.warning, #memory.warning { color: @warning; }
+#cpu.critical, #memory.critical { color: @urgent; }
+
+tooltip {
+  background-color: @surface;
+  border: 1px solid @border;
+  border-radius: 6px;
+}
+
+tooltip label {
+  color: @foreground;
+  padding: 2px;
+}

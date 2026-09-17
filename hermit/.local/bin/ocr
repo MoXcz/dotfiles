@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Copy the text out of a screen region with OCR.
+# Language: $HERMIT_OCR_LANGS (tesseract codes, default eng).
+
+set -euo pipefail
+
+command -v tesseract >/dev/null 2>&1 || {
+  notify-send -a hermit -u critical "OCR needs tesseract" "Install tesseract and a language pack"
+  exit 1
+}
+
+FREEZE_PID=""
+cleanup() { [[ -n $FREEZE_PID ]] && kill "$FREEZE_PID" 2>/dev/null || true; }
+trap cleanup EXIT
+
+if command -v hyprpicker >/dev/null 2>&1; then
+  hyprpicker -r -z >/dev/null 2>&1 &
+  FREEZE_PID=$!
+  sleep .1
+fi
+
+SELECTION=$(slurp 2>/dev/null) || exit 0
+[[ -z $SELECTION ]] && exit 0
+
+TEXT=$(grim -g "$SELECTION" - |
+  tesseract stdin stdout --oem 1 --psm 6 -l "${HERMIT_OCR_LANGS:-eng}" \
+    --dpi 300 -c preserve_interword_spaces=1 2>/dev/null) || exit 1
+
+[[ -z $TEXT ]] && {
+  notify-send -a hermit -u low "No text found in the selection"
+  exit 1
+}
+
+printf "%s" "$TEXT" | wl-copy
+notify-send -a hermit -u low "Copied text from selection"

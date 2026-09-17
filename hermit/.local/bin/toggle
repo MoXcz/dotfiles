@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Start or stop something that changes how the session behaves.
+# Usage: toggle <idle|nightlight|dnd|bar>
+#
+#   idle        hypridle.service   (idle locking)
+#   nightlight  hyprsunset.service (warm display)
+#   dnd         mako do-not-disturb mode
+#   bar         show or hide waybar
+
+set -euo pipefail
+
+FLAG="${1:-}"
+[[ -n $FLAG ]] || { echo "Usage: toggle <idle|nightlight|dnd|bar>" >&2; exit 1; }
+
+notify() { notify-send -a hermit -u low "$1"; }
+
+service_toggle() {
+  local unit=$1 label=$2
+  if systemctl --user is-active --quiet "$unit"; then
+    systemctl --user stop "$unit"
+    notify "$label off"
+  else
+    systemctl --user start "$unit"
+    notify "$label on"
+  fi
+}
+
+case "$FLAG" in
+  idle) service_toggle hypridle.service "Idle locking" ;;
+  nightlight) service_toggle hyprsunset.service "Nightlight" ;;
+  dnd)
+    if [[ $(makoctl mode) == *do-not-disturb* ]]; then
+      makoctl mode -r do-not-disturb >/dev/null
+      notify "Notifications on"
+    else
+      # The confirmation goes out before silencing so it is still shown.
+      notify "Notifications silenced"
+      sleep 0.2
+      makoctl mode -a do-not-disturb >/dev/null
+    fi
+    ;;
+  bar) pkill -SIGUSR1 waybar ;;
+  *) echo "Unknown toggle: $FLAG" >&2; exit 1 ;;
+esac

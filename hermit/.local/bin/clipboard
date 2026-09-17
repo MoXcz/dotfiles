@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Pick an entry from the clipboard history (cliphist) with rofi and copy it.
+# Usage: clipboard [wipe]
+
+set -euo pipefail
+
+if [[ ${1:-} == wipe ]]; then
+  cliphist wipe
+  notify-send -a hermit -u low "Clipboard history cleared"
+  exit 0
+fi
+
+# Second press closes the picker.
+pkill -x rofi && exit 0
+
+selection=$(cliphist list | menu pick "Clipboard" -display-columns 2 \
+  -theme-str 'window { width: 760px; }') || exit 0
+[[ -n $selection ]] || exit 0
+
+printf '%s' "$selection" | cliphist decode | wl-copy

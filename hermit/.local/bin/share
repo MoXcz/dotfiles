@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Share the clipboard, files, or a folder with LocalSend.
+# Usage: share <clipboard|file|folder> [path...]
+
+set -euo pipefail
+
+MODE="${1:-}"
+shift || true
+[[ -n $MODE ]] || { echo "Usage: share <clipboard|file|folder> [path...]" >&2; exit 1; }
+
+command -v localsend >/dev/null 2>&1 || command -v localsend_app >/dev/null 2>&1 || {
+  notify-send -a hermit -u critical "Sharing needs LocalSend" "Install localsend-bin"
+  exit 1
+}
+LOCALSEND=$(command -v localsend || command -v localsend_app)
+
+files=()
+if [[ $MODE == clipboard ]]; then
+  temp=$(mktemp --suffix=.txt)
+  wl-paste >"$temp"
+  files=("$temp")
+elif (($# > 0)); then
+  files=("$@")
+else
+  # zenity ships with the GNOME stack nemo already pulls in; fall back to the
+  # file manager when it is missing so the action is never a dead end.
+  if command -v zenity >/dev/null 2>&1; then
+    if [[ $MODE == folder ]]; then
+      selection=$(zenity --file-selection --directory --title "Share folder") || exit 0
+    else
+      selection=$(zenity --file-selection --multiple --separator=$'\n' --title "Share files") || exit 0
+    fi
+    mapfile -t files <<<"$selection"
+  else
+    notify-send -a hermit -u low "Pick what to share in the file manager"
+    exec "$LOCALSEND"
+  fi
+fi
+
+((${#files[@]} > 0)) || exit 0
+exec "$LOCALSEND" "${files[@]}"

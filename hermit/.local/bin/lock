@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Lock the session with hyprlock. Safe to call while already locked.
+
+set -euo pipefail
+
+pidof hyprlock >/dev/null && exit 0
+exec hyprlock

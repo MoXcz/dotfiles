@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+# Switch the desktop theme.
+# Usage: theme [current|list|set <name>|next|apply]
+#
+# A theme is a directory under ~/.config/hermit/themes holding colors.json,
+# an optional hyprland.lua, and a backgrounds/ folder. `set` records the name
+# in the state directory and runs `apply`, which renders colors.json into a
+# theme file next to each consumer's config (waybar, mako, rofi, hyprlock;
+# Hyprland's goes to the state directory) and reloads the ones that are
+# running. Those generated files are not stowed: `apply` runs from autostart
+# so they exist before waybar starts.
+
+set -euo pipefail
+
+THEMES_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/hermit/themes"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/hermit"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+NAME_FILE="$STATE_DIR/theme"
+DEFAULT_THEME="solitude"
+
+list() {
+  find -L "$THEMES_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort
+}
+
+current() {
+  if [[ -f $NAME_FILE ]]; then
+    cat "$NAME_FILE"
+  elif [[ -d $THEMES_DIR/$DEFAULT_THEME ]]; then
+    echo "$DEFAULT_THEME"
+  else
+    list | head -1
+  fi
+}
+
+# Render colors.json into the per-program files. Everything is generated
+# from the same twelve keys, so a theme only ever has to define those.
+render() {
+  local dir=$1
+  mkdir -p "$STATE_DIR"
+
+  # Hyprland cannot un-apply what a previous theme set, so an absent
+  # hyprland.lua still needs the old one gone before the reload.
+  if [[ -f $dir/hyprland.lua ]]; then
+    cp "$dir/hyprland.lua" "$STATE_DIR/theme.lua"
+  else
+    rm -f "$STATE_DIR/theme.lua"
+  fi
+
+  mkdir -p "$CONFIG_DIR"/{waybar,mako,rofi,hypr}
+  python3 - "$dir/colors.json" "$CONFIG_DIR" <<'PY'
+import json, sys
+colors = json.load(open(sys.argv[1]))
+out = sys.argv[2]
+keys = ["background", "surface", "surfaceAlt", "border", "foreground",
+        "muted", "accent", "urgent", "success", "warning"]
+c = {k: colors[k] for k in keys}
+
+with open(f"{out}/waybar/theme.css", "w") as f:
+    for k, v in c.items():
+        f.write(f"@define-color {k} {v};\n")
+
+with open(f"{out}/mako/theme.conf", "w") as f:
+    f.write(f"""background-color={c['surface']}
+text-color={c['foreground']}
+border-color={c['border']}
+progress-color=over {c['surfaceAlt']}
+
+[urgency=low]
+border-color={c['muted']}
+
+[urgency=critical]
+border-color={c['urgent']}
+""")
+
+with open(f"{out}/rofi/theme.rasi", "w") as f:
+    f.write(f"""@theme "kanagawa"
+* {{
+    kanagawa-bg:      {c['background']};
+    kanagawa-bg-alt:  {c['surface']};
+    kanagawa-fg:      {c['foreground']};
+    kanagawa-fg-dim:  {c['foreground']};
+    kanagawa-fg-alt:  {c['muted']};
+    kanagawa-ok:      {c['success']};
+    kanagawa-warn:    {c['warning']};
+    kanagawa-err:     {c['urgent']};
+    kanagawa-info:    {c['accent']};
+    kanagawa-accent:  {c['accent']};
+    kanagawa-accent2: {c['accent']};
+}}
+""")
+
+# hyprlang colors: rgb(rrggbb) and rgba(rrggbbaa).
+def rgb(hexcolor, alpha=None):
+    h = hexcolor.lstrip("#")
+    return f"rgba({h}{int(alpha * 255):02x})" if alpha is not None else f"rgb({h})"
+
+with open(f"{out}/hypr/hyprlock-theme.conf", "w") as f:
+    f.write(f"""$background = {rgb(c['background'])}
+$surface = {rgb(c['surface'], 0.9)}
+$border = {rgb(c['border'])}
+$foreground = {rgb(c['foreground'])}
+$muted = {rgb(c['muted'])}
+$accent = {rgb(c['accent'])}
+$urgent = {rgb(c['urgent'])}
+""")
+PY
+}
+
+reload() {
+  hyprctl reload >/dev/null 2>&1 || true
+  # waybar re-reads its CSS on SIGUSR2; mako has a proper reload.
+  pkill -SIGUSR2 -x waybar 2>/dev/null || true
+  makoctl reload >/dev/null 2>&1 || true
+}
+
+apply() {
+  local name dir
+  name=$(current)
+  [[ -n $name ]] || exit 0
+  dir="$THEMES_DIR/$name"
+  [[ -f $dir/colors.json ]] || { echo "Theme has no colors.json: $name" >&2; exit 1; }
+  render "$dir"
+}
+
+set_theme() {
+  local name=$1
+  local dir="$THEMES_DIR/$name"
+  [[ -d $dir ]] || { echo "Unknown theme: $name" >&2; exit 1; }
+
+  mkdir -p "$STATE_DIR"
+  printf '%s\n' "$name" >"$NAME_FILE"
+  render "$dir"
+  reload
+
+  # Only follow the theme's own wallpaper when the current one came from a
+  # different theme, so a background picked by hand survives a theme switch.
+  local background
+  background=$(background current 2>/dev/null || true)
+  if [[ -z $background || $background != "$dir"/* ]]; then
+    local first
+    first=$(find -L "$dir/backgrounds" -type f 2>/dev/null | sort | head -1)
+    [[ -n $first ]] && background set "$first" >/dev/null 2>&1 || true
+  fi
+
+  notify-send -a hermit -u low "Theme: $name"
+}
+
+case "${1:-current}" in
+  current) current ;;
+  list) list ;;
+  apply) apply ;;
+  set)
+    [[ $# -ge 2 ]] || { echo "Usage: theme set <name>" >&2; exit 1; }
+    set_theme "$2"
+    ;;
+  next)
+    mapfile -t names < <(list)
+    ((${#names[@]} > 0)) || exit 1
+    active=$(current)
+    index=0
+    for i in "${!names[@]}"; do
+      [[ ${names[$i]} == "$active" ]] && index=$(((i + 1) % ${#names[@]}))
+    done
+    set_theme "${names[$index]}"
+    ;;
+  *) echo "Usage: theme [current|list|set <name>|next|apply]" >&2; exit 1 ;;
+esac

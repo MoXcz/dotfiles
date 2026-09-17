@@ -1,0 +1,177 @@
+#!/usr/bin/env bash
+# Command menu on rofi. Usage: menu [route]
+#
+#   (none)       root menu
+#   launcher     application launcher (rofi drun)
+#   capture      screenshot, recording, OCR, color picker
+#   toggle       idle locking, nightlight, do not disturb, bar
+#   theme        switch the theme
+#   background   switch the wallpaper
+#   keyboard     switch the keyboard layout
+#   share        LocalSend
+#   tools        transcode, displays, VPN, Windows VM
+#   power        lock, suspend, logout, reboot, shutdown
+#   emoji, keybindings, clipboard   the pickers by that name
+#   pick <prompt>   dmenu on stdin with the theme applied (used by the pickers)
+#
+# Any route can be bound directly. Pressing the binding again closes the menu.
+
+set -euo pipefail
+
+THEME_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/theme.rasi"
+
+rofi_themed() {
+  if [[ -f $THEME_FILE ]]; then
+    rofi -theme "$THEME_FILE" "$@"
+  else
+    rofi "$@"
+  fi
+}
+
+# Rows are "glyph  Title<TAB>command". Only the visible part reaches rofi.
+pick() {
+  local prompt=$1
+  shift
+  rofi_themed -dmenu -i -p "$prompt" "$@"
+}
+
+run_rows() {
+  local prompt=$1
+  local rows choice
+  rows=$(cat)
+  choice=$(printf '%s\n' "$rows" | cut -f1 | pick "$prompt") || exit 0
+  [[ -n $choice ]] || exit 0
+  local command
+  command=$(printf '%s\n' "$rows" | awk -F'\t' -v c="$choice" '$1 == c { print $2; exit }')
+  [[ -n $command ]] || exit 0
+  # Detach so the menu's own exit does not take the launched program with it.
+  setsid -f bash -c "$command" >/dev/null 2>&1
+}
+
+has() { command -v "$1" >/dev/null 2>&1; }
+
+route_root() {
+  {
+    printf '󰀻  Apps\tmenu launcher\n'
+    printf '󰄀  Capture\tmenu capture\n'
+    printf '󰔡  Toggle\tmenu toggle\n'
+    printf '󰏘  Theme\tmenu theme\n'
+    printf '󰸉  Background\tmenu background\n'
+    printf '󰌌  Keyboard layout\tmenu keyboard\n'
+    printf '󰞅  Emoji\tmenu emoji\n'
+    printf '󰘳  Keybindings\tmenu keybindings\n'
+    printf '󰅍  Clipboard\tclipboard\n'
+    has localsend && printf '󰒍  Share\tmenu share\n'
+    printf '󰒓  Tools\tmenu tools\n'
+    printf '󰐥  Power\tmenu power\n'
+  } | run_rows "Menu"
+}
+
+route_capture() {
+  {
+    printf '󰨏  Screenshot region\tscreenshot\n'
+    printf '󰹑  Screenshot screen\tscreenshot fullscreen\n'
+    has wf-recorder && printf '󰕧  Screen recording\tscreenrecord\n'
+    has wf-recorder && printf '󰕧  Screen recording with audio\tscreenrecord region --with-audio\n'
+    has tesseract && printf '󰴑  Extract text (OCR)\tocr\n'
+    has hyprpicker && printf '󰉦  Color picker\tpkill hyprpicker || hyprpicker -a\n'
+  } | run_rows "Capture"
+}
+
+route_toggle() {
+  {
+    printf '󰒲  Idle locking\ttoggle idle\n'
+    printf '󰛨  Nightlight\ttoggle nightlight\n'
+    printf '󰂛  Do not disturb\ttoggle dnd\n'
+    printf '󰍜  Bar\ttoggle bar\n'
+  } | run_rows "Toggle"
+}
+
+route_theme() {
+  local active choice
+  active=$(theme current)
+  choice=$(theme list | while read -r name; do
+    [[ $name == "$active" ]] && printf '󰏘  %s  (active)\n' "$name" || printf '󰏘  %s\n' "$name"
+  done | pick "Theme") || exit 0
+  [[ -n $choice ]] || exit 0
+  choice=${choice#*  }
+  theme set "${choice%%  *}"
+}
+
+route_background() {
+  background list | while IFS=$'\t' read -r _ title path mark _; do
+    printf '󰸉  %s  ·  %s\t%s\n' "$title" "$mark" "$path"
+  done | run_rows_path "Background"
+}
+
+# Like run_rows, but the payload is a path for `background set`.
+run_rows_path() {
+  local prompt=$1 rows choice path
+  rows=$(cat)
+  choice=$(printf '%s\n' "$rows" | cut -f1 | pick "$prompt") || exit 0
+  [[ -n $choice ]] || exit 0
+  path=$(printf '%s\n' "$rows" | awk -F'\t' -v c="$choice" '$1 == c { print $2; exit }')
+  [[ -n $path ]] && background set "$path"
+}
+
+route_keyboard() {
+  local choice
+  choice=$(keyboard list | while IFS=$'\t' read -r glyph name _ mark; do
+    [[ -n $mark ]] && printf '%s  %s  (%s)\n' "$glyph" "$name" "$mark" || printf '%s  %s\n' "$glyph" "$name"
+  done | pick "Keyboard") || exit 0
+  [[ -n $choice ]] || exit 0
+  choice=${choice#*  }
+  keyboard set "${choice%%  *}"
+}
+
+route_share() {
+  {
+    printf '󰅍  Share clipboard\tshare clipboard\n'
+    printf '󰈔  Share files\tshare file\n'
+    printf '󰉋  Share folder\tshare folder\n'
+  } | run_rows "Share"
+}
+
+route_tools() {
+  {
+    has ffmpeg && printf '󰈫  Transcode\ttranscode\n'
+    [[ -x /usr/bin/swanctl ]] && printf '󰖂  VPN toggle\tvpn toggle\n'
+    has docker && printf '󰖳  Windows VM\twindows-vm launch\n'
+    printf '󰄛  Activity\ttui btop\n'
+    printf '󰕾  Audio\ttui wiremix\n'
+    printf '󰤨  Wi-Fi\ttui nmtui\n'
+    printf '󰂯  Bluetooth\ttui bluetui\n'
+  } | run_rows "Tools"
+}
+
+route_power() {
+  {
+    printf '󰌾  Lock\tlock\n'
+    printf '󰒲  Suspend\tsystemctl suspend\n'
+    printf "󰍃  Log out\thyprctl dispatch 'hl.dsp.exit()'\n"
+    printf '󰜉  Reboot\tsystemctl reboot\n'
+    printf '󰐥  Shut down\tsystemctl poweroff\n'
+  } | run_rows "Power"
+}
+
+route=${1:-root}
+shift || true
+
+case "$route" in
+  pick)
+    (($# >= 1)) || { echo "Usage: menu pick <prompt> [rofi args]" >&2; exit 1; }
+    pick "$@"
+    ;;
+  launcher)
+    pkill -x rofi && exit 0
+    rofi_themed -show drun
+    ;;
+  emoji | keybindings | clipboard) exec "$route" ;;
+  root | capture | toggle | theme | background | keyboard | share | tools | power)
+    # A second press of the binding closes whatever menu is open.
+    pkill -x rofi && exit 0
+    "route_$route"
+    ;;
+  -h | --help) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//' ;;
+  *) echo "Unknown route: $route" >&2; exit 1 ;;
+esac

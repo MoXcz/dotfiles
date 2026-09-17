@@ -19,7 +19,7 @@ if [[ ! -d "$SHARED_DIR" ]]; then
   exit 1
 fi
 
-PROFILES=("omarchy" "solitude" "paradise-lost")
+PROFILES=("omarchy" "solitude" "hermit" "paradise-lost")
 
 unstow_others() {
   local selected="$1"
@@ -71,7 +71,7 @@ setup_nvim() {
   fi
 }
 
-options=("omarchy" "paradise-lost" "solitude" "Quit")
+options=("omarchy" "paradise-lost" "solitude" "hermit" "Quit")
 
 if [[ -n "$PROFILE" ]]; then
   stow_profile "$PROFILE"

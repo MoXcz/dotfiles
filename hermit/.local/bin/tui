@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Open a terminal UI in a floating terminal, or focus it if already open.
+# Usage: tui <command...>
+#
+# The window class is TUI.float, which hypr/apps/system.lua floats and
+# centers. The title is the command, so a second press focuses the running
+# one instead of stacking another copy.
+
+set -euo pipefail
+
+(($# > 0)) || { echo "Usage: tui <command...>" >&2; exit 1; }
+
+command -v "$1" >/dev/null 2>&1 || {
+  notify-send -a hermit -u critical "$1 is not installed"
+  exit 1
+}
+
+CLASS="TUI.float"
+TITLE="$1"
+
+address=$(hyprctl -j clients 2>/dev/null | python3 -c '
+import json, sys
+wanted_class, wanted_title = sys.argv[1:3]
+for w in json.load(sys.stdin):
+    if w.get("class") == wanted_class and w.get("title") == wanted_title:
+        print(w["address"]); break
+' "$CLASS" "$TITLE" || true)
+
+if [[ -n $address ]]; then
+  hyprctl dispatch "hl.dsp.focus({ window = \"address:$address\" })" >/dev/null
+  exit 0
+fi
+
+exec kitty --class "$CLASS" --title "$TITLE" -e "$@"
