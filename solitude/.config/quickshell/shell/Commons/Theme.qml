@@ -5,7 +5,7 @@ import Quickshell.Io
 import qs.Commons
 
 // Colors and structural tokens. The palette comes from the active theme
-// (~/.config/shell/themes/<name>/colors.json, selected with
+// (~/.config/themes/<name>/colors.json, selected with
 // theme); the values below are the fallback when no theme is set or
 // its file cannot be read. Corner radius and outer gap are picked up from
 // Hyprland so the shell matches the window decorations.
@@ -92,7 +92,7 @@ QtObject {
   }
 
   property FileView colorsFile: FileView {
-    path: Config.home + "/.config/shell/themes/" + root.themeName + "/colors.json"
+    path: Config.home + "/.config/themes/" + root.themeName + "/colors.json"
     watchChanges: true
     printErrors: false
     onFileChanged: reload()

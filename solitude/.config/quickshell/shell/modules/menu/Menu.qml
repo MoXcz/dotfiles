@@ -17,6 +17,7 @@ Item {
   id: root
 
   required property var bar
+  readonly property bool attachedPanel: true
   readonly property bool opened: panel.opened
   property string filter: ""
   property int selectedIndex: 0
@@ -89,10 +90,15 @@ Item {
 
   function close() {
     panel.dismiss()
+  }
+
+  function stopWork() {
     generator.running = false
     dynamicRows = null
     loadingLabel = ""
   }
+
+  onOpenedChanged: if (!opened) stopWork()
 
   // Raised before opening so the shell can close the other overlays.
   signal opening()

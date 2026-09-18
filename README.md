@@ -2,50 +2,19 @@
 
 Personal configuration files for Linux desktop environments, managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
-## Table of Contents
-
-- [Overview](#overview)
-- [Directory Structure](#directory-structure)
-- [Installation](#installation)
-- [Profiles](#profiles)
-
-## Overview
-
-This repository contains four desktop environment profiles, plus a set of shared configurations used by all of them.
-
-| Profile                               | Base OS    | WM        |
-| ------------------------------------- | ---------- | --------- |
-| [**Omarchy**](./omarchy/)             | Arch Linux | Hyprland  |
+| Profile                               | Base OS    | WM                    |
+| ------------------------------------- | ---------- | --------------------- |
+| [**Omarchy**](./omarchy/)             | Arch Linux | Hyprland              |
 | [**Solitude**](./solitude/)           | Arch Linux | Hyprland + Quickshell |
-| [**Hermit**](./hermit/)               | Arch Linux | Hyprland + Waybar |
-| [**Paradise Lost**](./paradise-lost/) | Debian 12  | Sway / i3 |
-
-Both profiles share:
+| [**Hermit**](./hermit/)               | Arch Linux | Hyprland + Waybar     |
+| [**Paradise Lost**](./paradise-lost/) | Debian 12  | Sway / i3             |
 
 - **Shell**: [Zsh](https://www.zsh.org/)
-- **Terminal**: [Ghostty](https://ghostty.org/) / [Kitty](https://sw.kovidgoyal.net/kitty/) with [tmux](https://github.com/tmux/tmux)
+- **Terminal**: [Kitty](https://sw.kovidgoyal.net/kitty/) with [tmux](https://github.com/tmux/tmux)
 - **Editor**: [Neovim](https://neovim.io/)
 - **Font**: [Iosevka Term](https://typeof.net/Iosevka/)
-- **Colorscheme**: [Kanagawa](https://github.com/rebelot/kanagawa.nvim) (though not completely)
-- **Bar**: [Waybar](https://github.com/Alexays/Waybar)
-
-## Directory Structure
-
-```
-.
-├── setup.sh            # Main entry point — stows a selected profile
-├── shared/             # Config shared between all profiles
-│   ├── .config/        # Neovim, Zsh, Tmux, Ghostty, Starship, etc.
-│   └── scripts/        # Utility scripts (sessionizer, cht.sh, …)
-├── omarchy/            # Arch Linux + Hyprland + Omarchy profile
-│   ├── bootstrap.sh    # Post-install script
-│   └── .config/        # Hyprland, Alacritty, Waybar, …
-├── solitude/           # Arch Linux + Hyprland + Quickshell profile
-├── hermit/             # Arch Linux + Hyprland + Waybar profile
-└── paradise-lost/      # Debian 12 + Sway/i3 profile
-    ├── scripts/        # Setup & utility scripts
-    └── .config/        # Sway, i3, Waybar, i3blocks, …
-```
+- **Colorscheme**: [Kanagawa](https://github.com/rebelot/kanagawa.nvim) and ashen.nvim
+- **Bar**: [Waybar](https://github.com/Alexays/Waybar) and Quickshell
 
 ## Installation
 
@@ -74,43 +43,6 @@ A menu will appear to select the profile you want to deploy. The script will:
 1. Unstow any previously active profile
 2. Stow the shared configuration
 3. Stow the selected profile
-
-You can also pass the profile name directly:
-
-```bash
-./setup.sh omarchy
-./setup.sh solitude
-./setup.sh hermit
-./setup.sh paradise-lost
-```
-
-## Profiles
-
-### Omarchy
-
-> Arch Linux + Hyprland via [Omarchy](https://omarchy.org/)
-
-See [omarchy/README.md](./omarchy/README.md) for detailed setup instructions.
-
-### Solitude
-
-> Arch Linux + Hyprland with a single Quickshell desktop shell
-
-See [solitude/README.md](./solitude/README.md) for detailed setup instructions.
-
-### Hermit
-
-> Arch Linux + Hyprland with Waybar, rofi, mako, swayosd, hyprlock
-
-Solitude without Quickshell: the same Hyprland config, scripts and themes,
-with each desktop role handled by a separate small program.
-See [hermit/README.md](./hermit/README.md) for detailed setup instructions.
-
-### Paradise Lost
-
-> Debian 12 + Sway / i3
-
-See [paradise-lost/README.md](./paradise-lost/README.md) for detailed setup instructions.
 
 ### Shared Config
 

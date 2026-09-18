@@ -23,7 +23,7 @@ handled by a small tool that does only that.
 | File pickers     | xdg-desktop-portal-gtk                                                      |
 | File manager     | nemo                                                                        |
 | Removable drives | udiskie                                                                     |
-| Monitors         | `hypr/monitors.lua` per hostname, `monitor-watch` reloads on hotplug         |
+| Monitors         | `hypr/monitors.lua` with per-host layouts                                   |
 | Auth prompts     | polkit-gnome                                                                |
 
 ## Install
@@ -75,11 +75,13 @@ knowing on day one:
 
 ## Themes
 
-A theme is a folder under `.config/hermit/themes/<name>` with:
+A theme is a folder under the shared `.config/themes/<name>` with:
 
 - `colors.json` – twelve named colors
 - `hyprland.lua` – optional window border colors
-- `backgrounds/` – wallpapers
+
+Wallpapers live independently under `~/backgrounds`, stowed from the shared
+dotfiles package.
 
 `theme set <name>` renders `colors.json` into a `theme.*` file next to the
 config of waybar, mako, rofi and hyprlock (those files are generated, not
@@ -108,6 +110,5 @@ Everything lives in `.local/bin`:
 | `ocr`             | tesseract on a region                                        |
 | `transcode`       | resize and re-encode pictures and videos                     |
 | `share`           | LocalSend for the clipboard, files or a folder               |
-| `monitor-watch`   | reloads Hyprland after hotplug and resume                    |
 | `vpn`             | strongSwan helper (`vpn setup` once)                         |
 | `windows-vm`      | dockur/windows VM helper                                     |

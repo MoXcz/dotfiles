@@ -13,6 +13,7 @@ Item {
   id: root
 
   required property var bar
+  readonly property bool attachedPanel: true
   readonly property bool opened: panel.opened
   // Hover only steers the cursor after the mouse has actually moved; a
   // pointer resting over the list must not steal the selection at open.
@@ -65,9 +66,14 @@ Item {
 
   function close() {
     panel.dismiss()
+  }
+
+  function stopWork() {
     calcTimer.stop()
     if (calcProc.running) calcProc.running = false
   }
+
+  onOpenedChanged: if (!opened) stopWork()
 
   function toggle() {
     if (opened) close(); else open()

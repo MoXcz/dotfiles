@@ -1,6 +1,10 @@
 configuration {
     font: "Iosevka Nerd Font 12";
     show-icons: true;
+    matching: "normal";
+    sort: true;
+    sorting-method: "normal";
+    drun-match-fields: "name,generic,keywords";
     drun-display-format: "{name}";
     display-drun: "Applications";
     display-run: "Run";
@@ -19,7 +23,7 @@ configuration {
 }
 
 window {
-    width: 40em;
+    width: 20em;
     border: 2px;
     border-color: @border;
     border-radius: 8px;
@@ -61,43 +65,15 @@ listview {
 element {
     border-radius: 5px;
     padding: 0.6em;
-    background-color: transparent;
-    text-color: @foreground;
 }
 
-element selected {
-    background-color: @surface-alt;
-    text-color: @accent;
-}
-
+element normal,
 element alternate {
     background-color: @surface;
     text-color: @foreground;
 }
 
-element selected element-text,
-element selected element-icon {
-    background-color: transparent;
-    text-color: @accent;
-}
-
-element alternate element-text,
-element alternate element-icon {
-    background-color: transparent;
-    text-color: @foreground;
-}
-
-/* Override Rofi's built-in light theme state colors. */
-element normal.normal,
-element normal.active,
-element alternate.normal,
-element alternate.active {
-    background-color: @surface;
-    text-color: @foreground;
-}
-
-element selected.normal,
-element selected.active {
+element selected {
     background-color: @surface-alt;
     text-color: @accent;
 }

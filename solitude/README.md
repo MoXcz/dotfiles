@@ -240,20 +240,18 @@ The helper commands the routes and the capture binds drive live in
 
 ### Themes
 
-A theme is a directory in `.config/shell/themes/<name>`:
+A theme is a directory in the shared `.config/themes/<name>`:
 
 ```
 colors.json     palette read by Commons/Theme.qml
 hyprland.lua    window border colors, loaded by hyprland.lua
 preview.png     thumbnail shown in the Theme menu (optional)
-backgrounds/    wallpapers offered by the background menu
 ```
 
 Adding a theme is dropping a directory in there: `colors.json` is the only
-required file. Wallpapers are any images in `backgrounds/` — jpg, png and webp
-all work. `preview.png` is what the Theme menu shows as a tile; a screenshot of
-the desktop is the obvious thing to use, and a theme without one still lists,
-just with its glyph instead of a picture.
+required file. `preview.png` is what the Theme menu shows as a tile; a
+screenshot of the desktop is the obvious thing to use, and a theme without one
+still lists, just with its glyph instead of a picture.
 
 Both menus show previews rather than a list of names. The images are decoded
 once into 600x400 JPEG thumbnails cached in
@@ -268,10 +266,9 @@ deleting the cache directory is always safe.
 watches the state file. Colors not named in `colors.json` fall back to the
 values in `Theme.qml`, so a partial theme is fine.
 
-Backgrounds come from every installed theme, not just the active one
-(`Super + Ctrl + Space`). Setting a theme only changes the wallpaper if the
-current one belonged to a different theme, so a background you picked by hand
-survives a theme switch.
+Backgrounds are shared by every profile under `~/backgrounds`, stowed from
+`shared/backgrounds` (`Super + Ctrl + Space`). They are independent of themes,
+so changing the palette does not replace a background picked by hand.
 
 ### Keyboard layouts
 

@@ -3,4 +3,4 @@
 i3lock --show-failed-attempts \
     --ignore-empty-password \
     --tiling \
-    --image="$HOME/dotfiles/.config/backgrounds/signalis_wallpaper.png"
+    --image="$HOME/backgrounds/signalis_wallpaper.png"

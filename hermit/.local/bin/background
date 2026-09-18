@@ -2,22 +2,35 @@
 # Set the desktop background with swaybg.
 # Usage: background [current|list|set <path>|next|restore]
 #
-# `list` prints the backgrounds of every installed theme, so the menu can offer
-# them all rather than only the active theme's. `restore` is for autostart: it
-# re-applies whatever was set last.
+# Backgrounds live in the shared dotfiles package, which stows them to
+# ~/backgrounds. `restore` is for autostart: it re-applies whatever was set
+# last.
 
 set -euo pipefail
 
-THEMES_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/hermit/themes"
+BACKGROUNDS_DIR="${HERMIT_BACKGROUNDS_DIR:-$HOME/backgrounds}"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/hermit"
 PATH_FILE="$STATE_DIR/background"
 
 backgrounds() {
-  find -L "$THEMES_DIR" -mindepth 3 -maxdepth 3 -type f -path '*/backgrounds/*' 2>/dev/null | sort
+  find -L "$BACKGROUNDS_DIR" -maxdepth 1 -type f 2>/dev/null | sort
 }
 
 current() {
-  [[ -f $PATH_FILE ]] && cat "$PATH_FILE" || true
+  [[ -f $PATH_FILE ]] || return 0
+
+  local image fallback
+  image=$(cat "$PATH_FILE")
+  if [[ -f $image ]]; then
+    printf '%s\n' "$image"
+    return
+  fi
+
+  # Migrate state left by the old per-theme background directories.
+  fallback="$BACKGROUNDS_DIR/$(basename "$image")"
+  if [[ -f $fallback ]]; then
+    printf '%s\n' "$fallback" | tee "$PATH_FILE"
+  fi
 }
 
 apply() {
@@ -50,9 +63,8 @@ case "${1:-current}" in
     active=$(current)
     while read -r image; do
       [[ -n $image ]] || continue
-      theme=$(basename "$(dirname "$(dirname "$image")")")
       title=$(basename "${image%.*}")
-      if [[ $image == "$active" ]]; then mark="$theme · active"; else mark="$theme"; fi
+      if [[ $image == "$active" ]]; then mark="active"; else mark=""; fi
       printf '󰋩\t%s\t%s\t%s\n' "$title" "$image" "$mark"
     done < <(backgrounds)
     ;;

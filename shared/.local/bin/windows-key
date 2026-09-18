@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-MSDM=${SOLITUDE_MSDM_PATH:-/sys/firmware/acpi/tables/MSDM}
+MSDM=${WINDOWS_MSDM_PATH:-${HERMIT_MSDM_PATH:-${SOLITUDE_MSDM_PATH:-/sys/firmware/acpi/tables/MSDM}}}
 
 if [[ ! -e $MSDM ]]; then
   echo "No Windows license key found in firmware." >&2

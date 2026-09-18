@@ -43,10 +43,15 @@ ShellRoot {
   }
 
   function closeOthers(name) {
+    var opening = overlayFor(name)
     for (var key in overlays) {
-      if (key !== name && overlays[key].opened) overlays[key].close()
+      var other = overlays[key]
+      // Launcher and command menu are states of the same DockPanel. Let the
+      // host crossfade/morph them directly instead of collapsing in between.
+      if (key !== name && other.opened
+          && !(opening && opening.attachedPanel && other.attachedPanel)) other.close()
     }
-    Bus.dockPanelsCloseAll()
+    if (!opening || !opening.attachedPanel) Bus.dockPanelsCloseAll()
   }
 
   // Bar panels morph into one another, but remain exclusive with the larger
@@ -56,7 +61,10 @@ ShellRoot {
     function onDockPanelRequested(panel) {
       for (var key in shell.overlays) {
         var overlay = shell.overlays[key]
-        if (overlay.opened && (!overlay.ownsPanel || !overlay.ownsPanel(panel))) overlay.close()
+        // DockPanel itself retires the old attached content. Only independent
+        // overlays need closing here; closing an attached one first creates a
+        // one-frame collapse/flash during launcher, menu and picker handoffs.
+        if (overlay.opened && !overlay.attachedPanel) overlay.close()
       }
     }
   }

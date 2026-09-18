@@ -88,30 +88,29 @@ route_toggle() {
 }
 
 route_theme() {
-  local active choice
+  local active choice name label preview
   active=$(theme current)
-  choice=$(theme list | while read -r name; do
-    [[ $name == "$active" ]] && printf '󰏘  %s  (active)\n' "$name" || printf '󰏘  %s\n' "$name"
-  done | pick "Theme") || exit 0
+  choice=$(while read -r name; do
+    [[ $name == "$active" ]] && label="󰏘  $name  (active)" || label="󰏘  $name"
+    preview=$(theme preview "$name" 2>/dev/null || true)
+    if [[ -n $preview ]]; then
+      printf '%s\0display\x1f%s\x1ficon\x1f%s\n' "$name" "$label" "$preview"
+    else
+      printf '%s\0display\x1f%s\n' "$name" "$label"
+    fi
+  done < <(theme list) | pick "Theme" -theme-str 'element-icon { size: 4em; }') || exit 0
   [[ -n $choice ]] || exit 0
-  choice=${choice#*  }
-  theme set "${choice%%  *}"
+  theme set "$choice"
 }
 
 route_background() {
-  background list | while IFS=$'\t' read -r _ title path mark _; do
-    printf '󰸉  %s  ·  %s\t%s\n' "$title" "$mark" "$path"
-  done | run_rows_path "Background"
-}
-
-# Like run_rows, but the payload is a path for `background set`.
-run_rows_path() {
-  local prompt=$1 rows choice path
-  rows=$(cat)
-  choice=$(printf '%s\n' "$rows" | cut -f1 | pick "$prompt") || exit 0
-  [[ -n $choice ]] || exit 0
-  path=$(printf '%s\n' "$rows" | awk -F'\t' -v c="$choice" '$1 == c { print $2; exit }')
-  [[ -n $path ]] && background set "$path"
+  local choice label
+  choice=$(background list | while IFS=$'\t' read -r _ title path mark _; do
+    label="󰸉  $title"
+    [[ -n $mark ]] && label+="  ·  $mark"
+    printf '%s\0display\x1f%s\x1ficon\x1f%s\n' "$path" "$label" "$path"
+  done | pick "Background" -theme-str 'element-icon { size: 4em; }') || exit 0
+  [[ -n $choice ]] && background set "$choice"
 }
 
 route_keyboard() {

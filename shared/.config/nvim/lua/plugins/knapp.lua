@@ -6,13 +6,13 @@ require("knapp").setup({
   wrap = {
     enabled = true,
     width = 120,
-    pad = true,
+    pad = false,
     display_line_motions = true,
   },
   backlinks = {
     auto = true,
     position = "right",
-    width = 40,
+    width = 80,
     height = 10,
   },
   keys = {

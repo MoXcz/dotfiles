@@ -33,7 +33,7 @@ unstow_others() {
 }
 
 stow_shared() {
-  echo "Stowing shared config (.config)..."
+  echo "Stowing shared config, commands, and backgrounds..."
   stow -v --no-folding -t "$TARGET_DIR" "$SHARED_DIR"
 }
 

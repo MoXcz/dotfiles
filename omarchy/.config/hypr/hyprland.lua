@@ -57,6 +57,3 @@ function module(module)
 end
 
 module("omarchy.current.theme.hyprland")
-
--- Added by hyprmoncfg: its generated monitor rules load last, so nothing before this can override the applied layout.
-dofile((os.getenv("XDG_CONFIG_HOME") or os.getenv("HOME") .. "/.config") .. "/hypr/hyprmoncfg-monitors.lua")

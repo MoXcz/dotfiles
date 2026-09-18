@@ -2,14 +2,14 @@
 # Switch the shell and window decoration theme.
 # Usage: theme [current|list|set <name>|next]
 #
-# A theme is a directory under ~/.config/shell/themes holding colors.json,
-# an optional hyprland.lua, and a backgrounds/ folder. Setting one writes the
+# A theme is a directory under ~/.config/themes holding colors.json,
+# an optional hyprland.lua, and an optional preview.png. Setting one writes the
 # name into the state directory, copies its hyprland.lua where hyprland.lua
 # loads it from, and tells the shell to re-read its palette.
 
 set -euo pipefail
 
-THEMES_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/shell/themes"
+THEMES_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/themes"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/shell"
 NAME_FILE="$STATE_DIR/theme"
 LUA_FILE="$STATE_DIR/theme.lua"
@@ -38,16 +38,6 @@ set_theme() {
     rm -f "$LUA_FILE"
   fi
   hyprctl reload >/dev/null 2>&1 || true
-
-  # Only follow the theme's own wallpaper when the current one came from a
-  # different theme, so a background picked by hand survives a theme switch.
-  local background
-  background=$(background current 2>/dev/null || true)
-  if [[ -z $background || $background != "$dir"/* ]]; then
-    local first
-    first=$(find -L "$dir/backgrounds" -type f 2>/dev/null | sort | head -1)
-    [[ -n $first ]] && background set "$first" >/dev/null 2>&1 || true
-  fi
 
   shell shell reloadTheme >/dev/null 2>&1 || true
   notify-send -a shell -u low "Theme: $name"
