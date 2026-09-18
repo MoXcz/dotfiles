@@ -146,7 +146,6 @@ o.bind(modCtrl .. " + PRINT", "Extract text (OCR) from screenshot", "ocr")
 o.bind(mod .. " + A", "Audio controls", "tui wiremix")
 o.bind(mod .. " + B", "Bluetooth controls", "tui bluetui")
 o.bind(mod .. " + W", "Wifi controls", "tui nmtui")
-o.bind(mod .. " + S", "System usage", "tui btop")
 
 -- Zoom
 o.bind(modCtrl .. " + Z", "Zoom in", function()
@@ -158,7 +157,7 @@ o.bind(modCtrlAlt .. " + Z", "Reset zoom", function()
 end)
 
 -- Lock system
-o.bind(modCtrl .. " + L", "Lock system", "lock")
+o.bind(modCtrl .. " + L", "Lock system", "lock", { locked = true })
 o.bind(modShift .. " + Q", "Power menu", "menu power")
 
 -- Clipboard
