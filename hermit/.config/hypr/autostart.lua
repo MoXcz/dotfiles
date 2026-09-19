@@ -7,11 +7,8 @@ hl.on("hyprland.start", function()
     .. " && dbus-update-activation-environment --systemd --all"
     .. " && systemctl --user start hypridle.service")
 
-  -- Desktop shell: bar, notifications, OSD, clipboard history. The theme
-  -- files waybar and mako include are rendered first, in the same command,
-  -- so neither can start before they exist.
-  hl.exec_cmd("theme apply && systemd-cat -t waybar waybar")
-  hl.exec_cmd("theme apply && systemd-cat -t mako mako")
+  -- Desktop shell: bar, notifications, OSD, clipboard history
+  hl.exec_cmd("theme apply && { systemd-cat -t waybar waybar & systemd-cat -t mako mako & }")
   hl.exec_cmd("systemd-cat -t swayosd swayosd-server")
   hl.exec_cmd("wl-paste --type text --watch cliphist store")
   hl.exec_cmd("wl-paste --type image --watch cliphist store")
