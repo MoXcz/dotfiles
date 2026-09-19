@@ -29,7 +29,7 @@ args=(-f "$FILEPATH")
 if [[ ${1:-region} == fullscreen ]]; then
   # wf-recorder prompts for an output when more than one is connected, and a
   # prompt on stdin is a hang when it is launched from a keybinding.
-  MONITOR=$(hyprctl activeworkspace | awk 'NR == 1 { print $NF }' | tr -d ':')
+  MONITOR=$(hyprctl -j activeworkspace | python3 -c 'import json, sys; print(json.load(sys.stdin)["monitor"])')
   [[ -n $MONITOR ]] && args+=(-o "$MONITOR")
 else
   GEOMETRY=$(slurp 2>/dev/null) || exit 0

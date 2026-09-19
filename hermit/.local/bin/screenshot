@@ -28,11 +28,10 @@ cleanup() { [[ -n $FREEZE_PID ]] && kill "$FREEZE_PID" 2>/dev/null || true; }
 trap cleanup EXIT
 
 if [[ $MODE == fullscreen ]]; then
-  GEOMETRY=$(hyprctl activeworkspace | awk 'NR==1 {print $NF}' | tr -d ':')
-  GEOMETRY=$(hyprctl monitors | awk -v m="$GEOMETRY" '
-    $1 == "Monitor" && $2 == m { found = 1 }
-    found && $1 ~ /^[0-9]+x[0-9]+@/ { split($1, r, "@"); split($3, o, "x"); print o[1] "," o[2] " " r[1]; exit }')
-  [[ -z $GEOMETRY ]] && exit 1
+  # grim captures a whole output by name; the focused one is the target.
+  MONITOR=$(hyprctl -j activeworkspace | python3 -c 'import json, sys; print(json.load(sys.stdin)["monitor"])')
+  [[ -n $MONITOR ]] || exit 1
+  GRIM_TARGET=(-o "$MONITOR")
 else
   # Freeze the screen so the capture matches what was pointed at. hyprpicker
   # is optional: without it the picker still works, it just is not frozen.
@@ -43,10 +42,11 @@ else
   fi
   GEOMETRY=$(slurp 2>/dev/null) || exit 0
   [[ -z $GEOMETRY ]] && exit 0
+  GRIM_TARGET=(-g "$GEOMETRY")
 fi
 
 FILEPATH="$OUTPUT_DIR/screenshot-$(date +'%Y-%m-%d_%H-%M-%S').png"
-grim -g "$GEOMETRY" "$FILEPATH" || exit 1
+grim "${GRIM_TARGET[@]}" "$FILEPATH" || exit 1
 cleanup
 FREEZE_PID=""
 
