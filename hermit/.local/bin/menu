@@ -9,7 +9,7 @@
 #   background   switch the wallpaper
 #   keyboard     switch the keyboard layout
 #   share        LocalSend
-#   tools        transcode, displays, VPN, Windows VM
+#   tools        transcode, VPN, Windows VM, TUIs
 #   power        lock, suspend, logout, reboot, shutdown
 #   emoji, keybindings, clipboard   the pickers by that name
 #   pick <prompt>   dmenu on stdin with the theme applied (used by the pickers)
