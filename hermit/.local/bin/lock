@@ -5,3 +5,12 @@ set -euo pipefail
 
 pidof hyprlock >/dev/null && exit 0
 exec hyprlock
+
+# hyprlock runs in its own transient unit rather than as a child of whoever
+# called this (hypridle, a keybinding). Stopping or restarting hypridle.service
+# would otherwise kill the lock screen along with it, leaving Hyprland locked
+# with no lock client.
+# exec systemd-run --user --quiet --collect --unit hyprlock \
+#   --setenv=WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-1}" \
+#   --setenv=HYPRLAND_INSTANCE_SIGNATURE="${HYPRLAND_INSTANCE_SIGNATURE:-}" \
+#   hyprlock --quiet
