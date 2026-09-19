@@ -27,7 +27,7 @@ o.bind(modAlt .. " + K", "Keyboard layout menu", "menu keyboard")
 o.bind("XF86Calculator", "Calculator", "gnome-calculator")
 
 -- ─── Aesthetics ─────────────────────
-o.bind(modShift .. " + SPACE", "Toggle top bar", "pkill -SIGUSR1 waybar")
+o.bind(modShift .. " + SPACE", "Toggle top bar", "toggle bar")
 o.bind(mod .. " + BACKSPACE", "Toggle window transparency",
   hl.dsp.window.set_prop({ window = "active", prop = "opaque", value = "toggle" }))
 
