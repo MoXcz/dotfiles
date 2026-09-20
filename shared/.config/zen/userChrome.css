@@ -1,0 +1,96 @@
+/* Solitude for Zen's browser UI. Select a dark browser theme. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --solitude-bg: #121212;
+    --solitude-surface: #191919;
+    --solitude-hover: #212121;
+    --solitude-selection: #323232;
+    --solitude-border: #323232;
+    --solitude-border-focus: #535353;
+    --solitude-text: #b4b4b4;
+    --solitude-muted: #949494;
+    --solitude-accent: #c4b6a6;
+    --solitude-red: #c95757;
+
+    --zen-primary-color: var(--solitude-accent) !important;
+    --zen-colors-primary: var(--solitude-surface) !important;
+    --zen-colors-secondary: var(--solitude-hover) !important;
+    --zen-colors-tertiary: var(--solitude-bg) !important;
+    --zen-colors-border: var(--solitude-border) !important;
+    --zen-themed-toolbar-bg: var(--solitude-surface) !important;
+    --zen-main-browser-background: var(--solitude-bg) !important;
+
+    --lwt-accent-color: var(--solitude-bg) !important;
+    --lwt-text-color: var(--solitude-text) !important;
+    --toolbar-color: var(--solitude-text) !important;
+    --toolbar-bgcolor: var(--solitude-surface) !important;
+    --toolbarbutton-icon-fill: var(--solitude-text) !important;
+    --toolbarbutton-icon-fill-attention: var(--solitude-accent) !important;
+    --toolbarbutton-hover-background: var(--solitude-hover) !important;
+    --toolbarbutton-active-background: var(--solitude-selection) !important;
+    --toolbar-field-background-color: var(--solitude-surface) !important;
+    --toolbar-field-color: var(--solitude-text) !important;
+    --toolbar-field-border-color: var(--solitude-border) !important;
+    --toolbar-field-focus-background-color: var(--solitude-surface) !important;
+    --toolbar-field-focus-color: var(--solitude-text) !important;
+    --toolbar-field-focus-border-color: var(--solitude-accent) !important;
+
+    --tab-selected-bgcolor: var(--solitude-selection) !important;
+    --tab-selected-textcolor: var(--solitude-accent) !important;
+    --tab-loading-fill: var(--solitude-accent) !important;
+    --lwt-sidebar-background-color: var(--solitude-surface) !important;
+    --lwt-sidebar-text-color: var(--solitude-text) !important;
+    --sidebar-background-color: var(--solitude-surface) !important;
+    --sidebar-text-color: var(--solitude-text) !important;
+
+    --arrowpanel-background: var(--solitude-surface) !important;
+    --arrowpanel-color: var(--solitude-text) !important;
+    --arrowpanel-border-color: var(--solitude-border-focus) !important;
+    --arrowpanel-dimmed: var(--solitude-hover) !important;
+    --arrowpanel-dimmed-further: var(--solitude-selection) !important;
+    --urlbarView-highlight-background: var(--solitude-selection) !important;
+    --urlbarView-highlight-color: var(--solitude-text) !important;
+  }
+
+  #urlbar-background {
+    background-color: var(--solitude-surface) !important;
+  }
+
+  .urlbarView-url {
+    color: var(--solitude-accent) !important;
+  }
+
+  .urlbarView-action {
+    color: var(--solitude-muted) !important;
+  }
+
+  tooltip {
+    appearance: none !important;
+    background-color: var(--solitude-surface) !important;
+    color: var(--solitude-text) !important;
+    border: 1px solid var(--solitude-border-focus) !important;
+    border-radius: 4px !important;
+  }
+}
+
+/* Keep editing left-aligned; center only the inactive address display. */
+#urlbar:not([focused]) .urlbar-input {
+  text-align: center !important;
+}
+
+/* Match Zen Better Unloaded Tabs: desaturate and dim unloaded tabs. */
+.tabbrowser-tab[pending="true"] {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+
+/* Animate colors without changing control sizes or focus outlines. */
+@media (prefers-reduced-motion: no-preference) {
+  .tab-background,
+  .toolbarbutton-icon,
+  .urlbarView-row {
+    transition:
+      background-color 120ms ease,
+      color 120ms ease !important;
+  }
+}
