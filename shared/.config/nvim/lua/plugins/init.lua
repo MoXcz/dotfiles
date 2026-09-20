@@ -36,9 +36,12 @@ vim.pack.add({
   --   src = "https://github.com/ryanmab/onoma.nvim",
   --   version = vim.version.range("*")
   -- },
+  vim.pack.add({
+    { src = "https://github.com/MoXcz/solitude.nvim" },
+  })
 })
 
-vim.cmd.colorscheme("ashen")
+vim.cmd.colorscheme("solitude")
 vim.cmd.packadd("nvim.undotree")
 -- run cd ~/.local/share/nvim/site/pack/core/opt/markdown-preview.nvim/app && npx --yes yarn install
 vim.cmd.packadd("markdown-preview.nvim")
