@@ -20,7 +20,7 @@ Snacks.setup({
   input = { enabled = true },
   indent = { enabled = true },
   picker = { enabled = true, hidden = true },
-  explorer = { enabled = true },
+  explorer = { enabled = false },
   rename = { enabled = true },
   gitbrowse = { enabled = true },
   git = { enabled = true },
@@ -98,7 +98,6 @@ local keymaps = {
   { "<leader>gb", function() Snacks.picker.git_branches() end,                                           desc = "Git Branches" },
   { "<leader>gl", function() Snacks.picker.git_log() end,                                                desc = "Git Log" },
   { "<leader>gL", function() Snacks.picker.git_log_line() end,                                           desc = "Git Log Line" },
-  { "<leader>gf", function() Snacks.picker.git_log_file() end,                                           desc = "Git Log File" },
   { "<leader>gc", function() Snacks.picker.git_status() end,                                             desc = "Git Status" },
   { "<leader>gd", function() Snacks.picker.git_diff() end,                                               desc = "Git Diff (Hunks)" },
   { "<leader>gS", function() Snacks.picker.git_stash() end,                                              desc = "Git Stash" },
@@ -117,15 +116,7 @@ local keymaps = {
   {
     "grv",
     function()
-      local params = vim.lsp.util.make_position_params()
-      vim.lsp.buf_request(0, "textDocument/definition", params, function(err, result, ctx)
-        if err or not result or vim.tbl_isempty(result) then
-          vim.notify("No definition found", vim.log.levels.WARN)
-          return
-        end
-        vim.cmd("vsplit")
-        vim.lsp.util.show_document(result[1], "utf-8", { focus = true })
-      end)
+      Snacks.picker.lsp_definitions({ confirm = "edit_vsplit" })
     end,
     desc = "Goto Definition in Vertical Split"
   },
@@ -133,7 +124,6 @@ local keymaps = {
   { "<leader>sf", function() Snacks.picker.smart() end,              desc = "Smart Find Files" },
   { "<leader>,",  function() Snacks.picker.buffers() end,            desc = "Buffers" },
   { "<leader>:",  function() Snacks.picker.command_history() end,    desc = "Command History" },
-  { "<leader>e",  function() Snacks.explorer() end,                  desc = "File Explorer" },
   { '<leader>fn', function() Snacks.notifier.show_history() end,     desc = 'Notification History', },
   -- search
   { '<leader>s"', function() Snacks.picker.registers() end,          desc = "Registers" },
