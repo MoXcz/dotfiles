@@ -36,9 +36,7 @@ vim.pack.add({
   --   src = "https://github.com/ryanmab/onoma.nvim",
   --   version = vim.version.range("*")
   -- },
-  vim.pack.add({
-    { src = "https://github.com/MoXcz/solitude.nvim" },
-  })
+  "https://github.com/MoXcz/solitude.nvim"
 })
 
 vim.cmd.colorscheme("solitude")
