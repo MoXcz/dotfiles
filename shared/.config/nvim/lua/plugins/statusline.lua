@@ -11,11 +11,6 @@ require("lualine").setup({
     always_divide_middle = true,
     always_show_tabline = true,
     globalstatus = false,
-    refresh = {
-      statusline = 10,
-      tabline = 10,
-      winbar = 10,
-    },
   },
   sections = {
     lualine_a = { "mode" },
