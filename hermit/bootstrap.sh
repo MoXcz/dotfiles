@@ -30,7 +30,8 @@ sudo pacman -Syu --needed \
   ttf-iosevka-nerd noto-fonts-emoji swaybg \
   gnome-themes-extra adwaita-icon-theme adwaita-fonts \
   noto-fonts noto-fonts-cjk ttf-liberation \
-  steam zsh tmux starship fzf unzip nodejs tree-sitter-cli npm rustup
+  steam zsh tmux starship fzf unzip nodejs tree-sitter-cli npm rustup \
+  tectonic fd
 
 if ! command -v yay >/dev/null 2>&1; then
   yay_dir="$(mktemp -d)"
