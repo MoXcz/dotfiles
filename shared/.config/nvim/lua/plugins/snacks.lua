@@ -111,7 +111,7 @@ local keymaps = {
   { "gD",         function() Snacks.picker.lsp_declarations() end,                                       desc = "Goto Declaration" },
   { "grr",        function() Snacks.picker.lsp_references() end,                                         desc = "References" },
   { "gri",        function() Snacks.picker.lsp_implementations() end,                                    desc = "Goto Implementation" },
-  { "gt",         function() Snacks.picker.lsp_type_definitions() end,                                   desc = "Goto T[y]pe Definition" },
+  { "grt",        function() Snacks.picker.lsp_type_definitions() end,                                   desc = "Goto T[y]pe Definition" },
   {
     "grv",
     function()
