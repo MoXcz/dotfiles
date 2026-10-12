@@ -1,7 +1,6 @@
 vim.lsp.enable({
   "lua_ls",
   "gopls",
-  "goimports",
   "rust_analyzer",
   "ols",
   "html",
@@ -9,6 +8,7 @@ vim.lsp.enable({
   "clangd",
   "ts_ls",
   "ty",
+  "ruff",
   "svelte",
 })
 
