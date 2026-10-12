@@ -24,8 +24,8 @@ autocmd("BufWinEnter", {
 })
 
 local map = vim.keymap.set
-map("n", "gu", "<cmd>diffget //2<CR>")
-map("n", "gh", "<cmd>diffget //3<CR>")
+map("n", "<leader>go", "<cmd>diffget //2<CR>", { desc = "Diffget ours (//2)" })
+map("n", "<leader>gt", "<cmd>diffget //3<CR>", { desc = "Diffget theirs (//3)" })
 map("n", "<leader>gd", "<cmd>Gdiffsplit!<CR>", { desc = "Split current buffer changes (current branch)" })
 map("n", "<leader>gs", vim.cmd.Git)
 
