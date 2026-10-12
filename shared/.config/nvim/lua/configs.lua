@@ -85,11 +85,9 @@ local augroup = vim.api.nvim_create_augroup
 autocmd("TextYankPost", {
   group = augroup("highlight-yank", { clear = true }),
   callback = function()
-    vim.highlight.on_yank()
+    vim.hl.on_yank()
   end,
 })
-
-vim.cmd.filetype("plugin indent on")
 
 -- Checkout: https://github.com/m4xshen/dotfiles/blob/main/nvim/nvim/lua/config/autocmds.lua
 vim.api.nvim_create_autocmd("BufEnter", {
