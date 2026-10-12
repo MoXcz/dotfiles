@@ -20,7 +20,6 @@ Snacks.setup({
   input = { enabled = true },
   indent = { enabled = true },
   picker = { enabled = true, hidden = true },
-  explorer = { enabled = false },
   rename = { enabled = true },
   gitbrowse = { enabled = true },
   git = { enabled = true },
@@ -119,7 +118,7 @@ local keymaps = {
     end,
     desc = "Goto Definition in Vertical Split"
   },
-  -- Top Pickers & Explorer
+  -- Top Pickers
   { "<leader>sf", function() Snacks.picker.smart() end,              desc = "Smart Find Files" },
   { "<leader>,",  function() Snacks.picker.buffers() end,            desc = "Buffers" },
   { "<leader>:",  function() Snacks.picker.command_history() end,    desc = "Command History" },
@@ -137,14 +136,6 @@ local keymaps = {
   { "<leader>sR", function() Snacks.picker.resume() end,             desc = "Resume" },
   { "<leader>z",  function() Snacks.zen() end,                       desc = "Toggle Zen Mode" },
   { "<leader>Z",  function() Snacks.zen.zoom() end,                  desc = "Toggle Zoom" },
-  n_esc = { "<esc>", { "cmp_close", "cancel" }, mode = "n", expr = true },
-  i_esc = { "<esc>", { "cmp_close", "stopinsert" }, mode = "i", expr = true },
-  i_cr = { "<cr>", { "cmp_accept", "confirm" }, mode = "i", expr = true },
-  i_tab = { "<tab>", { "cmp_select_next", "cmp" }, mode = "i", expr = true },
-  i_ctrl_w = { "<c-w>", "<c-s-w>", mode = "i", expr = true },
-  i_up = { "<up>", { "hist_up" }, mode = { "i", "n" } },
-  i_down = { "<down>", { "hist_down" }, mode = { "i", "n" } },
-  q = "cancel",
 }
 
 for _, map in ipairs(keymaps) do
