@@ -10,6 +10,14 @@ vim.lsp.enable({
   "ty",
   "ruff",
   "svelte",
+  "tailwindcss",
+  "emmet_ls",
+  "htmx",
+  "templ",
+  "bashls",
+  "marksman",
+  "expert",
+  "phpactor",
 })
 
 vim.diagnostic.config({
