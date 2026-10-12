@@ -48,17 +48,13 @@ require("gitsigns").setup({
   on_attach = function(buffer)
     local gs = package.loaded.gitsigns
 
-    local function map(mode, lhs, rhs, desc)
-      vim.keymap.set(mode, lhs, rhs, { buffer = buffer, desc = desc })
-    end
-
     map("n", "]c", function()
       if vim.wo.diff then
         vim.cmd.normal({ "]c", bang = true })
       else
         gs.nav_hunk("next")
       end
-    end, "Next Hunk")
+    end, { desc = "Next Hunk", buf = buffer })
 
     map("n", "[c", function()
       if vim.wo.diff then
@@ -66,18 +62,18 @@ require("gitsigns").setup({
       else
         gs.nav_hunk("prev")
       end
-    end, "Prev Hunk")
+    end, { desc = "Prev Hunk", buf = buffer })
 
     map("n", "]C", function()
       gs.nav_hunk("last")
-    end, "Last Hunk")
+    end, { desc = "Last Hunk" })
     map("n", "[C", function()
       gs.nav_hunk("first")
-    end, "First Hunk")
+    end, { desc = "First Hunk", buf = buffer })
 
-    map("n", "<leader>hd", gs.diffthis, "Diff This")
+    map("n", "<leader>hd", gs.diffthis, { desc = "Diff This" })
     map("n", "<leader>hD", function()
       gs.diffthis("~")
-    end, "Diff This ~")
+    end, { desc = "Diff This ~", buf = buffer })
   end,
 })
