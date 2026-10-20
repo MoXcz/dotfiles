@@ -209,3 +209,7 @@ fi
 if command -v fzf &> /dev/null; then
   source <(fzf --zsh)
 fi
+
+if command -v opencode &> /dev/null; then
+  source <(opencode --completions zsh)
+fi
