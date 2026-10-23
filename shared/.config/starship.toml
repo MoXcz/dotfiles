@@ -23,6 +23,8 @@ truncation_length = 4
 truncate_to_repo = true     # truncates directory to root folder if in github repo
 style = "#b4b4b4"
 read_only_style = "#c95757"
+repo_root_style = "#c4b6a6"
+repo_root_format = '[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) '
 
 [aws]
 symbol = "  "
@@ -68,6 +70,16 @@ symbol = " "
 [git_branch]
 symbol = " "
 style = "#c4b6a6"
+
+[cmd_duration]
+min_time = 2000
+format = 'took [$duration](#949494) '
+
+[git_metrics]
+disabled = false
+added_style = "#929d83"
+deleted_style = "#c95757"
+format = '([+$added]($added_style) )([-$deleted]($deleted_style) )'
 
 [golang]
 symbol = " "
