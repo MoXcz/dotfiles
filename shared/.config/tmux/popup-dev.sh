@@ -6,6 +6,7 @@ session="dev-${hash}"
 
 if ! tmux has-session -t "$session" 2>/dev/null; then
   tmux new-session -d -s "$session" -c "$dir"
+  tmux set -t "$session" @popup dev
   tmux split-window -h -t "$session" -c "$dir/web-platform"
 
   # get actual pane IDs regardless of base-index
