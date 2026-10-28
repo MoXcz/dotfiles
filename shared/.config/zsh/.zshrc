@@ -206,10 +206,5 @@ if command -v zoxide &> /dev/null; then
   eval "$(zoxide init zsh)"
 fi
 
-if command -v fzf &> /dev/null; then
-  source <(fzf --zsh)
-fi
-
-if command -v opencode &> /dev/null; then
-  source <(opencode --completions zsh)
-fi
+cached_init fzf 'fzf --zsh'
+cached_init opencode 'opencode --completions zsh'

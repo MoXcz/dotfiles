@@ -144,3 +144,17 @@ function book() {
 
   sioyek $BOOK &
 }
+
+# Source cached output of a slow init command; regenerate when the binary is updated
+function cached_init() {
+  local bin=${commands[$1]} cmd=$2
+  local cache="$XDG_CACHE_HOME/zsh/init/$1.zsh"
+  [[ -n $bin ]] || return
+  if [[ ! -s $cache || $bin -nt $cache ]]; then
+    mkdir -p ${cache:h}
+    # Temp file so a failed or interrupted run never leaves a partial cache
+    eval "$cmd" > $cache.tmp && mv $cache.tmp $cache || rm -f $cache.tmp
+  fi
+  [[ -s $cache ]] || return
+  source $cache
+}
