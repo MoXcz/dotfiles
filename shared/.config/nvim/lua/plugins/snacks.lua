@@ -19,7 +19,12 @@ Snacks.setup({
   toggle = { enabled = true },
   input = { enabled = true },
   indent = { enabled = true },
-  picker = { enabled = true, hidden = true },
+  picker = {
+    enabled = true,
+    hidden = true,
+    -- rg skips symlinks by default
+    sources = { grep = { follow = true } },
+  },
   rename = { enabled = true },
   gitbrowse = { enabled = true },
   git = { enabled = true },
