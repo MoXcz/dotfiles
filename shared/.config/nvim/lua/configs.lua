@@ -17,7 +17,7 @@ opt.softtabstop = 2
 opt.shiftwidth = 2
 opt.shiftround = true -- round to multiple of 'shiftwidth
 opt.list = true       -- Show whitespace characters
-opt.listchars = { tab = "» ", trail = "·", nbsp = "␣", eol = "󰌑" }
+opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 opt.number = true
 opt.relativenumber = true
 opt.wrap = false
