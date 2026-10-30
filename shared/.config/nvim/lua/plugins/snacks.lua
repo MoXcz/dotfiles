@@ -57,6 +57,11 @@ Snacks.setup({
 Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
 Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
 Snacks.toggle.diagnostics():map("<leader>ud")
+Snacks.toggle.new({
+  name = "Diagnostic Lines",
+  get = function() return vim.diagnostic.config().virtual_lines and true or false end,
+  set = function(state) vim.diagnostic.config({ virtual_lines = state, virtual_text = not state }) end,
+}):map("<leader>ul")
 Snacks.toggle
     .option("conceallevel",
       { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2, name = "Conceal Level" })
