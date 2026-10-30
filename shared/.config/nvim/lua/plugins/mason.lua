@@ -23,17 +23,17 @@ require("mason-tool-installer").setup({
     -- formatters
     "prettier",
     "google-java-format",
-    "black",
-    "codelldb",
     "goimports",
-    "impl",
-    "gomodifytags",
     "golangci-lint",
-    "delve",
     "shfmt",
     "pretty-php",
     "phpactor",
     "ruff",
+    "stylua",
+    "taplo",
+    "clang-format",
+    "oxfmt",
+    "jq",
   },
 })
 
