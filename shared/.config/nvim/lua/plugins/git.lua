@@ -66,12 +66,12 @@ require("gitsigns").setup({
 
     map("n", "]C", function()
       gs.nav_hunk("last")
-    end, { desc = "Last Hunk" })
+    end, { desc = "Last Hunk", buf = buffer })
     map("n", "[C", function()
       gs.nav_hunk("first")
     end, { desc = "First Hunk", buf = buffer })
 
-    map("n", "<leader>hd", gs.diffthis, { desc = "Diff This" })
+    map("n", "<leader>hd", gs.diffthis, { desc = "Diff This", buf = buffer })
     map("n", "<leader>hD", function()
       gs.diffthis("~")
     end, { desc = "Diff This ~", buf = buffer })
