@@ -7,6 +7,7 @@ vim.lsp.enable({
   "cssls",
   "clangd",
   "ts_ls",
+  "oxlint",
   "ty",
   "ruff",
   "svelte",
