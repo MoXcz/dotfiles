@@ -61,16 +61,16 @@ vim.api.nvim_create_user_command("FormatEnable", function()
   vim.notify("Autoformat enabled", vim.log.levels.INFO)
 end, { desc = "Re-enable autoformat-on-save" })
 
-local auto_format = true
-
-vim.keymap.set("n", "<leader>uf", function()
-  auto_format = not auto_format
-  if auto_format then
-    vim.cmd("FormatEnable")
-  else
-    vim.cmd("FormatDisable")
-  end
-end, { desc = "Toggle Autoformat" })
+Snacks.toggle.new({
+  name = "Autoformat",
+  get = function() return not vim.g.disable_autoformat end,
+  set = function(state)
+    vim.g.disable_autoformat = not state
+    if state then
+      vim.b.disable_autoformat = false
+    end
+  end,
+}):map("<leader>uf")
 
 vim.keymap.set({ "n", "v" }, "<leader>af", function()
   require("conform").format({ async = true }, function(err, did_edit)
