@@ -55,9 +55,10 @@ require("hardtime").setup({
 })
 
 require("smartcolumn").setup({
+  colorcolumn = "120",
   disabled_filetypes = {
     "netrw",
-    "Oil",
+    "oil",
     "mason",
     "help",
     "text",
