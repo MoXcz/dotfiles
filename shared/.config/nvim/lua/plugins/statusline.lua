@@ -1,35 +1,44 @@
+local function modes()
+  local flags = {}
+  if vim.g.disable_autoformat or vim.b.disable_autoformat then table.insert(flags, "no-fmt") end
+  if vim.g.blink_manual then table.insert(flags, "manual-cmp") end
+  return table.concat(flags, " ")
+end
+
 require("lualine").setup({
   options = {
     icons_enabled = true,
     component_separators = { left = "", right = "" },
     section_separators = { left = "", right = "" },
-    disabled_filetypes = {
-      statusline = {},
-      winbar = {},
-    },
-    ignore_focus = {},
     always_divide_middle = true,
-    always_show_tabline = true,
     globalstatus = true,
   },
   sections = {
     lualine_a = { "mode" },
-    lualine_b = { "branch", "diff", "diagnostics" },
-    lualine_c = { "filename" },
-    lualine_x = { "encoding", "fileformat", "filetype" },
-    lualine_y = { "progress" },
+    lualine_b = {
+      "branch",
+      {
+        "diff",
+        source = function()
+          local status = vim.b.gitsigns_status_dict
+          if status then
+            return { added = status.added, modified = status.changed, removed = status.removed }
+          end
+        end,
+      },
+      "diagnostics",
+    },
+    lualine_c = {
+      { "filename", path = 1, symbols = { modified = " ●", readonly = " " } },
+    },
+    lualine_x = {
+      { modes, color = "WarningMsg" },
+      "lsp_status",
+      { "encoding",   cond = function() return vim.bo.fileencoding ~= "utf-8" end },
+      { "fileformat", cond = function() return vim.bo.fileformat ~= "unix" end },
+      "filetype",
+    },
     lualine_z = { "location" },
   },
-  inactive_sections = {
-    lualine_a = {},
-    lualine_b = {},
-    lualine_c = { "filename" },
-    lualine_x = { "location" },
-    lualine_y = {},
-    lualine_z = {},
-  },
-  tabline = {},
-  winbar = {},
-  inactive_winbar = {},
-  extensions = {},
+  extensions = { "oil", "fugitive", "quickfix", "man" },
 })
