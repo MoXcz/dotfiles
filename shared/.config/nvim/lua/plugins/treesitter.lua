@@ -19,22 +19,10 @@ require('nvim-treesitter-textobjects').setup {
 
 -- Autocommands
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = {
-    "c", "cpp", "cmake", "go", "java", "javascript", "javascriptreact", "ledger",
-    "lua", "markdown", "python", "rust", "typescript", "typescriptreact", "vue", "odin", "svelte"
-  },
+  pattern = "*",
   callback = function()
-    vim.treesitter.start()
-  end,
-  group = nvimrc_augroup
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "cpp", "java", "typescriptreact", "javascriptreact", "python", "vue" },
-  callback = function()
-    vim.wo.foldmethod = "expr"
-    vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-    vim.wo.foldlevel = 99
+    -- fails for filetypes without an installed parser
+    pcall(vim.treesitter.start)
   end,
   group = nvimrc_augroup
 })
