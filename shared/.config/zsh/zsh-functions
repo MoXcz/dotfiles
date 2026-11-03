@@ -6,7 +6,7 @@ function plug() {
   plugin_name=$(echo $1 | cut -d "/" -f 2)
   if [ -d $ZDOTDIR/plugins/$plugin_name ]; then
     add_file "plugins/$plugin_name/$plugin_name.zsh" || \
-    add_file "plugins/$plugin_name/$plugin_name.plugins.zsh"
+    add_file "plugins/$plugin_name/$plugin_name.plugin.zsh"
   else
     git clone "https://github.com/zsh-users/$1.git" "$ZDOTDIR/plugins/$plugin_name"
   fi
