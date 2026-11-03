@@ -18,6 +18,7 @@ require("conform").setup({
     liquid = { "prettier" },
     java = { "google-java-format" },
     c = { "clang-format" },
+    cpp = { "clang-format" },
     json = { "oxfmt", "jq", stop_after_first = true },
     jsonc = { "oxfmt", "jq", stop_after_first = true },
     rust = { "rustfmt" },
