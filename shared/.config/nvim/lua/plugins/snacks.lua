@@ -99,7 +99,7 @@ local keymaps = {
   { "<leader>fk", function() Snacks.picker.keymaps() end,                                                desc = "Keymaps" },
   { "<leader>fi", function() Snacks.picker.icons() end,                                                  desc = "Icons" },
   { "<leader>fq", function() Snacks.picker.qflist() end,                                                 desc = "Quickfix List" },
-  { "<leader>ft", function() Snacks.picker.todo_comments({ keywords = { "TODO", "FIX", "FIXME" } }) end, desc = "Todo/Fix/Fixme" },
+  { "<leader>ft", function() Snacks.picker.pick("todo_comments", { keywords = { "TODO", "FIX", "FIXME" } }) end, desc = "Todo/Fix/Fixme" },
   --  Symbols are things like variables, functions, types, etc.
   { "<leader>fS", function() Snacks.picker.lsp_symbols() end,                                            desc = "LSP Symbols" },
   { "<leader>fw", function() Snacks.picker.lsp_workspace_symbols() end,                                  desc = "LSP Workspace Symbols" },
