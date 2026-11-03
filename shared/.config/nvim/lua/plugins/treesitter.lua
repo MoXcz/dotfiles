@@ -5,7 +5,7 @@ require("nvim-treesitter").install({
   "c", "cpp", "cmake", "comment", "go", "java", "javascript",
   "latex", "lua", "ledger", "markdown", "markdown_inline",
   "python", "rust", "typescript", "tsx", "vim", "vue", "zsh", "odin",
-  "svelte", "css", "html", "regex", "scss"
+  "svelte", "css", "html", "regex", "scss", "make", "doxygen"
 })
 
 require('nvim-treesitter-textobjects').setup {
