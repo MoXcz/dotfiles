@@ -2,20 +2,43 @@
 local nvimrc_augroup = vim.api.nvim_create_augroup("nvimrc", { clear = true })
 
 require("nvim-treesitter").install({
-  "c", "cpp", "cmake", "comment", "go", "java", "javascript",
-  "latex", "lua", "ledger", "markdown", "markdown_inline",
-  "python", "rust", "typescript", "tsx", "vim", "vue", "zsh", "odin",
-  "svelte", "css", "html", "regex", "scss", "make", "doxygen"
+  "c",
+  "cpp",
+  "cmake",
+  "comment",
+  "go",
+  "java",
+  "javascript",
+  "latex",
+  "lua",
+  "ledger",
+  "markdown",
+  "markdown_inline",
+  "python",
+  "rust",
+  "typescript",
+  "tsx",
+  "vim",
+  "vue",
+  "zsh",
+  "odin",
+  "svelte",
+  "css",
+  "html",
+  "regex",
+  "scss",
+  "make",
+  "doxygen",
 })
 
-require('nvim-treesitter-textobjects').setup {
+require("nvim-treesitter-textobjects").setup({
   select = {
     lookahead = true,
   },
   move = {
     set_jumps = true,
-  }
-}
+  },
+})
 
 -- Autocommands
 vim.api.nvim_create_autocmd("FileType", {
@@ -24,19 +47,17 @@ vim.api.nvim_create_autocmd("FileType", {
     -- fails for filetypes without an installed parser
     pcall(vim.treesitter.start)
   end,
-  group = nvimrc_augroup
+  group = nvimrc_augroup,
 })
 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "javascriptreact", "typescriptreact", "vue" },
-  callback = function()
-    vim.bo.indentexpr = "v:lua.require('nvim-treesitter').indentexpr()"
-  end,
-  group = nvimrc_augroup
+  callback = function() vim.bo.indentexpr = "v:lua.require('nvim-treesitter').indentexpr()" end,
+  group = nvimrc_augroup,
 })
 
 -- Toggle mappings
-vim.keymap.set('n', '<leader>st', function()
+vim.keymap.set("n", "<leader>st", function()
   if vim.treesitter.highlighter.active[vim.api.nvim_get_current_buf()] ~= nil then
     vim.treesitter.stop()
     vim.print("Turned off treesitter highlighting...")
@@ -46,7 +67,7 @@ vim.keymap.set('n', '<leader>st', function()
   end
 end, { noremap = true, silent = true, desc = "Toggle treesitter highlighting" })
 
-vim.keymap.set('n', '<leader>sT', function()
+vim.keymap.set("n", "<leader>sT", function()
   local current_indentexpr = vim.bo.indentexpr
   local current_buffer = vim.api.nvim_get_current_buf()
   if current_indentexpr ~= "v:lua.require('nvim-treesitter').indentexpr()" then
@@ -55,9 +76,7 @@ vim.keymap.set('n', '<leader>sT', function()
     vim.print("Turned on treesitter indent...")
   else
     local previous_indentexpr = vim.b[current_buffer].rahlir_previous_indentexpr
-    if previous_indentexpr == nil then
-      previous_indentexpr = ""
-    end
+    if previous_indentexpr == nil then previous_indentexpr = "" end
     vim.bo.indentexpr = previous_indentexpr
     vim.print("Turned off treesitter indent...")
   end
@@ -67,85 +86,157 @@ end, { noremap = true, silent = true, desc = "Toggle treesitter indent" })
 -- and '{' blocks, but they do fill help fill small gaps
 
 -- useful for refactoring and code navigation
-vim.keymap.set({ "x", "o" }, "af", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@function.outer", "textobjects")
-end, { desc = "Function outer region" })
-vim.keymap.set({ "x", "o" }, "if", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@function.inner", "textobjects")
-end, { desc = "Function inner region" })
+vim.keymap.set(
+  { "x", "o" },
+  "af",
+  function() require("nvim-treesitter-textobjects.select").select_textobject("@function.outer", "textobjects") end,
+  { desc = "Function outer region" }
+)
+vim.keymap.set(
+  { "x", "o" },
+  "if",
+  function() require("nvim-treesitter-textobjects.select").select_textobject("@function.inner", "textobjects") end,
+  { desc = "Function inner region" }
+)
 
 -- I really like this one to move quickly between function parameters
-vim.keymap.set({ "x", "o" }, "aa", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@parameter.outer", "textobjects")
-end, { desc = "Parameter outer region" })
-vim.keymap.set({ "x", "o" }, "ia", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@parameter.inner", "textobjects")
-end, { desc = "Parameter inner region" })
+vim.keymap.set(
+  { "x", "o" },
+  "aa",
+  function() require("nvim-treesitter-textobjects.select").select_textobject("@parameter.outer", "textobjects") end,
+  { desc = "Parameter outer region" }
+)
+vim.keymap.set(
+  { "x", "o" },
+  "ia",
+  function() require("nvim-treesitter-textobjects.select").select_textobject("@parameter.inner", "textobjects") end,
+  { desc = "Parameter inner region" }
+)
 
-vim.keymap.set({ "x", "o" }, "ak", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@block.outer", "textobjects")
-end, { desc = "Block outer region" })
-vim.keymap.set({ "x", "o" }, "ik", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@block.inner", "textobjects")
-end, { desc = "Block inner region" })
+vim.keymap.set(
+  { "x", "o" },
+  "ak",
+  function() require("nvim-treesitter-textobjects.select").select_textobject("@block.outer", "textobjects") end,
+  { desc = "Block outer region" }
+)
+vim.keymap.set(
+  { "x", "o" },
+  "ik",
+  function() require("nvim-treesitter-textobjects.select").select_textobject("@block.inner", "textobjects") end,
+  { desc = "Block inner region" }
+)
 
-vim.keymap.set({ "x", "o" }, "ac", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@conditional.outer", "textobjects")
-end, { desc = "Conditional outer region" })
-vim.keymap.set({ "x", "o" }, "ic", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@conditional.inner", "textobjects")
-end, { desc = "Conditional inner region" })
+vim.keymap.set(
+  { "x", "o" },
+  "ac",
+  function() require("nvim-treesitter-textobjects.select").select_textobject("@conditional.outer", "textobjects") end,
+  { desc = "Conditional outer region" }
+)
+vim.keymap.set(
+  { "x", "o" },
+  "ic",
+  function() require("nvim-treesitter-textobjects.select").select_textobject("@conditional.inner", "textobjects") end,
+  { desc = "Conditional inner region" }
+)
 
-vim.keymap.set({ "x", "o" }, "al", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@loop.outer", "textobjects")
-end, { desc = "Loop outer region" })
-vim.keymap.set({ "x", "o" }, "il", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@loop.inner", "textobjects")
-end, { desc = "Loop inner region" })
+vim.keymap.set(
+  { "x", "o" },
+  "al",
+  function() require("nvim-treesitter-textobjects.select").select_textobject("@loop.outer", "textobjects") end,
+  { desc = "Loop outer region" }
+)
+vim.keymap.set(
+  { "x", "o" },
+  "il",
+  function() require("nvim-treesitter-textobjects.select").select_textobject("@loop.inner", "textobjects") end,
+  { desc = "Loop inner region" }
+)
 
-vim.keymap.set({ "x", "o" }, "a=", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@assignment.outer", "textobjects")
-end, { desc = "Assignment outer region" })
-vim.keymap.set({ "x", "o" }, "i=", function()
-  require('nvim-treesitter-textobjects.select').select_textobject("@assignment.inner", "textobjects")
-end, { desc = "Assignment inner region" })
+vim.keymap.set(
+  { "x", "o" },
+  "a=",
+  function() require("nvim-treesitter-textobjects.select").select_textobject("@assignment.outer", "textobjects") end,
+  { desc = "Assignment outer region" }
+)
+vim.keymap.set(
+  { "x", "o" },
+  "i=",
+  function() require("nvim-treesitter-textobjects.select").select_textobject("@assignment.inner", "textobjects") end,
+  { desc = "Assignment inner region" }
+)
 
 -- Move keymappings
-vim.keymap.set({ "n", "x", "o" }, "]f", function()
-  require('nvim-treesitter-textobjects.move').goto_next_start("@function.outer", "textobjects")
-end, { desc = "Next function" })
-vim.keymap.set({ "n", "x", "o" }, "]F", function()
-  require('nvim-treesitter-textobjects.move').goto_next_end("@function.outer", "textobjects")
-end, { desc = "End of next function" })
-vim.keymap.set({ "n", "x", "o" }, "[f", function()
-  require('nvim-treesitter-textobjects.move').goto_previous_start("@function.outer", "textobjects")
-end, { desc = "Previous function" })
-vim.keymap.set({ "n", "x", "o" }, "[F", function()
-  require('nvim-treesitter-textobjects.move').goto_previous_end("@function.outer", "textobjects")
-end, { desc = "End of previous function" })
+vim.keymap.set(
+  { "n", "x", "o" },
+  "]f",
+  function() require("nvim-treesitter-textobjects.move").goto_next_start("@function.outer", "textobjects") end,
+  { desc = "Next function" }
+)
+vim.keymap.set(
+  { "n", "x", "o" },
+  "]F",
+  function() require("nvim-treesitter-textobjects.move").goto_next_end("@function.outer", "textobjects") end,
+  { desc = "End of next function" }
+)
+vim.keymap.set(
+  { "n", "x", "o" },
+  "[f",
+  function() require("nvim-treesitter-textobjects.move").goto_previous_start("@function.outer", "textobjects") end,
+  { desc = "Previous function" }
+)
+vim.keymap.set(
+  { "n", "x", "o" },
+  "[F",
+  function() require("nvim-treesitter-textobjects.move").goto_previous_end("@function.outer", "textobjects") end,
+  { desc = "End of previous function" }
+)
 
-vim.keymap.set({ "n", "x", "o" }, "]k", function()
-  require('nvim-treesitter-textobjects.move').goto_next_start("@block.outer", "textobjects")
-end, { desc = "Next block" })
-vim.keymap.set({ "n", "x", "o" }, "]K", function()
-  require('nvim-treesitter-textobjects.move').goto_next_end("@block.outer", "textobjects")
-end, { desc = "End of next block" })
-vim.keymap.set({ "n", "x", "o" }, "[k", function()
-  require('nvim-treesitter-textobjects.move').goto_previous_start("@block.outer", "textobjects")
-end, { desc = "Previous block" })
-vim.keymap.set({ "n", "x", "o" }, "[K", function()
-  require('nvim-treesitter-textobjects.move').goto_previous_end("@block.outer", "textobjects")
-end, { desc = "End of previous block" })
+vim.keymap.set(
+  { "n", "x", "o" },
+  "]k",
+  function() require("nvim-treesitter-textobjects.move").goto_next_start("@block.outer", "textobjects") end,
+  { desc = "Next block" }
+)
+vim.keymap.set(
+  { "n", "x", "o" },
+  "]K",
+  function() require("nvim-treesitter-textobjects.move").goto_next_end("@block.outer", "textobjects") end,
+  { desc = "End of next block" }
+)
+vim.keymap.set(
+  { "n", "x", "o" },
+  "[k",
+  function() require("nvim-treesitter-textobjects.move").goto_previous_start("@block.outer", "textobjects") end,
+  { desc = "Previous block" }
+)
+vim.keymap.set(
+  { "n", "x", "o" },
+  "[K",
+  function() require("nvim-treesitter-textobjects.move").goto_previous_end("@block.outer", "textobjects") end,
+  { desc = "End of previous block" }
+)
 
-vim.keymap.set({ "n", "x", "o" }, "]a", function()
-  require('nvim-treesitter-textobjects.move').goto_next_start("@parameter.outer", "textobjects")
-end, { desc = "Next parameter" })
-vim.keymap.set({ "n", "x", "o" }, "]A", function()
-  require('nvim-treesitter-textobjects.move').goto_next_end("@parameter.outer", "textobjects")
-end, { desc = "End of next parameter" })
-vim.keymap.set({ "n", "x", "o" }, "[a", function()
-  require('nvim-treesitter-textobjects.move').goto_previous_start("@parameter.outer", "textobjects")
-end, { desc = "Previous parameter" })
-vim.keymap.set({ "n", "x", "o" }, "[A", function()
-  require('nvim-treesitter-textobjects.move').goto_previous_end("@parameter.outer", "textobjects")
-end, { desc = "End of previous parameter" })
+vim.keymap.set(
+  { "n", "x", "o" },
+  "]a",
+  function() require("nvim-treesitter-textobjects.move").goto_next_start("@parameter.outer", "textobjects") end,
+  { desc = "Next parameter" }
+)
+vim.keymap.set(
+  { "n", "x", "o" },
+  "]A",
+  function() require("nvim-treesitter-textobjects.move").goto_next_end("@parameter.outer", "textobjects") end,
+  { desc = "End of next parameter" }
+)
+vim.keymap.set(
+  { "n", "x", "o" },
+  "[a",
+  function() require("nvim-treesitter-textobjects.move").goto_previous_start("@parameter.outer", "textobjects") end,
+  { desc = "Previous parameter" }
+)
+vim.keymap.set(
+  { "n", "x", "o" },
+  "[A",
+  function() require("nvim-treesitter-textobjects.move").goto_previous_end("@parameter.outer", "textobjects") end,
+  { desc = "End of previous parameter" }
+)

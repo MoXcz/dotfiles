@@ -12,7 +12,7 @@ require("mason-tool-installer").setup({
     "templ",
     "ty",
     "ols",
-    'htmx-lsp',
+    "htmx-lsp",
     "tailwindcss-language-server",
     "bash-language-server",
     "clangd",
@@ -37,6 +37,6 @@ require("mason-tool-installer").setup({
   },
 })
 
-require("mason-lspconfig").setup {
-  automatic_enable = false
-}
+require("mason-lspconfig").setup({
+  automatic_enable = false,
+})

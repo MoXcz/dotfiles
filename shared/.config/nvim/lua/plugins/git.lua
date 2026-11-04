@@ -5,19 +5,13 @@ autocmd("BufWinEnter", {
   group = m_fugitive,
   pattern = "*",
   callback = function()
-    if vim.bo.ft ~= "fugitive" then
-      return
-    end
+    if vim.bo.ft ~= "fugitive" then return end
 
     local bufnr = vim.api.nvim_get_current_buf()
     local opts = { buffer = bufnr, remap = false }
-    vim.keymap.set("n", "<leader>p", function()
-      vim.cmd.Git("push")
-    end, opts)
+    vim.keymap.set("n", "<leader>p", function() vim.cmd.Git("push") end, opts)
 
-    vim.keymap.set("n", "<leader>P", function()
-      vim.cmd.Git({ "pull", "--rebase" })
-    end, opts)
+    vim.keymap.set("n", "<leader>P", function() vim.cmd.Git({ "pull", "--rebase" }) end, opts)
 
     vim.keymap.set("n", "<leader>tt", ":Git push -u origin ", opts)
   end,
@@ -32,11 +26,11 @@ map("n", "<leader>gs", vim.cmd.Git)
 require("gitsigns").setup({
   current_line_blame = true,
   signs = {
-    add = { text = '+' },
-    change = { text = '~' },
-    delete = { text = '_' },
-    topdelete = { text = '‾' },
-    changedelete = { text = '~' },
+    add = { text = "+" },
+    change = { text = "~" },
+    delete = { text = "_" },
+    topdelete = { text = "‾" },
+    changedelete = { text = "~" },
   },
   signs_staged = {
     add = { text = "▎" },
@@ -64,16 +58,10 @@ require("gitsigns").setup({
       end
     end, { desc = "Prev Hunk", buf = buffer })
 
-    map("n", "]C", function()
-      gs.nav_hunk("last")
-    end, { desc = "Last Hunk", buf = buffer })
-    map("n", "[C", function()
-      gs.nav_hunk("first")
-    end, { desc = "First Hunk", buf = buffer })
+    map("n", "]C", function() gs.nav_hunk("last") end, { desc = "Last Hunk", buf = buffer })
+    map("n", "[C", function() gs.nav_hunk("first") end, { desc = "First Hunk", buf = buffer })
 
     map("n", "<leader>hd", gs.diffthis, { desc = "Diff This", buf = buffer })
-    map("n", "<leader>hD", function()
-      gs.diffthis("~")
-    end, { desc = "Diff This ~", buf = buffer })
+    map("n", "<leader>hD", function() gs.diffthis("~") end, { desc = "Diff This ~", buf = buffer })
   end,
 })

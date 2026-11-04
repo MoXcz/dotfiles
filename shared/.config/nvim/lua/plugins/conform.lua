@@ -36,9 +36,7 @@ require("conform").setup({
     lsp_format = "fallback",
   },
   format_on_save = function(bufnr)
-    if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
-      return
-    end
+    if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then return end
     return { timeout_ms = 500, lsp_format = "fallback" }
   end,
 })
@@ -58,25 +56,26 @@ vim.api.nvim_create_user_command("FormatEnable", function()
   vim.notify("Autoformat enabled", vim.log.levels.INFO)
 end, { desc = "Re-enable autoformat-on-save" })
 
-Snacks.toggle.new({
-  name = "Autoformat",
-  get = function() return not vim.g.disable_autoformat end,
-  set = function(state)
-    vim.g.disable_autoformat = not state
-    if state then
-      vim.b.disable_autoformat = false
-    end
-  end,
-}):map("<leader>uf")
+Snacks.toggle
+  .new({
+    name = "Autoformat",
+    get = function() return not vim.g.disable_autoformat end,
+    set = function(state)
+      vim.g.disable_autoformat = not state
+      if state then vim.b.disable_autoformat = false end
+    end,
+  })
+  :map("<leader>uf")
 
 vim.keymap.set({ "n", "v" }, "<leader>af", function()
   require("conform").format({ async = true }, function(err, did_edit)
-    if not err and did_edit then
-      vim.notify("Code formatted", vim.log.levels.INFO, { title = "Conform" })
-    end
+    if not err and did_edit then vim.notify("Code formatted", vim.log.levels.INFO, { title = "Conform" }) end
   end)
 end, { desc = "Format buffer" })
 
-vim.keymap.set({ "n", "v" }, "<leader>aF", function()
-  require("conform").format({ formatters = { "injected" }, timeout_ms = 3000 })
-end, { desc = "Format Injected Langs" })
+vim.keymap.set(
+  { "n", "v" },
+  "<leader>aF",
+  function() require("conform").format({ formatters = { "injected" }, timeout_ms = 3000 }) end,
+  { desc = "Format Injected Langs" }
+)

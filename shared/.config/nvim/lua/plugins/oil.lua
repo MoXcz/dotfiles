@@ -9,7 +9,7 @@ function _G.get_oil_winbar()
   end
 end
 
-require('oil').setup({
+require("oil").setup({
   columns = { "permissions", "size", "mtime", "icon" },
   keymaps = {
     ["<C-h>"] = false,

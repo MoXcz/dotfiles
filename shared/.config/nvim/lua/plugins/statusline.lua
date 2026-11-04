@@ -21,9 +21,7 @@ require("lualine").setup({
         "diff",
         source = function()
           local status = vim.b.gitsigns_status_dict
-          if status then
-            return { added = status.added, modified = status.changed, removed = status.removed }
-          end
+          if status then return { added = status.added, modified = status.changed, removed = status.removed } end
         end,
       },
       "diagnostics",
@@ -34,7 +32,7 @@ require("lualine").setup({
     lualine_x = {
       { modes, color = "WarningMsg" },
       "lsp_status",
-      { "encoding",   cond = function() return vim.bo.fileencoding ~= "utf-8" end },
+      { "encoding", cond = function() return vim.bo.fileencoding ~= "utf-8" end },
       { "fileformat", cond = function() return vim.bo.fileformat ~= "unix" end },
       "filetype",
     },

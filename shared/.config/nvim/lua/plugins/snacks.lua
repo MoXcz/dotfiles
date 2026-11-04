@@ -2,10 +2,7 @@ local Snacks = require("snacks")
 require("todo-comments").setup({})
 
 -- used in case terminal query is answered by tmux
-if vim.env.SNACKS_KITTY == nil
-    and (vim.env.KITTY_WINDOW_ID or vim.env.KITTY_PID or vim.env.KITTY_INSTALLATION_DIR) then
-  vim.env.SNACKS_KITTY = "1"
-end
+if vim.env.SNACKS_KITTY == nil and (vim.env.KITTY_WINDOW_ID or vim.env.KITTY_PID or vim.env.KITTY_INSTALLATION_DIR) then vim.env.SNACKS_KITTY = "1" end
 
 Snacks.setup({
   bigfile = { enabled = true },
@@ -34,7 +31,7 @@ Snacks.setup({
     doc = {
       enabled = true,
       inline = true, -- draw in the buffer (kitty graphics protocol)
-      float = true,  -- fall back to a float when inline is unsupported
+      float = true, -- fall back to a float when inline is unsupported
       max_width = 60,
       max_height = 25,
     },
@@ -57,20 +54,17 @@ Snacks.setup({
 Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
 Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
 Snacks.toggle.diagnostics():map("<leader>ud")
-Snacks.toggle.new({
-  name = "Diagnostic Lines",
-  get = function() return vim.diagnostic.config().virtual_lines and true or false end,
-  set = function(state) vim.diagnostic.config({ virtual_lines = state, virtual_text = not state }) end,
-}):map("<leader>ul")
 Snacks.toggle
-    .option("conceallevel",
-      { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2, name = "Conceal Level" })
-    :map("<leader>uc")
-Snacks.toggle
-    .option("showtabline", { off = 0, on = vim.o.showtabline > 0 and vim.o.showtabline or 2, name = "Tabline" })
-    :map("<leader>uA")
+  .new({
+    name = "Diagnostic Lines",
+    get = function() return vim.diagnostic.config().virtual_lines and true or false end,
+    set = function(state) vim.diagnostic.config({ virtual_lines = state, virtual_text = not state }) end,
+  })
+  :map("<leader>ul")
+Snacks.toggle.option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2, name = "Conceal Level" }):map("<leader>uc")
+Snacks.toggle.option("showtabline", { off = 0, on = vim.o.showtabline > 0 and vim.o.showtabline or 2, name = "Tabline" }):map("<leader>uA")
 Snacks.toggle.treesitter():map("<leader>uT")
-Snacks.toggle.inlay_hints():map('<leader>uh')
+Snacks.toggle.inlay_hints():map("<leader>uh")
 Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map("<leader>ub")
 Snacks.toggle.dim():map("<leader>uD")
 Snacks.toggle.animate():map("<leader>ua")
@@ -83,84 +77,93 @@ Snacks.toggle.zen():map("<leader>uz")
 
 local keymaps = {
   -- Scratch
-  { '<leader>R',  function() Snacks.rename.rename_file() end,                                            desc = 'Rename File', },
-  { '<leader>un', function() Snacks.notifier.hide() end,                                                 desc = 'Dismiss All Notifications', },
-  { ']]',         function() Snacks.words.jump(vim.v.count1) end,                                        desc = 'Next Reference',             mode = { 'n', 't' }, },
-  { '[[',         function() Snacks.words.jump(-vim.v.count1) end,                                       desc = 'Prev Reference',             mode = { 'n', 't' }, },
+  { "<leader>R", function() Snacks.rename.rename_file() end, desc = "Rename File" },
+  { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
+  {
+    "]]",
+    function() Snacks.words.jump(vim.v.count1) end,
+    desc = "Next Reference",
+    mode = { "n", "t" },
+  },
+  {
+    "[[",
+    function() Snacks.words.jump(-vim.v.count1) end,
+    desc = "Prev Reference",
+    mode = { "n", "t" },
+  },
   -- Pickers
-  { "<leader>ff", function() Snacks.picker.files({ action = "replace" }) end,                            desc = "Find Files" },
-  { "<leader>fs", function() Snacks.picker.grep() end,                                                   desc = "Grep" },
-  { "<leader>fg", function() Snacks.picker.grep_word() end,                                              desc = "Visual selection or word",   mode = { "n", "x" } },
-  { "<leader>fp", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end,                desc = "Find Config File" },
-  { "<leader>fd", function() Snacks.picker.diagnostics() end,                                            desc = "Diagnostics" },
-  { "<leader>fh", function() Snacks.picker.help() end,                                                   desc = "Help Pages" },
-  { "<leader>fc", function() Snacks.picker.colorschemes() end,                                           desc = "Colorschemes" },
-  { "<leader>fm", function() Snacks.picker.man() end,                                                    desc = "Man Pages" },
-  { "<leader>fk", function() Snacks.picker.keymaps() end,                                                desc = "Keymaps" },
-  { "<leader>fi", function() Snacks.picker.icons() end,                                                  desc = "Icons" },
-  { "<leader>fq", function() Snacks.picker.qflist() end,                                                 desc = "Quickfix List" },
+  { "<leader>ff", function() Snacks.picker.files({ action = "replace" }) end, desc = "Find Files" },
+  { "<leader>fs", function() Snacks.picker.grep() end, desc = "Grep" },
+  {
+    "<leader>fg",
+    function() Snacks.picker.grep_word() end,
+    desc = "Visual selection or word",
+    mode = { "n", "x" },
+  },
+  { "<leader>fp", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
+  { "<leader>fd", function() Snacks.picker.diagnostics() end, desc = "Diagnostics" },
+  { "<leader>fh", function() Snacks.picker.help() end, desc = "Help Pages" },
+  { "<leader>fc", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
+  { "<leader>fm", function() Snacks.picker.man() end, desc = "Man Pages" },
+  { "<leader>fk", function() Snacks.picker.keymaps() end, desc = "Keymaps" },
+  { "<leader>fi", function() Snacks.picker.icons() end, desc = "Icons" },
+  { "<leader>fq", function() Snacks.picker.qflist() end, desc = "Quickfix List" },
   { "<leader>ft", function() Snacks.picker.pick("todo_comments", { keywords = { "TODO", "FIX", "FIXME" } }) end, desc = "Todo/Fix/Fixme" },
   --  Symbols are things like variables, functions, types, etc.
-  { "<leader>fS", function() Snacks.picker.lsp_symbols() end,                                            desc = "LSP Symbols" },
-  { "<leader>fw", function() Snacks.picker.lsp_workspace_symbols() end,                                  desc = "LSP Workspace Symbols" },
+  { "<leader>fS", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
+  { "<leader>fw", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
   -- git
-  { "<leader>gb", function() Snacks.picker.git_branches() end,                                           desc = "Git Branches" },
-  { "<leader>gl", function() Snacks.picker.git_log() end,                                                desc = "Git Log" },
-  { "<leader>gL", function() Snacks.picker.git_log_line() end,                                           desc = "Git Log Line" },
-  { "<leader>gc", function() Snacks.picker.git_status() end,                                             desc = "Git Status" },
-  { "<leader>gS", function() Snacks.picker.git_stash() end,                                              desc = "Git Stash" },
-  { '<leader>gB', function() Snacks.gitbrowse() end,                                                     desc = 'Git Browse', },
+  { "<leader>gb", function() Snacks.picker.git_branches() end, desc = "Git Branches" },
+  { "<leader>gl", function() Snacks.picker.git_log() end, desc = "Git Log" },
+  { "<leader>gL", function() Snacks.picker.git_log_line() end, desc = "Git Log Line" },
+  { "<leader>gc", function() Snacks.picker.git_status() end, desc = "Git Status" },
+  { "<leader>gS", function() Snacks.picker.git_stash() end, desc = "Git Stash" },
+  { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse" },
   -- gh
-  { "<leader>gi", function() Snacks.picker.gh_issue() end,                                               desc = "GitHub Issues (open)" },
-  { "<leader>gI", function() Snacks.picker.gh_issue({ state = "all" }) end,                              desc = "GitHub Issues (all)" },
-  { "<leader>gp", function() Snacks.picker.gh_pr() end,                                                  desc = "GitHub Pull Requests (open)" },
-  { "<leader>gP", function() Snacks.picker.gh_pr({ state = "all" }) end,                                 desc = "GitHub Pull Requests (all)" },
+  { "<leader>gi", function() Snacks.picker.gh_issue() end, desc = "GitHub Issues (open)" },
+  { "<leader>gI", function() Snacks.picker.gh_issue({ state = "all" }) end, desc = "GitHub Issues (all)" },
+  { "<leader>gp", function() Snacks.picker.gh_pr() end, desc = "GitHub Pull Requests (open)" },
+  { "<leader>gP", function() Snacks.picker.gh_pr({ state = "all" }) end, desc = "GitHub Pull Requests (all)" },
   -- LSP
-  { "gd",         function() Snacks.picker.lsp_definitions() end,                                        desc = "Goto Definition" },
-  { "gD",         function() Snacks.picker.lsp_declarations() end,                                       desc = "Goto Declaration" },
-  { "grr",        function() Snacks.picker.lsp_references() end,                                         desc = "References" },
-  { "gri",        function() Snacks.picker.lsp_implementations() end,                                    desc = "Goto Implementation" },
-  { "grt",        function() Snacks.picker.lsp_type_definitions() end,                                   desc = "Goto T[y]pe Definition" },
+  { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
+  { "gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
+  { "grr", function() Snacks.picker.lsp_references() end, desc = "References" },
+  { "gri", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
+  { "grt", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
   {
     "grv",
-    function()
-      Snacks.picker.lsp_definitions({ confirm = "edit_vsplit" })
-    end,
-    desc = "Goto Definition in Vertical Split"
+    function() Snacks.picker.lsp_definitions({ confirm = "edit_vsplit" }) end,
+    desc = "Goto Definition in Vertical Split",
   },
   -- Top Pickers
-  { "<leader>sf", function() Snacks.picker.smart() end,              desc = "Smart Find Files" },
-  { "<leader>,",  function() Snacks.picker.buffers() end,            desc = "Buffers" },
-  { "<leader>:",  function() Snacks.picker.command_history() end,    desc = "Command History" },
-  { '<leader>fn', function() Snacks.notifier.show_history() end,     desc = 'Notification History', },
+  { "<leader>sf", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
+  { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
+  { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
+  { "<leader>fn", function() Snacks.notifier.show_history() end, desc = "Notification History" },
   -- search
-  { '<leader>s"', function() Snacks.picker.registers() end,          desc = "Registers" },
-  { '<leader>s/', function() Snacks.picker.search_history() end,     desc = "Search History" },
-  { "<leader>sa", function() Snacks.picker.autocmds() end,           desc = "Autocmds" },
-  { "<leader>sC", function() Snacks.picker.commands() end,           desc = "Commands" },
+  { '<leader>s"', function() Snacks.picker.registers() end, desc = "Registers" },
+  { "<leader>s/", function() Snacks.picker.search_history() end, desc = "Search History" },
+  { "<leader>sa", function() Snacks.picker.autocmds() end, desc = "Autocmds" },
+  { "<leader>sC", function() Snacks.picker.commands() end, desc = "Commands" },
   { "<leader>sD", function() Snacks.picker.diagnostics_buffer() end, desc = "Buffer Diagnostics" },
-  { "<leader>sH", function() Snacks.picker.highlights() end,         desc = "Highlights" },
-  { "<leader>sj", function() Snacks.picker.jumps() end,              desc = "Jumps" },
-  { "<leader>sl", function() Snacks.picker.loclist() end,            desc = "Location List" },
-  { "<leader>sm", function() Snacks.picker.marks() end,              desc = "Marks" },
-  { "<leader>sR", function() Snacks.picker.resume() end,             desc = "Resume" },
-  { "<leader>z",  function() Snacks.zen() end,                       desc = "Toggle Zen Mode" },
-  { "<leader>Z",  function() Snacks.zen.zoom() end,                  desc = "Toggle Zoom" },
+  { "<leader>sH", function() Snacks.picker.highlights() end, desc = "Highlights" },
+  { "<leader>sj", function() Snacks.picker.jumps() end, desc = "Jumps" },
+  { "<leader>sl", function() Snacks.picker.loclist() end, desc = "Location List" },
+  { "<leader>sm", function() Snacks.picker.marks() end, desc = "Marks" },
+  { "<leader>sR", function() Snacks.picker.resume() end, desc = "Resume" },
+  { "<leader>z", function() Snacks.zen() end, desc = "Toggle Zen Mode" },
+  { "<leader>Z", function() Snacks.zen.zoom() end, desc = "Toggle Zoom" },
 }
 
 for _, map in ipairs(keymaps) do
   local opts = { desc = map.desc }
-  if map.silent ~= nil then
-    opts.silent = map.silent
-  end
+  if map.silent ~= nil then opts.silent = map.silent end
   if map.noremap ~= nil then
     opts.noremap = map.noremap
   else
     opts.noremap = true
   end
-  if map.expr ~= nil then
-    opts.expr = map.expr
-  end
+  if map.expr ~= nil then opts.expr = map.expr end
 
   local mode = map.mode or "n"
   vim.keymap.set(mode, map[1], map[2], opts)

@@ -16,7 +16,7 @@ opt.tabstop = 2
 opt.softtabstop = 2
 opt.shiftwidth = 2
 opt.shiftround = true -- round to multiple of 'shiftwidth
-opt.list = true       -- Show whitespace characters
+opt.list = true -- Show whitespace characters
 opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 opt.number = true
 opt.relativenumber = true
@@ -44,8 +44,8 @@ map("n", "<C-h>", "<C-w><C-h>")
 -- center cursor after jump and search
 map("n", "<C-d>", "<C-d>zz")
 map("n", "<C-u>", "<C-u>zz")
-map('n', 'n', 'nzzzv')
-map('n', 'N', 'Nzzzv')
+map("n", "n", "nzzzv")
+map("n", "N", "Nzzzv")
 
 -- cd into current file dir
 map("n", "<leader>cd", '<cmd>lua vim.fn.chdir(vim.fn.expand("%:p:h"))<CR>')
@@ -72,19 +72,17 @@ map("n", "<leader>xc", "<cmd>!chmod +x %<CR>", { silent = true })
 map("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer.sh<CR>")
 map("n", "Q", "<nop>")
 map("n", "<Esc>", "<cmd>nohlsearch<CR>")
-map("n", "<leader>ps", '<cmd>lua vim.pack.update()<CR>')
+map("n", "<leader>ps", "<cmd>lua vim.pack.update()<CR>")
 
 -- control size of splits (width/height)
-map('n', '<M-,>', '<c-w>5<', { desc = 'decrease left panel width' })
-map('n', '<M-.>', '<c-w>5>', { desc = 'increase left panel width' })
-map('n', '<M-t>', '<C-W>+', { desc = 'increase top panel width' })
-map('n', '<M-s>', '<C-W>-', { desc = 'decrease top panel width' })
+map("n", "<M-,>", "<c-w>5<", { desc = "decrease left panel width" })
+map("n", "<M-.>", "<c-w>5>", { desc = "increase left panel width" })
+map("n", "<M-t>", "<C-W>+", { desc = "increase top panel width" })
+map("n", "<M-s>", "<C-W>-", { desc = "decrease top panel width" })
 
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 autocmd("TextYankPost", {
   group = augroup("highlight-yank", { clear = true }),
-  callback = function()
-    vim.hl.on_yank()
-  end,
+  callback = function() vim.hl.on_yank() end,
 })

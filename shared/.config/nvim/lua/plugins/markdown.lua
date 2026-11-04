@@ -49,5 +49,4 @@ require("render-markdown").setup({
   indent = { enabled = false },
 })
 
-vim.keymap.set("n", "<leader>um", "<cmd>RenderMarkdown buf_toggle<CR>",
-  { desc = "Toggle markdown rendering", silent = true })
+vim.keymap.set("n", "<leader>um", "<cmd>RenderMarkdown buf_toggle<CR>", { desc = "Toggle markdown rendering", silent = true })

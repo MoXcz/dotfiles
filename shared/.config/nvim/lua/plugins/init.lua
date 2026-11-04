@@ -12,7 +12,7 @@ vim.pack.add({
   "https://github.com/nvim-tree/nvim-web-devicons",
   {
     src = "https://github.com/saghen/blink.cmp",
-    version = vim.version.range("^1")
+    version = vim.version.range("^1"),
   },
   "https://github.com/stevearc/oil.nvim",
   "https://github.com/nvim-treesitter/nvim-treesitter-textobjects",
@@ -35,7 +35,7 @@ vim.pack.add({
   --   src = "https://github.com/ryanmab/onoma.nvim",
   --   version = vim.version.range("*")
   -- },
-  "https://github.com/MoXcz/solitude.nvim"
+  "https://github.com/MoXcz/solitude.nvim",
 })
 
 vim.cmd.colorscheme("solitude")
@@ -50,7 +50,7 @@ map("n", "<leader>fu", vim.cmd.Undotree, { desc = "Undo history" })
 require("hardtime").setup({
   disabled_filetypes = {
     "nvim-undotree",
-  }
+  },
 })
 
 require("smartcolumn").setup({
@@ -64,7 +64,7 @@ require("smartcolumn").setup({
     "markdown",
     "tex",
     "html",
-    "snacks_dashboard"
+    "snacks_dashboard",
   },
 })
 
