@@ -1,0 +1,46 @@
+[
+  // Window resizing
+  { "key": "alt+,", "command": "workbench.action.decreaseViewWidth", "when": "editorTextFocus && vim.mode == 'Normal'" },
+  { "key": "alt+.", "command": "workbench.action.increaseViewWidth", "when": "editorTextFocus && vim.mode == 'Normal'" },
+  { "key": "alt+t", "command": "workbench.action.increaseViewHeight", "when": "editorTextFocus && vim.mode == 'Normal'" },
+  { "key": "alt+s", "command": "workbench.action.decreaseViewHeight", "when": "editorTextFocus && vim.mode == 'Normal'" },
+
+  // multicursors
+  { "key": "alt+j", "command": "editor.action.insertCursorBelow", "when": "editorTextFocus && vim.mode != 'Insert'" },
+  { "key": "alt+k", "command": "editor.action.insertCursorAbove", "when": "editorTextFocus && vim.mode != 'Insert'" },
+  { "key": "alt+l", "command": "editor.action.addSelectionToNextFindMatch", "when": "editorTextFocus && vim.mode != 'Insert'" },
+  { "key": "alt+h", "command": "editor.action.addSelectionToPreviousFindMatch", "when": "editorTextFocus && vim.mode != 'Insert'" },
+
+  // completions
+  { "key": "tab", "command": "-acceptSelectedSuggestion" },
+  { "key": "ctrl+y", "command": "acceptSelectedSuggestion", "when": "suggestWidgetVisible && textInputFocus" },
+  { "key": "ctrl+n", "command": "selectNextSuggestion", "when": "suggestWidgetVisible && textInputFocus" },
+  { "key": "ctrl+p", "command": "selectPrevSuggestion", "when": "suggestWidgetVisible && textInputFocus" },
+  { "key": "ctrl+e", "command": "hideSuggestWidget", "when": "suggestWidgetVisible && textInputFocus" },
+  { "key": "ctrl+d", "command": "toggleSuggestionDetails", "when": "suggestWidgetVisible && textInputFocus" },
+  { "key": "ctrl+n", "command": "workbench.action.quickOpenSelectNext", "when": "inQuickOpen" },
+  { "key": "ctrl+p", "command": "workbench.action.quickOpenSelectPrevious", "when": "inQuickOpen" },
+
+  // Leave the explorer the same way as any other split
+  { "key": "ctrl+l", "command": "workbench.action.navigateRight", "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "ctrl+j", "command": "workbench.action.navigateDown", "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "ctrl+k", "command": "workbench.action.navigateUp", "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "-", "command": "workbench.action.focusActiveEditorGroup", "when": "filesExplorerFocus && !inputFocus" },
+
+  // Oil-like file operations in the explorer
+  { "key": "j", "command": "list.focusDown", "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "k", "command": "list.focusUp", "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "l", "command": "list.select", "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "enter", "command": "list.select", "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "h", "command": "list.collapse", "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "g g", "command": "list.focusFirst", "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "shift+g", "command": "list.focusLast", "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "a", "command": "explorer.newFile", "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "shift+a", "command": "explorer.newFolder", "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "r", "command": "renameFile", "when": "filesExplorerFocus && !explorerResourceIsRoot && !inputFocus" },
+  { "key": "d", "command": "deleteFile", "when": "filesExplorerFocus && !explorerResourceIsRoot && !inputFocus" },
+  { "key": "y", "command": "filesExplorer.copy", "when": "filesExplorerFocus && !explorerResourceIsRoot && !inputFocus" },
+  { "key": "x", "command": "filesExplorer.cut", "when": "filesExplorerFocus && !explorerResourceIsRoot && !inputFocus" },
+  { "key": "p", "command": "filesExplorer.paste", "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "alt+h", "command": "explorer.openToSide", "when": "filesExplorerFocus && !inputFocus" }
+]
