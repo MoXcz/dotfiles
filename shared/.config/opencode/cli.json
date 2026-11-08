@@ -2,5 +2,17 @@
   "$schema": "https://opencode.ai/v2/cli.json",
   "theme": {
     "name": "solitude"
-  }
+  },
+  "diffs": {
+    "wrap": "word"
+  },
+  "session": {
+    "sidebar": "auto",
+    "scrollbar": true,
+    "thinking": "hide"
+  },
+  "tabs": {
+    "mode": "off"
+  },
+  "animations": true
 }
